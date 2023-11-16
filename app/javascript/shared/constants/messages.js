@@ -1,3 +1,8 @@
+// Atharva Nigoskar
+import store from '../../dashboard/store/index.js';
+
+const planName = store.getters.getPlanName;
+
 export const MESSAGE_STATUS = {
   FAILED: 'failed',
   SENT: 'sent',
@@ -36,7 +41,16 @@ export const CONVERSATION_PRIORITY_ORDER = {
 };
 
 // Size in mega bytes
-export const MAXIMUM_FILE_UPLOAD_SIZE = 2;
+let MAXIMUM_FILE_UPLOAD_SIZE;
+
+if (planName === 'Starter') {
+  MAXIMUM_FILE_UPLOAD_SIZE = 2;
+} else {
+  MAXIMUM_FILE_UPLOAD_SIZE = 10;
+}
+
+export { MAXIMUM_FILE_UPLOAD_SIZE };
+
 export const MAXIMUM_FILE_UPLOAD_SIZE_TWILIO_SMS_CHANNEL = 5;
 
 export const ALLOWED_FILE_TYPES =

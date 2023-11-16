@@ -66,6 +66,19 @@ if (window.logRocketProjectId) {
 
 Vue.use(Vuex);
 export default new Vuex.Store({
+  state: {
+    planName: '',
+  },
+  mutations: {
+    setPlanName(state, planName) {
+      state.planName = planName;
+    },
+  },
+  getters: {
+    getPlanName(state) {
+      return state.planName;
+    },
+  },
   modules: {
     accounts,
     agentBots,

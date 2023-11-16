@@ -129,14 +129,13 @@ class Account < ApplicationRecord
     {
       agents: ChatwootApp.max_limit.to_i,
       inboxes: ChatwootApp.max_limit.to_i,
-      history: ChatwootApp.max_limit.to_i,
+      history: ChatwootApp.max_limit.to_i
     }
   end
 
   # For first-time signup
   def check_and_subscribe_for_plan(user)
     subscribe_for_plan unless has_stripe_subscription?(user)
-
   end
 
   def subscribe_for_plan(name = 'Trial', end_time = ChatwootApp.trial_plan_ending_time)
@@ -151,28 +150,24 @@ class Account < ApplicationRecord
     user_email = user.email
     Stripe.api_key = ENV.fetch('STRIPE_SECRET_KEY', nil)
     customer = Stripe::Customer.list(email: user_email)
-    if customer.data.any?
-      # customer with the specified email found
-      stripe_customer_id = customer.data[0].id
-      subscription = Stripe::Subscription.list(customer: stripe_customer_id)
-      if subscription.data.any?
-        subscription_price = Enterprise::BillingProductPrice.find_by(price_stripe_id: subscription['data'][0]['plan']['id'])
-        if subscription_price
-          # subscription present for stripe chat plan
-          account_billing_subscriptions.create!(billing_product_price: subscription_price, subscription_stripe_id: subscription['data'][0]['id'],
-            current_period_end: Time.at(subscription['data'][0]['current_period_end']).utc.to_datetime)
-          return true
-        else
-          # subscription present but for any other stripe plan
-          return false
-        end
-      else
-        return false
-      end
-    else
-      # No customer with the specified email found
-      return false
-    end
+    return false unless customer.data.any?
+
+    # customer with the specified email found
+    stripe_customer_id = customer.data[0].id
+    subscription = Stripe::Subscription.list(customer: stripe_customer_id)
+    return false unless subscription.data.any?
+
+    subscription_price = Enterprise::BillingProductPrice.find_by(price_stripe_id: subscription['data'][0]['plan']['id'])
+    return false unless subscription_price
+
+    # subscription present for stripe chat plan
+    account_billing_subscriptions.create!(billing_product_price: subscription_price, subscription_stripe_id: subscription['data'][0]['id'],
+                                          current_period_end: Time.at(subscription['data'][0]['current_period_end']).utc.to_datetime)
+    true
+
+    # subscription present but for any other stripe plan
+
+    # No customer with the specified email found
   end
 
   # Set limits for the account
@@ -186,24 +181,24 @@ class Account < ApplicationRecord
     Account::UpdateUserAccountsBasedOnLimitsJob.perform_later(id)
   end
 
-  #Create subscription plan for ltd accounts
+  # Create subscription plan for ltd accounts
   def subscribe_for_ltd_plan(coupon_code)
-    code_prefix = coupon_code.code[0,2]
-    partner_name = ""
-    if code_prefix == "AS"
-      partner_name = "AppSumo"
-    elsif code_prefix == "DM"
-      partner_name = "DealMirror"
-    elsif code_prefix == "PG"
-      partner_name = "PitchGround"
+    code_prefix = coupon_code.code[0, 2]
+    partner_name = ''
+    if code_prefix == 'AS'
+      partner_name = 'AppSumo'
+    elsif code_prefix == 'DM'
+      partner_name = 'DealMirror'
+    elsif code_prefix == 'PG'
+      partner_name = 'PitchGround'
     end
 
-    if partner_name == "AppSumo" || partner_name == "DealMirror"
-      _plan=nil
-      ltd_price=nil
+    if %w[AppSumo DealMirror].include?(partner_name)
+      _plan = nil
+      ltd_price = nil
       if coupon_code_used == 0
         _plan = Enterprise::BillingProduct.find_by(product_description: 'Tier 1 LTD Plan for AS/DM')
-      elsif coupon_code_used == 1 
+      elsif coupon_code_used == 1
         _plan = Enterprise::BillingProduct.find_by(product_description: 'Tier 2 LTD Plan for AS/DM')
       elsif coupon_code_used == 2
         _plan = Enterprise::BillingProduct.find_by(product_description: 'Tier 3 LTD Plan for AS/DM')
@@ -213,15 +208,14 @@ class Account < ApplicationRecord
 
       if _plan
         ltd_price = Enterprise::BillingProductPrice.find_by(billing_product_id: _plan.id)
-        account_billing_subscriptions&.update(billing_product_price: ltd_price, current_period_end: Time.new(2050, 12, 31).utc.to_datetime, partner: partner_name)
+        account_billing_subscriptions&.update(billing_product_price: ltd_price, current_period_end: Time.new(2050, 12,
+                                                                                                             31).utc.to_datetime, partner: partner_name)
       end
 
-      if coupon_code_used < 5
-        update_columns(coupon_code_used: coupon_code_used + 1)
-      end
-    elsif partner_name == "PitchGround"
-      tier = coupon_code.code[-2,2]
-      _plan=nil
+      update_columns(coupon_code_used: coupon_code_used + 1) if coupon_code_used < 5
+    elsif partner_name == 'PitchGround'
+      tier = coupon_code.code[-2, 2]
+      _plan = nil
       if tier == 'T1'
         _plan = Enterprise::BillingProduct.find_by(product_description: 'Tier 1 LTD Plan for PG')
       elsif tier == 'T2'
@@ -234,12 +228,11 @@ class Account < ApplicationRecord
 
       if _plan
         ltd_price = Enterprise::BillingProductPrice.find_by(billing_product_id: _plan.id)
-        account_billing_subscriptions&.update(billing_product_price: ltd_price, current_period_end: Time.new(2050, 12, 31).utc.to_datetime, partner: partner_name)
+        account_billing_subscriptions&.update(billing_product_price: ltd_price, current_period_end: Time.new(2050, 12,
+                                                                                                             31).utc.to_datetime, partner: partner_name)
       end
 
-      if coupon_code_used < 1
-        update_columns(coupon_code_used: coupon_code_used + 1)
-      end
+      update_columns(coupon_code_used: coupon_code_used + 1) if coupon_code_used < 1
     end
   end
 

@@ -20,7 +20,17 @@ json.available_product_prices do
     json.description "<p> #{billing_product_price.limits['agents'].presence || 'Unlimited '.html_safe} Agents</p>
                       <p> #{billing_product_price.limits['inboxes'].presence || 'Unlimited '.html_safe} Inboxes</p>
                       <p> #{billing_product_price.limits['chat'].presence || 'Unlimited '.html_safe} Chat</p>
-                      <p> #{billing_product_price.limits['history'].presence || 'Unlimited '.html_safe} Days Chat History</p>"
+                      <p> #{billing_product_price.limits['history'].presence || 'Unlimited '.html_safe} Days Chat History</p>
+                      <p> #{if billing_product_price.billing_product.product_name == 'Starter'
+                              2
+                            else
+                              (if %w[Pro
+                                     Plus].include?(billing_product_price.billing_product.product_name)
+                                 10
+                               else
+                                 'N/A'
+                               end)
+                            end}MB Attachment Limit</p>"
     json.unit_amount billing_product_price.unit_amount
     json.no_of_allowed_agents billing_product_price.limits['agents']
     json.no_of_allowed_inboxes billing_product_price.limits['inboxes']

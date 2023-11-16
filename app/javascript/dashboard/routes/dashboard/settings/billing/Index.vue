@@ -99,6 +99,7 @@ import alertMixin from 'shared/mixins/alertMixin';
 import configMixin from 'shared/mixins/configMixin';
 import accountMixin from '../../../../mixins/account';
 import AccountAPI from '../../../../api/account';
+// eslint-disable-next-line no-unused-vars
 import { applyPageFilters } from '../../../../store/modules/conversations/helpers';
 // List all Plans
 import ShowPlan from './ShowPlan.vue';
@@ -180,6 +181,7 @@ export default {
             plan_expiry_date,
           } = this.getAccount(this.accountId);
           this.planName = plan_name;
+          this.$store.commit('setPlanName', plan_name);
           this.platformName = platform_name;
           this.selectedProductPrice = plan_id;
           this.agentCount = allowed_no_agents;
