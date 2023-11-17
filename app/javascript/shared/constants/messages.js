@@ -42,10 +42,13 @@ export const CONVERSATION_PRIORITY_ORDER = {
 
 // Size in mega bytes
 let MAXIMUM_FILE_UPLOAD_SIZE;
-
+// eslint-disable-next-line no-console
+console.log(planName);
 if (planName === 'Starter') {
   MAXIMUM_FILE_UPLOAD_SIZE = 2;
 } else {
+  // eslint-disable-next-line no-console
+  console.log(planName);
   MAXIMUM_FILE_UPLOAD_SIZE = 10;
 }
 
