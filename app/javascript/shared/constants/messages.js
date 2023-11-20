@@ -1,7 +1,38 @@
 // Atharva Nigoskar
-import store from '../../dashboard/store/index.js';
+// import axios from 'axios';
+// import store from '../../dashboard/store/index.js';
 
-const planName = store.getters.getPlanName;
+// import AccountAPI from '../../dashboard/api/account.js';
+// const planName = store.getters.getPlanName;
+// let realPlanName = store.getters.getPlanName;
+// AccountAPI.getBillingSubscription()
+//   .then(response => {
+//     // Extract plan_name from the response
+//     const planName = response.data.plan_name;
+//     realPlanName = planName;
+//     // Use plan_name here
+//   })
+//   .catch(error => {
+//     // eslint-disable-next-line no-console
+//     console.error('An error occurred:', error);
+//     const planName = 'Trial';
+//     realPlanName = planName;
+//   });
+
+// let accountId = 1; // Replace this with the actual accountId
+// let account = store.getters.getAccount(accountId);
+// let planName;
+
+// axios
+//   .get(`/api/v1/accounts/${account.id}/billing_subscription`)
+//   .then(response => {
+//     planName = response.data.plan_name;
+//     console.log(planName);
+//   })
+//   .catch(error => {
+//     console.error('An error occurred:', error);
+//     planName = 'Trial';
+//   });
 
 export const MESSAGE_STATUS = {
   FAILED: 'failed',
@@ -41,18 +72,20 @@ export const CONVERSATION_PRIORITY_ORDER = {
 };
 
 // Size in mega bytes
-let MAXIMUM_FILE_UPLOAD_SIZE;
-// eslint-disable-next-line no-console
-console.log(planName);
-if (planName === 'Starter') {
-  MAXIMUM_FILE_UPLOAD_SIZE = 2;
-} else {
-  // eslint-disable-next-line no-console
-  console.log(planName);
-  MAXIMUM_FILE_UPLOAD_SIZE = 10;
-}
+// let MAXIMUM_FILE_UPLOAD_SIZE;
+// // eslint-disable-next-line no-console
+// // console.log(planName);
+// // eslint-disable-next-line no-console
+// console.log(typeof realPlanName);
+// // eslint-disable-next-line no-console
+// console.log(realPlanName.length);
+// if (realPlanName === 'Starter') {
+//   MAXIMUM_FILE_UPLOAD_SIZE = 2;
+// } else {
+//   MAXIMUM_FILE_UPLOAD_SIZE = 10;
+// }
 
-export { MAXIMUM_FILE_UPLOAD_SIZE };
+export const MAXIMUM_FILE_UPLOAD_SIZE = 10;
 
 export const MAXIMUM_FILE_UPLOAD_SIZE_TWILIO_SMS_CHANNEL = 5;
 
