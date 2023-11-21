@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <modal :show.sync="show" :on-close="onClose">
     <div>
@@ -19,9 +18,9 @@
 
 <script>
 import alertMixin from 'shared/mixins/alertMixin';
-import AccountAPI from '../../../../api/account';
-import Modal from '../../../../components/Modal.vue';
-import WootSubmitButton from '../../../../components/buttons/FormSubmitButton.vue';
+import AccountAPI from '../../../../../api/account';
+import Modal from './modal.vue';
+import WootSubmitButton from '../../../../../components/buttons/FormSubmitButton.vue';
 import { mapGetters } from 'vuex';
 
 export default {
