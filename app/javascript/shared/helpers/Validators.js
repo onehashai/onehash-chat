@@ -29,7 +29,7 @@ export const isLowercase = value =>{
   return containsUppercase;
 }
 
-export const isSpecialChar = value =>{
+export const hasSpecialChar = value =>{
   const containsSpecialCharacter = /[!@#$%^&*()_+\-=[\]{}|'"/\\.,`<>:;?~]/.test(
     value
   );

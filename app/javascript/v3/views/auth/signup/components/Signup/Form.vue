@@ -162,7 +162,7 @@ export default {
       return true;
     },
     passwordErrorText() {
-      errs = [];
+      let errs = [];
       const { password } = this.$v.credentials;
       if (!password.$error) {
         return '';
@@ -176,7 +176,7 @@ export default {
       if (!password.isLowercase) {
         errs.push(this.$t('REGISTER.PASSWORD.NOT_LOWERCASE'));
       }
-      if (!password.isSpecialChar) {
+      if (!password.hasSpecialChar) {
         errs.push(this.$t('REGISTER.PASSWORD.NOT_SPECIAL_CHARACTER'));
       }
       if (!password.hasNumber) {
