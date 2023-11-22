@@ -1,13 +1,13 @@
 <template>
   <transition name="modal-fade">
     <div
-      v-if="show"
       :class="modalClassName"
       transition="modal"
       @mousedown="handleMouseDown"
     >
       <div
         :class="modalContainerClassName"
+        style="display: block"
         @mouse.stop
         @mousedown="event => event.stopPropagation()"
       >
@@ -16,7 +16,8 @@
           color-scheme="secondary"
           icon="dismiss"
           variant="clear"
-          class="absolute ltr:right-2 rtl:left-2 top-2 z-10"
+          class="ExpireModal"
+          style="display: block"
           @click="close"
         />
         <slot />
@@ -39,7 +40,7 @@ export default {
     },
     onClose: {
       type: Function,
-      required: true,
+      required: false,
     },
     fullWidth: {
       type: Boolean,
@@ -63,9 +64,6 @@ export default {
     modalContainerClassName() {
       let className =
         'modal-container bg-white dark:bg-slate-800 skip-context-menu';
-      if (this.fullWidth) {
-        return `${className} modal-container--full-width`;
-      }
 
       return `${className} ${this.size}`;
     },
@@ -98,6 +96,7 @@ export default {
     },
     close() {
       this.onClose();
+      this.$emit('close');
     },
     onMouseUp() {
       if (this.mousedDownOnBackdrop) {
@@ -109,14 +108,18 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-.modal-container--full-width {
+<style lang="scss">
+.modal-container {
   align-items: center;
   border-radius: 0;
   display: flex;
-  height: 100%;
+  height: 20%;
   justify-content: center;
-  width: 100%;
+  width: 40%;
+  padding: 1rem;
+  padding-top: 1.5rem;
+  margin: 10px;
+  text-align: center;
 }
 
 .modal-mask.right-aligned {
@@ -124,11 +127,16 @@ export default {
 
   .modal-container {
     border-radius: 0;
-    height: 100%;
+    height: 30%;
     width: 30rem;
+    padding: 100px;
+    margin: 100px;
   }
 }
 .modal-big {
   width: 60%;
+}
+.ExpireModal {
+  display: block;
 }
 </style>

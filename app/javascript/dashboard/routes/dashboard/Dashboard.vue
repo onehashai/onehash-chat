@@ -1,7 +1,25 @@
+<!-- eslint-disable no-console -->
 <template>
   <div
     class="app-wrapper h-full flex-grow-0 min-h-0 w-full max-w-full ml-auto mr-auto flex flex-wrap dark:text-slate-300"
   >
+    <transition name="fade">
+      <template v-if="planHasExpired(localExpiryDate) && showModal">
+        <modal>
+          <h2 style="text-align:center, display: block">
+            Your Plan has expired. Please renew your plan or plan or select a
+            new plan to continue using OneHash Chat
+          </h2>
+          <div style="margin-top: 3rem">
+            <woot-submit-button
+              :button-text="'Take me to Billing'"
+              :disabled="isPlanClicked === true"
+              @click="() => routeToBilling()"
+            />
+          </div>
+        </modal>
+      </template>
+    </transition>
     <sidebar
       :route="currentRoute"
       :show-secondary-sidebar="isSidebarOpen"
@@ -50,6 +68,12 @@ import AddLabelModal from 'dashboard/routes/dashboard/settings/labels/AddLabel.v
 import NotificationPanel from 'dashboard/routes/dashboard/notifications/components/NotificationPanel.vue';
 import uiSettingsMixin from 'dashboard/mixins/uiSettings';
 import wootConstants from 'dashboard/constants/globals';
+import { mapGetters } from 'vuex';
+import WootSubmitButton from '../../components/buttons/FormSubmitButton.vue';
+import alertMixin from 'shared/mixins/alertMixin';
+import configMixin from 'shared/mixins/configMixin';
+import AccountMixin from '../../mixins/account';
+import Modal from './settings/billing/components/modal.vue';
 
 export default {
   components: {
@@ -60,8 +84,10 @@ export default {
     AccountSelector,
     AddLabelModal,
     NotificationPanel,
+    WootSubmitButton,
+    Modal,
   },
-  mixins: [uiSettingsMixin],
+  mixins: [AccountMixin, alertMixin, configMixin, uiSettingsMixin],
   data() {
     return {
       showAccountModal: false,
@@ -70,6 +96,18 @@ export default {
       showShortcutModal: false,
       isNotificationPanel: false,
       displayLayoutType: '',
+      planName: '',
+      platformName: '',
+      agentCount: 0,
+      selectedProductPrice: '',
+      availableProductPrices: [],
+      showStatus: true,
+      planExpiryDate: '',
+      isValidCouponCode: false,
+      inputValue: '',
+      localExpiryDate: null,
+      isPlanClicked: false,
+      showModal: true,
     };
   },
   computed: {
@@ -91,6 +129,11 @@ export default {
         this.uiSettings;
       return showSecondarySidebar;
     },
+    ...mapGetters({
+      globalConfig: 'globalConfig/get',
+      getAccount: 'accounts/getAccount',
+      uiFlags: 'accounts/getUIFlags',
+    }),
   },
   watch: {
     displayLayoutType() {
@@ -111,6 +154,7 @@ export default {
     this.handleResize();
     window.addEventListener('resize', this.handleResize);
     bus.$on(BUS_EVENTS.TOGGLE_SIDEMENU, this.toggleSidebar);
+    this.initializeAccountBillingSubscription();
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
@@ -171,6 +215,84 @@ export default {
     closeNotificationPanel() {
       this.isNotificationPanel = false;
     },
+    hidePlanModal() {
+      this.$emit('hideModal');
+    },
+    routeToBilling() {
+      this.$router
+        .push({
+          name: 'billing_settings_index',
+          params: { accountId: this.accountId },
+        })
+        .then(() => {
+          this.isPlanClicked = true;
+          this.showModal = false; // Close the modal after successful routing
+        })
+        .catch(error => {
+          // eslint-disable-next-line no-console
+          console.error('Error while routing:', error);
+        });
+    },
+    async initializeAccountBillingSubscription() {
+      this.$store.dispatch('accounts/getBillingSubscription').then(() => {
+        try {
+          const {
+            available_product_prices,
+            plan_name,
+            platform_name,
+            plan_id,
+            allowed_no_agents,
+            plan_expiry_date,
+          } = this.getAccount(this.accountId);
+          this.planName = plan_name;
+          this.$store.commit('setPlanName', plan_name);
+          this.platformName = platform_name;
+          this.selectedProductPrice = plan_id;
+          this.agentCount = allowed_no_agents;
+          this.availableProductPrices = available_product_prices;
+          const dateObject = new Date(plan_expiry_date);
+          const day = String(dateObject.getDate()).padStart(2, '0');
+          const monthIndex = dateObject.getMonth();
+          const year = dateObject.getFullYear();
+          const monthNames = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+          ];
+          const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
+          this.planExpiryDate = formattedDate;
+          this.localExpiryDate = dateObject;
+        } catch (error) {
+          // not showing error
+        }
+      });
+    },
+    planHasExpired(expirationDate) {
+      const currentDate = new Date();
+      const planExpirationDate = new Date(expirationDate);
+      // Compare the current date with the plan's expiration date
+      return currentDate > planExpirationDate;
+    },
   },
 };
 </script>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  position: absolute;
+  z-index: 9999;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
