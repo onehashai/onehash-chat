@@ -1,10 +1,9 @@
-<!-- eslint-disable no-console -->
 <template>
   <div
     class="app-wrapper h-full flex-grow-0 min-h-0 w-full max-w-full ml-auto mr-auto flex flex-wrap dark:text-slate-300"
   >
     <transition name="fade">
-      <template v-if="planHasExpired(localExpiryDate) && showModal">
+      <template v-if="expired && showModal">
         <modal>
           <h2 style="text-align:center, display: block">
             Your Plan has expired. Please renew your plan or plan or select a
@@ -14,7 +13,7 @@
             <woot-submit-button
               :button-text="'Take me to Billing'"
               :disabled="isPlanClicked === true"
-              @click="() => routeToBilling()"
+              @click="routeToBilling"
             />
           </div>
         </modal>
@@ -108,6 +107,7 @@ export default {
       localExpiryDate: null,
       isPlanClicked: false,
       showModal: false,
+      expired: false,
     };
   },
   computed: {
@@ -219,17 +219,19 @@ export default {
       this.$emit('hideModal');
     },
     routeToBilling() {
+      this.showModal = false;
+      setTimeout(() => {
+        this.isPlanClicked = true;
+      }, 100);
+
+      // Proceed to route change
       this.$router
         .push({
           name: 'billing_settings_index',
           params: { accountId: this.accountId },
         })
-        .then(() => {
-          this.isPlanClicked = true;
-          this.showModal = false; // Close the modal after successful routing
-        })
         .catch(error => {
-          // eslint-disable-next-line no-console
+          // Handle redirection error if needed
           console.error('Error while routing:', error);
         });
     },
@@ -271,17 +273,16 @@ export default {
           const formattedDate = `${day} ${monthNames[monthIndex]} ${year}`;
           this.planExpiryDate = formattedDate;
           this.localExpiryDate = dateObject;
+          const currentDate = new Date();
+          const planExpirationDate = this.localExpiryDate;
+          if (currentDate > planExpirationDate) {
+            this.expired = true;
+            this.showModal = true;
+          }
         } catch (error) {
           // not showing error
         }
       });
-    },
-    planHasExpired(expirationDate) {
-      const currentDate = new Date();
-      const planExpirationDate = new Date(expirationDate);
-      // Compare the current date with the plan's expiration date
-      this.showModal = true;
-      return currentDate > planExpirationDate;
     },
   },
 };
