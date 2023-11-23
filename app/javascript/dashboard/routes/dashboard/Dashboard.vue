@@ -107,7 +107,7 @@ export default {
       inputValue: '',
       localExpiryDate: null,
       isPlanClicked: false,
-      showModal: true,
+      showModal: false,
     };
   },
   computed: {
@@ -280,6 +280,7 @@ export default {
       const currentDate = new Date();
       const planExpirationDate = new Date(expirationDate);
       // Compare the current date with the plan's expiration date
+      this.showModal = true;
       return currentDate > planExpirationDate;
     },
   },

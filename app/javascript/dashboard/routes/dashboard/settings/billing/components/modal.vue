@@ -7,7 +7,6 @@
     >
       <div
         :class="modalContainerClassName"
-        style="display: block"
         @mouse.stop
         @mousedown="event => event.stopPropagation()"
       >
@@ -16,8 +15,7 @@
           color-scheme="secondary"
           icon="dismiss"
           variant="clear"
-          class="ExpireModal"
-          style="display: block"
+          class="absolute ltr:right-2 rtl:left-2 top-2 z-10"
           @click="close"
         />
         <slot />
@@ -70,7 +68,6 @@ export default {
     modalClassName() {
       const modalClassNameMap = {
         centered: '',
-        'right-aligned': 'right-aligned',
       };
 
       return `modal-mask skip-context-menu ${
@@ -96,7 +93,6 @@ export default {
     },
     close() {
       this.onClose();
-      this.$emit('close');
     },
     onMouseUp() {
       if (this.mousedDownOnBackdrop) {
@@ -108,18 +104,14 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .modal-container {
   align-items: center;
   border-radius: 0;
   display: flex;
-  height: 20%;
+  height: 30%;
   justify-content: center;
   width: 40%;
-  padding: 1rem;
-  padding-top: 1.5rem;
-  margin: 10px;
-  text-align: center;
 }
 
 .modal-mask.right-aligned {
@@ -127,16 +119,12 @@ export default {
 
   .modal-container {
     border-radius: 0;
-    height: 30%;
+    height: 100%;
     width: 30rem;
-    padding: 100px;
-    margin: 100px;
+    display: block;
   }
 }
 .modal-big {
   width: 60%;
-}
-.ExpireModal {
-  display: block;
 }
 </style>
