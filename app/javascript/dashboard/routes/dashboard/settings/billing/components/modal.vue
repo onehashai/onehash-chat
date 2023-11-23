@@ -108,7 +108,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .modal-container {
   align-items: center;
   border-radius: 0;
