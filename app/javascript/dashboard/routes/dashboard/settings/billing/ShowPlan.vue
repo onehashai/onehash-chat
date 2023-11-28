@@ -1,4 +1,4 @@
-<template>
+<template> 
   <modal :show.sync="show" :on-close="onClose">
     <div class="row flex justify-center items-center">
       <div
@@ -113,7 +113,7 @@ export default {
       this.clickedPlan = value;
       AccountAPI.changePlan(payload)
         .then(response => {
-          window.location.href = response.data.url;
+          window.open(response.data.url, '_blank');
           this.isPlanClicked = false;
           this.clickedPlan = null;
         })
