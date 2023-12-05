@@ -9,7 +9,8 @@ class AdministratorNotifications::AccountMailer < ApplicationMailer
     @deletion_date = deletion_for_intital_warning_date.strftime('%d %b %Y')
     account.update!(deletion_email_reminder: :initial_reminder, email_sent_at: Time.current)
     subject = 'OneHash Chat Account Deletion Warning'
-    send_mail_with_liquid(to: admin_email, subject: subject) and return
+    send_mail_with_liquid(to: admin_email, subject: subject,
+                          template_path: 'mailers/administrator_notifications/channel_notifications_mailer/account_mailer/initial_warning') and return
   end
 
   def second_warning(account)
@@ -23,7 +24,8 @@ class AdministratorNotifications::AccountMailer < ApplicationMailer
     account.update(deletion_email_reminder:  :second_reminder, email_sent_at: Time.current)
 
     subject = 'OneHash Chat Account Deletion Warning'
-    send_mail_with_liquid(to: admin_email, subject: subject) and return
+    send_mail_with_liquid(to: admin_email, subject: subject,
+                          template_path: 'mailers/administrator_notifications/channel_notifications_mailer/account_mailer/second_warning') and return
   end
 
   def account_deletion(account)
@@ -36,7 +38,8 @@ class AdministratorNotifications::AccountMailer < ApplicationMailer
     subject = 'OneHash Chat Account Deletion'
     account.update(deletion_email_reminder: :deletion_pending, email_sent_at: Time.current)
     @action_url = "#{ENV.fetch('FRONTEND_URL', nil)}/"
-    send_mail_with_liquid(to: admin_email, subject: subject) and return
+    send_mail_with_liquid(to: admin_email, subject: subject,
+                          emplate_path: 'mailers/administrator_notifications/channel_notifications_mailer/account_mailer/account_deletion') and return
   end
 
   private

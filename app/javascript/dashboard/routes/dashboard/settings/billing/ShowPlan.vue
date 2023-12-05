@@ -1,4 +1,4 @@
-<template> 
+<template>
   <modal :show.sync="show" :on-close="onClose">
     <div class="row flex justify-center items-center">
       <div

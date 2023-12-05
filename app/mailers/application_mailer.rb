@@ -29,13 +29,13 @@ class ApplicationMailer < ActionMailer::Base
     Rails.logger.error "Exception: #{message}"
   end
 
-  def send_mail_with_liquid(*args)
-    mail(*args) do |format|
+  def send_mail_with_liquid(to:, subject:, template_path:nil)
+    mail(to: to, subject: subject) do |format|
       # explored sending a multipart email containing both text type and html
       # parsing the html with nokogiri will remove the links as well
       # might also remove tags like b,li etc. so lets rethink about this later
       # format.text { Nokogiri::HTML(render(layout: false)).text }
-      format.html { render }
+      format.html { render template_path || action_name }
     end
   end
 
