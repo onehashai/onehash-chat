@@ -42,7 +42,7 @@ export const SDK_CSS = `
   border-radius: 100px;
   border-width: 0px;
   bottom: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .16) !important;
+  // box-shadow: 0 8px 24px rgba(0, 0, 0, .16) !important;
   cursor: pointer;
   height: 64px;
   padding: 0px;
@@ -50,7 +50,48 @@ export const SDK_CSS = `
   user-select: none;
   width: 64px;
   z-index: 2147483000 !important;
+  border-radius: 50%;
+  border-radius: 100% 100% 100% 100% / 100% 100% 0% 100%;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 55%,
+    98% 70%,
+    96% 80%,
+    98% 90%,
+    101% 100%,
+    0 100%
+  );
+  overflow: hidden;
 }
+
+// /* Blue dot on the left */
+// .woot-widget-bubble::before {
+//   content: ''; /* Create a pseudo-element */
+//   position: absolute; /* Position it absolutely within the .woot-widget-bubble */
+//   top: 50%; /* Position at the middle vertically */
+//   left: calc(50% - 20px); /* Position horizontally */
+//   transform: translate(-50%, -50%); /* Center it precisely */
+//   width: 8px; /* Adjust size as needed */
+//   height: 8px; /* Adjust size as needed */
+//   background-color: #007bff; /* Blue color */
+//   border-radius: 50%; /* Shape it as a circle */
+//   z-index: 1; /* Ensure the blue dot is above the other dots */
+// }
+
+// /* Blue dot on the right */
+// .woot-widget-bubble::after {
+//   content: ''; /* Create a pseudo-element */
+//   position: absolute; /* Position it absolutely within the .woot-widget-bubble */
+//   top: 50%; /* Position at the middle vertically */
+//   left: calc(50% + 20px); /* Position horizontally */
+//   transform: translate(-50%, -50%); /* Center it precisely */
+//   width: 8px; /* Adjust size as needed */
+//   height: 8px; /* Adjust size as needed */
+//   background-color: #007bff; /* Blue color */
+//   border-radius: 50%; /* Shape it as a circle */
+//   z-index: 1; /* Ensure the blue dot is above the other dots */
+// }
 
 .woot-widget-bubble.woot-widget-bubble--flat {
   border-radius: 0;
@@ -128,14 +169,16 @@ export const SDK_CSS = `
 
 .woot-widget-bubble:hover {
   background: #1f93ff;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, .4) !important;
+  // box-shadow: 0 8px 32px rgba(0, 0, 0, .4) !important;
 }
 
+/* // change inner white circle i.e. svg from here */
 .woot-widget-bubble svg {
   all: revert;
-  height: 24px;
-  margin: 20px;
-  width: 24px;
+  height: 38px;
+  margin: 13.5px;
+  width: 38px;
+  border-radius: 50%;
 }
 
 .woot-widget-bubble.woot-widget-bubble-color--lighter path{
