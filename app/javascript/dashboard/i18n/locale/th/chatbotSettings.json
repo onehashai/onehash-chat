@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "แชทบอท",
+    "DISCONNECT": "ตัดการเชื่อมต่อกล่องจดหมายเข้า",
     "BOT_STATUS": "สถานะแชทบอท",
     "BOT_STATUS_ACTIVE": "Chatbot ทำงานอยู่",
     "BOT_STATUS_INACTIVE": "Chatbot ไม่ทำงาน",

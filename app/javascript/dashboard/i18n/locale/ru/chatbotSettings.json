@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Чатбот",
+    "DISCONNECT": "Отключить входящие сообщения",
     "BOT_STATUS": "Статус чатбота",
     "BOT_STATUS_ACTIVE": "Активный чатбот",
     "BOT_STATUS_INACTIVE": "Неактивный чатбот",

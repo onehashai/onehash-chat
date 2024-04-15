@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_11_114620) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -401,6 +401,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "account_id", default: 0, null: false
+    t.string "website_token"
+    t.integer "inbox_id"
+    t.string "inbox_name"
+    t.boolean "bot_status"
   end
 
   create_table "contact_inboxes", force: :cascade do |t|
@@ -484,6 +488,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.bigint "sla_policy_id"
     t.datetime "waiting_since"
     t.string "cached_label_list"
+    t.boolean "bot_icon_status", default: true
+    t.boolean "is_bot_connected", default: false
     t.index ["account_id", "display_id"], name: "index_conversations_on_account_id_and_display_id", unique: true
     t.index ["account_id", "id"], name: "index_conversations_on_id_and_account_id"
     t.index ["account_id", "inbox_id", "status", "assignee_id"], name: "conv_acid_inbid_stat_asgnid_idx"

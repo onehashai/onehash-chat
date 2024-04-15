@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Beérkező üzenetek leválasztása",
     "BOT_STATUS": "Chatbot Állapot",
     "BOT_STATUS_ACTIVE": "Aktív Chatbot",
     "BOT_STATUS_INACTIVE": "Inaktív Chatbot",

@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "الروبوت الدردشة",
+      "DISCONNECT": "فصل الصندوق الوارد",
       "BOT_STATUS": "حالة الروبوت الدردشة",
       "BOT_STATUS_ACTIVE": "الروبوت الدردشة نشط",
       "BOT_STATUS_INACTIVE": "الروبوت الدردشة غير نشط",

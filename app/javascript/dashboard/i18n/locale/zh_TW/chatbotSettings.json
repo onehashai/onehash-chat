@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "聊天機器人",
+    "DISCONNECT": "中斷收件匣連線",
     "BOT_STATUS": "聊天機器人狀態",
     "BOT_STATUS_ACTIVE": "聊天機器人啟用",
     "BOT_STATUS_INACTIVE": "聊天機器人停用",

@@ -74,6 +74,12 @@ class ChatbotAPI extends ApiClient {
       `${this.baseUrl}/api/v1/widget/chatbot-id-to-name?chatbot_id=${chatbot_id}`
     );
   }
+
+  async disconnectChatbot(chatbot_id) {
+    return axios.delete(
+      `${this.baseUrl}/api/v1/widget/disconnect-chatbot?chatbot_id=${chatbot_id}`
+    );
+  }
 }
 
 export default new ChatbotAPI();

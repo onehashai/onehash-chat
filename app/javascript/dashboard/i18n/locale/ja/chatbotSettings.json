@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "チャットボット",
+    "DISCONNECT": "受信トレイを切断",
     "BOT_STATUS": "チャットボットの状態",
     "BOT_STATUS_ACTIVE": "チャットボット アクティブ",
     "BOT_STATUS_INACTIVE": "チャットボット 非アクティブ",

@@ -299,7 +299,6 @@ Rails.application.routes.draw do
         # chatbot routes
         post '/store-to-db', to: 'chatbot#store_to_db'
         post '/old-bot-train', to: 'chatbot#old_bot_train'
-        post '/change-bot-name', to: 'chatbot#change_bot_name'
         get '/chatbot-with-account-id', to: 'chatbot#fetch_chatbot_with_account_id'
         delete '/chatbot-with-chatbot-id', to: 'chatbot#delete_chatbot_with_chatbot_id'
         put '/update-bot-info', to: 'chatbot#update_bot_info'
@@ -308,6 +307,9 @@ Rails.application.routes.draw do
         get '/chatbot-status', to: 'chatbot#chatbot_status'
         get '/chatbot-id-to-name', to: 'chatbot#chatbot_id_to_name'
         post '/create-chatbot-microservice', to: 'chatbot#create_chatbot_microservice'
+        delete '/disconnect-chatbot', to: 'chatbot#disconnect_chatbot'
+        # only for testing
+        # get '/delete', to: 'chatbot#del'
       end
     end
 

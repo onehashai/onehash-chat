@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Aftengja innkönnun",
     "BOT_STATUS": "Estado del Chatbot",
     "BOT_STATUS_ACTIVE": "Virktivegur Spjallvélinn",
     "BOT_STATUS_INACTIVE": "Óvirktivegur Spjallvélinn",

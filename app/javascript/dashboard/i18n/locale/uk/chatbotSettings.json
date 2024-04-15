@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Чат-бот",
+    "DISCONNECT": "Відключити Вхідну скриньку",
     "BOT_STATUS": "Статус чат-бота",
     "BOT_STATUS_ACTIVE": "Активний чатбот",
     "BOT_STATUS_INACTIVE": "Неактивний чатбот",

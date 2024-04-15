@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "च्याटबट",
+    "DISCONNECT": "इनबक्स डिस्कनेक्ट गर्नुहोस्",
     "BOT_STATUS": "च्याटबट स्थिति",
     "BOT_STATUS_ACTIVE": "क्याटबट सक्रिय",
     "BOT_STATUS_INACTIVE": "क्याटबट निष्क्रिय",

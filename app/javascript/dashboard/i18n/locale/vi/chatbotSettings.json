@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Trợ lý ảo",
+    "DISCONNECT": "Ngắt kết nối Hộp thư đến",
     "BOT_STATUS": "Trạng thái Trợ lý ảo",
     "BOT_STATUS_ACTIVE": "Chatbot Đang Hoạt Động",
     "BOT_STATUS_INACTIVE": "Chatbot Không Hoạt Động",

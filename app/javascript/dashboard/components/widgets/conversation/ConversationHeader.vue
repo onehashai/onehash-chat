@@ -64,6 +64,10 @@
               {{ contactPanelToggleText }}
             </woot-button>
             <woot-button
+              v-if="
+                botStatusMap[conversationId] !== null &&
+                botStatusMap[conversationId] !== undefined
+              "
               v-tooltip="
                 botStatusMap[conversationId]
                   ? $t('CHATBOT_SETTINGS.BOT_STATUS_ACTIVE')

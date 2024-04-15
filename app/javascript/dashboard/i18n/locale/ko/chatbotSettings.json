@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "챗봇",
+    "DISCONNECT": "받은 편지함 연결 해제",
     "BOT_STATUS": "챗봇 상태",
     "BOT_STATUS_ACTIVE": "챗봇 활성화됨",
     "BOT_STATUS_INACTIVE": "챗봇 비활성화됨",

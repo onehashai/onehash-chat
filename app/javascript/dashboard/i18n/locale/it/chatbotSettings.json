@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Disconnetti la casella di posta in arrivo",
     "BOT_STATUS": "Stato del Chatbot",
     "BOT_STATUS_ACTIVE": "Chatbot Attivo",
     "BOT_STATUS_INACTIVE": "Chatbot Inattivo",

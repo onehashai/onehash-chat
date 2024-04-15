@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "Ρομπότ συνομιλίας",
+      "DISCONNECT": "Αποσύνδεση Εισερχόμενα",
       "BOT_STATUS": "Κατάσταση ρομπότ συνομιλίας",
       "BOT_STATUS_ACTIVE": "Ενεργό Chatbot",
       "BOT_STATUS_INACTIVE": "Ανενεργό Chatbot",

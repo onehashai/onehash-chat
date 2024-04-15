@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Klepetalnik",
+    "DISCONNECT": "Odklopi Prejeto",
     "BOT_STATUS": "Status klepetalnika",
     "BOT_STATUS_ACTIVE": "Aktiven pogovorni bot",
     "BOT_STATUS_INACTIVE": "Neaktiven pogovorni bot",

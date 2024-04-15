@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Четбот",
+    "DISCONNECT": "Isključi sanduče ulazne pošte",
     "BOT_STATUS": "Статус четбота",
     "BOT_STATUS_ACTIVE": "Aktivan Četbot",
     "BOT_STATUS_INACTIVE": "Neaktivan Četbot",

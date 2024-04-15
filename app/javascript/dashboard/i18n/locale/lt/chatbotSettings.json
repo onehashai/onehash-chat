@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Pokalbis",
+    "DISCONNECT": "Atjunkite gautų laiškų dėžutę",
     "BOT_STATUS": "Pokalbio būsena",
     "BOT_STATUS_ACTIVE": "Aktyvus pokalbių robotas",
     "BOT_STATUS_INACTIVE": "Neaktyvus pokalbių robotas",

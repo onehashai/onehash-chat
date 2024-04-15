@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Nyahsambung Peti Masuk",
     "BOT_STATUS": "Status Chatbot",
     "BOT_STATUS_ACTIVE": "Chatbot Aktif",
     "BOT_STATUS_INACTIVE": "Chatbot Tidak Aktif",

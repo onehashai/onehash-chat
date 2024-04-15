@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Rozłącz skrzynkę odbiorczą",
     "BOT_STATUS": "Status chatbota",
     "BOT_STATUS_ACTIVE": "Aktywny czatbot",
     "BOT_STATUS_INACTIVE": "Nieaktywny czatbot",

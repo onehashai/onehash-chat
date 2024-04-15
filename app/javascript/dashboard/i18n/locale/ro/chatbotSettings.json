@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Deconectare Inbox",
     "BOT_STATUS": "Stare Chatbot",
     "BOT_STATUS_ACTIVE": "Chatbot Activ",
     "BOT_STATUS_INACTIVE": "Chatbot Inactiv",

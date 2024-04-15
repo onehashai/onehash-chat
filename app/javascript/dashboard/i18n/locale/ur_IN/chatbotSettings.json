@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "چیٹ بوٹ",
+    "DISCONNECT": "ان باکس کو منقطع کریں",
     "BOT_STATUS": "چیٹ بوٹ کی حالت",
     "BOT_STATUS_ACTIVE": "چیٹ بوٹ فعال ہے",
     "BOT_STATUS_INACTIVE": "چیٹ بوٹ غیر فعال ہے",

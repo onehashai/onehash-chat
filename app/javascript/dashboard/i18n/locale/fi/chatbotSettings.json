@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "Keskusteluohjelma",
+      "DISCONNECT": "Katkaise sähköpostilaatikko",
       "BOT_STATUS": "Keskusteluohjelman tila",
       "BOT_STATUS_ACTIVE": "Keskustelurobotti aktiivinen",
       "BOT_STATUS_INACTIVE": "Keskustelurobotti ei aktiivinen",

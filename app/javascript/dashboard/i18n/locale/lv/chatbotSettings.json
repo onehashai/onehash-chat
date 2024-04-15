@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Čatsbots",
+    "DISCONNECT": "Atvienot iesūtni",
     "BOT_STATUS": "Čatsbota statuss",
     "BOT_STATUS_ACTIVE": "Aktīvais čatsbots",
     "BOT_STATUS_INACTIVE": "Neaktīvais čatsbots",

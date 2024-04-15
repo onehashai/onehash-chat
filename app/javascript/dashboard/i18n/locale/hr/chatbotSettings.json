@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Čavrljanje",
+    "DISCONNECT": "Isključi pristiglu poštu",
     "BOT_STATUS": "Status čavrljanja",
     "BOT_STATUS_ACTIVE": "Aktivan Chatbot",
     "BOT_STATUS_INACTIVE": "Neaktivan Chatbot",

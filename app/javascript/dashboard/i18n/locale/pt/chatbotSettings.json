@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Desconectar Caixa de Entrada",
     "BOT_STATUS": "Status do Chatbot",
     "BOT_STATUS_ACTIVE": "Chatbot Ativo",
     "BOT_STATUS_INACTIVE": "Chatbot Inativo",

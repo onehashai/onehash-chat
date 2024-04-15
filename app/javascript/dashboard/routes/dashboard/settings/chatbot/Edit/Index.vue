@@ -76,6 +76,21 @@
               >
                 {{ $t('CHATBOT_SETTINGS.UPDATE') }}
               </button>
+              <button
+                class="btn"
+                style="
+                  background-color: #fc2634;
+                  color: white;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 4px;
+                  cursor: pointer;
+                "
+                :disabled="isDisconnectButtonDisabled"
+                @click="disconnectBot()"
+              >
+                {{ $t('CHATBOT_SETTINGS.DISCONNECT') }}
+              </button>
             </div>
           </div>
         </form>
@@ -135,7 +150,7 @@ export default {
       isButtonActive: false,
       showToast: false,
       toastMessage: '',
-      inbox_id: '',
+      inbox_id: null,
       connectedInbox: null,
       updatedInboxName: '',
       isHamburgerMenuOpen: true,
@@ -152,12 +167,15 @@ export default {
         inbox => inbox.channel_type === 'Channel::WebWidget'
       );
     },
+    isDisconnectButtonDisabled() {
+      return this.inbox_id === null;
+    },
   },
   validations,
   watch: {
     $route(to) {
       this.fetchChatbotData(to.params.chatbotId);
-      this.connectedInbox = this.getChatbotName(this.chatbot_id);
+      this.connectedInbox = this.getChatbotInboxName(this.chatbot_id);
     },
     'uiSettings.show_secondary_sidebar': function (newVal) {
       this.isHamburgerMenuOpen = newVal;
@@ -168,12 +186,19 @@ export default {
   },
   async mounted() {
     this.fetchChatbotData(this.$route.params.chatbotId);
-    this.connectedInbox = this.getChatbotName(this.chatbot_id);
+    this.connectedInbox = this.getChatbotInboxName(this.chatbot_id);
   },
   methods: {
-    async getChatbotName(chatbot_id) {
+    async disconnectBot() {
+      const res = await ChatbotAPI.disconnectChatbot(this.chatbot_id);
+      if (res.status === 200) {
+        window.location.reload();
+      }
+    },
+    async getChatbotInboxName(chatbot_id) {
       const res = await ChatbotAPI.ChatbotIdToChatbotName(chatbot_id);
       this.connectedInbox = res.data.name;
+      this.inbox_id = res.data.id;
     },
     fetchChatbotData(data) {
       if (data) {

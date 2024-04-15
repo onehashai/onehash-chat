@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "聊天机器人",
+    "DISCONNECT": "断开收件箱连接",
     "BOT_STATUS": "聊天机器人状态",
     "BOT_STATUS_ACTIVE": "聊天机器人已激活",
     "BOT_STATUS_INACTIVE": "聊天机器人未激活",

@@ -178,7 +178,7 @@ export default {
     },
     confirmPlaceHolderText() {
       return `${this.$t('CHATBOT_SETTINGS.DELETE.CONFIRM.PLACE_HOLDER', {
-        name:
+        chatbotName:
           this.selectedChatbot.chatbot_name || this.selectedChatbot.chatbot_id,
       })}`;
     },

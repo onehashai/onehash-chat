@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Sohbet Botu",
+    "DISCONNECT": "Gelen Kutusunu Bağlantıyı Kes",
     "BOT_STATUS": "Sohbet Botu Durumu",
     "BOT_STATUS_ACTIVE": "Chatbot Aktif",
     "BOT_STATUS_INACTIVE": "Chatbot Pasif",

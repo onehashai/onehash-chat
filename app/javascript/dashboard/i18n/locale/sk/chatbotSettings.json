@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Odpojiť Doručenú poštu",
     "BOT_STATUS": "Stav chatbota",
     "BOT_STATUS_ACTIVE": "Aktívny chatbot",
     "BOT_STATUS_INACTIVE": "Neaktívny chatbot",

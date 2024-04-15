@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "चैटबॉट",
+      "DISCONNECT": "इनबॉक्स का डिस्कनेक्ट करें",
       "BOT_STATUS": "चैटबॉट स्थिति",
       "BOT_STATUS_ACTIVE": "चैटबॉट सक्रिय",
       "BOT_STATUS_INACTIVE": "चैटबॉट निष्क्रिय",

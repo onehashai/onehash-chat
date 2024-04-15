@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chattbot",
+    "DISCONNECT": "Koppla bort inkorgen",
     "BOT_STATUS": "Chattbotstatus",
     "BOT_STATUS_ACTIVE": "Aktiv Chatbot",
     "BOT_STATUS_INACTIVE": "Inaktiv Chatbot",

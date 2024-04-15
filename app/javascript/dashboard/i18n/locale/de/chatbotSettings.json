@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "Chatbot",
+      "DISCONNECT": "Posteingang trennen",
       "BOT_STATUS": "Chatbot-Status",
       "BOT_STATUS_ACTIVE": "Chatbot Aktiv",
       "BOT_STATUS_INACTIVE": "Chatbot Inaktiv",

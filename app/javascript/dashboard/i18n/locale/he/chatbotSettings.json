@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "צ'אטבוט",
+      "DISCONNECT": "ניתוק תיבת הדואר הנכנס",
       "BOT_STATUS": "מצב צ'אטבוט",
       "BOT_STATUS_ACTIVE": "צ'אטבוט פעיל",
       "BOT_STATUS_INACTIVE": "צ'אטבוט לא פעיל",

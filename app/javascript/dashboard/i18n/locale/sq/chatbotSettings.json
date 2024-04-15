@@ -1,6 +1,7 @@
 {
   "CHATBOT_SETTINGS": {
     "CHATBOT": "Chatbot",
+    "DISCONNECT": "Çaktivizo Kutin e Postës së Hyrjes",
     "BOT_STATUS": "Statusi i Chatbotit",
     "BOT_STATUS_ACTIVE": "Chatbot Aktiv",
     "BOT_STATUS_INACTIVE": "Chatbot Joaktiv",

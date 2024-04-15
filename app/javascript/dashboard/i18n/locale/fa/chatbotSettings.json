@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "ربات چت",
+      "DISCONNECT": "قطع اتصال صندوق ورودی",
       "BOT_STATUS": "وضعیت ربات چت",
       "BOT_STATUS_ACTIVE": "ربات گپ فعال",
       "BOT_STATUS_INACTIVE": "ربات گپ غیرفعال",

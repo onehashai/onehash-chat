@@ -1,6 +1,7 @@
 {
     "CHATBOT_SETTINGS": {
       "CHATBOT": "Xatbot",
+      "DISCONNECT": "Desconnectar la safata d'entrada",
       "BOT_STATUS": "Estat del Xatbot",
       "BOT_STATUS_ACTIVE": "Chatbot actiu",
       "BOT_STATUS_INACTIVE": "Chatbot inactiu",

@@ -1,6 +1,5 @@
 require 'http'
 class Api::V1::Widget::MessagesController < Api::V1::Widget::BaseController
-  include ChatbotHelper
   before_action :set_conversation, only: [:create]
   before_action :set_message, only: [:update]
 
@@ -12,9 +11,19 @@ class Api::V1::Widget::MessagesController < Api::V1::Widget::BaseController
     @message = conversation.messages.new(message_params)
     build_attachment
     website_token = params[:website_token]
-    chatbot_ID = ChatbotHelper.get_chatbot_id(website_token)
+    chatbot_ID = nil
+    chatbot = Chatbot.find_by(website_token: website_token)
+    chatbot_ID = chatbot.chatbot_id if chatbot
     conversation_id = conversation.id
     conversation_id = conversation_id.to_s
+    conversation = Conversation.find_by(id: conversation_id)
+    if conversation
+      if chatbot_ID.nil?
+        conversation.update(is_bot_connected: false)
+      else
+        conversation.update(is_bot_connected: true)
+      end
+    end
     client_message = @message[:content]
     @message.save!
     max_character_count = ENV.fetch('WIDGET_CHARACTER_COUNT', 0).to_i
@@ -23,27 +32,29 @@ class Api::V1::Widget::MessagesController < Api::V1::Widget::BaseController
       email_collect = MessageTemplates::Template::EmailCollect.new(conversation: @conversation)
       email_collect.chatbot(long_msg_issue)
     else
-      # Check if the conversation is present and the chatbot is active
-      if ChatbotHelper::CONVERSATION_ID_TO_BOT_STATUS_MAPPING[conversation_id] == true && conversation.present?
-        # Start the typing GIF
+      if conversation && !chatbot_ID.nil? && conversation.bot_icon_status == true && conversation.present?
+        # start GIF typing
         trigger_chatbot_typing_status(conversation_id, true)
       end
+      return unless conversation && conversation.bot_icon_status == true
+
       bot_res = HTTP.post(
         ENV.fetch('MICROSERVICE_URL', nil) + '/prompt',
         form: { chatbot_id: chatbot_ID, user_message: client_message },
         headers: { 'Content-Type' => 'application/x-www-form-urlencoded' }
       )
-      return unless ChatbotHelper::CONVERSATION_ID_TO_BOT_STATUS_MAPPING[conversation_id] != false
 
       response_body = bot_res.body.to_s
       response_hash = JSON.parse(response_body)
       bot_message = response_hash['message']
-      ChatbotHelper::CONVERSATION_ID_TO_BOT_STATUS_MAPPING[conversation_id] = true
       email_collect = MessageTemplates::Template::EmailCollect.new(conversation: @conversation)
-      email_collect.chatbot(bot_message)
-      return unless conversation.present?
+      email_collect.chatbot(bot_message) unless chatbot_ID.nil?
 
-      trigger_chatbot_typing_status(conversation_id, false)
+      if !chatbot_ID.nil? && conversation
+        # stop GIF typing
+        trigger_chatbot_typing_status(conversation_id,
+                                      false)
+      end
     end
   end
 
