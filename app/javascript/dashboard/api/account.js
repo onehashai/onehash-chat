@@ -9,6 +9,22 @@ class AccountAPI extends ApiClient {
   createAccount(data) {
     return axios.post(`${this.apiVersion}/accounts`, data);
   }
+
+  getLTD(data) {
+    return axios.post(`${this.url}get_ltd`, data);
+  }
+
+  getLtdDetails() {
+    return axios.get(`${this.url}get_ltd_details`);
+  }
+
+  stripe_checkout() {
+    return axios.post(`${this.url}stripe_checkout`);
+  }
+
+  stripe_subscription() {
+    return axios.post(`${this.url}stripe_subscription`);
+  }
 }
 
 export default new AccountAPI();

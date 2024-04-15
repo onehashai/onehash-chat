@@ -17,6 +17,7 @@
 #To learn more, please read the Rails Internationalization guide
 #available at https://guides.rubyonrails.org/i18n.html.
 id:
+  prompt: "%{client_message}"
   hello: "Hello world"
   messages:
     reset_password_success: Woot! Permintaan pengaturan ulang kata sandi berhasil. Periksa email Anda untuk mendapatkan petunjuk.
@@ -146,6 +147,8 @@ id:
       ways_to_reach_you_message_body: "Beri tim cara untuk menghubungi Anda."
       email_input_box_message_body: "Dapatkan pemberitahuan melalui email"
       csat_input_message_body: "Silakan beri peringkat percakapan ini"
+      bot_entered_chat: "Bot telah masuk ke obrolan"
+      long_message_issue: "Terlalu banyak karakter masukan, harap singkatkan pesan"
     reply:
       email:
         header:

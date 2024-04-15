@@ -113,6 +113,29 @@ export const actions = {
       // silent error
     }
   },
+
+  stripe_checkout: async ({ commit }) => {
+    commit(types.default.SET_ACCOUNT_UI_FLAG, { isCheckoutInProcess: true });
+    try {
+      const response = await AccountAPI.stripe_checkout();
+      window.open(response.data.redirect_url, '_blank');
+    } catch (error) {
+      throwErrorMessage(error);
+    } finally {
+      commit(types.default.SET_ACCOUNT_UI_FLAG, { isCheckoutInProcess: false });
+    }
+  },
+
+  stripe_subscription: async ({ commit }) => {
+    commit(types.default.SET_ACCOUNT_UI_FLAG, { isCheckoutInProcess: true });
+    try {
+      await AccountAPI.stripe_subscription();
+    } catch (error) {
+      throwErrorMessage(error);
+    } finally {
+      commit(types.default.SET_ACCOUNT_UI_FLAG, { isCheckoutInProcess: false });
+    }
+  },
 };
 
 export const mutations = {

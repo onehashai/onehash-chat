@@ -4,11 +4,13 @@
 #
 #  id                    :integer          not null, primary key
 #  auto_resolve_duration :integer
+#  coupon_code_used      :integer          default(0)
 #  custom_attributes     :jsonb
 #  domain                :string(100)
 #  feature_flags         :bigint           default(0), not null
 #  limits                :jsonb
 #  locale                :integer          default("en")
+#  ltd_attributes        :jsonb
 #  name                  :string           not null
 #  status                :integer          default("active")
 #  support_email         :string(100)
@@ -75,6 +77,8 @@ class Account < ApplicationRecord
   has_many :webhooks, dependent: :destroy_async
   has_many :whatsapp_channels, dependent: :destroy_async, class_name: '::Channel::Whatsapp'
   has_many :working_hours, dependent: :destroy_async
+  # has_many :account_billing_subscriptions, dependent: :destroy_async, class_name: '::Enterprise::AccountBillingSubscription'
+  has_many :coupon_codes, dependent: :destroy_async
 
   has_one_attached :contacts_export
 
@@ -83,6 +87,7 @@ class Account < ApplicationRecord
 
   before_validation :validate_limit_keys
   after_create_commit :notify_creation
+  after_create_commit :update_usage_limits
   after_destroy :remove_account_sequences
 
   def agents
@@ -119,11 +124,13 @@ class Account < ApplicationRecord
     super.presence || ENV.fetch('MAILER_SENDER_EMAIL') { GlobalConfig.get('MAILER_SUPPORT_EMAIL')['MAILER_SUPPORT_EMAIL'] }
   end
 
-  def usage_limits
-    {
-      agents: ChatwootApp.max_limit.to_i,
-      inboxes: ChatwootApp.max_limit.to_i
+  def update_usage_limits
+    Rails.logger.info('Executing update_usage_limits...')
+    limit = {
+      agents: get_agent_limit.to_i,
+      inboxes: get_inbox_limit.to_i
     }
+    update_columns(limits: limit)
   end
 
   private
@@ -147,6 +154,28 @@ class Account < ApplicationRecord
   def remove_account_sequences
     ActiveRecord::Base.connection.exec_query("drop sequence IF EXISTS camp_dpid_seq_#{id}")
     ActiveRecord::Base.connection.exec_query("drop sequence IF EXISTS conv_dpid_seq_#{id}")
+  end
+
+  def get_agent_limit
+    ltd_plan_name = ltd_attributes['ltd_plan_name']
+    plan_name = custom_attributes['plan_name']
+    return ltd_attributes['ltd_quantity'] if ltd_plan_name && plan_name == 'Starter'
+
+    return ChatwootApp.starter_agent_limit unless plan_name
+    return ChatwootApp.starter_agent_limit if plan_name == 'Starter'
+
+    ChatwootApp.paid_agent_limit
+  end
+
+  def get_inbox_limit
+    ltd_plan_name = ltd_attributes['ltd_plan_name']
+    plan_name = custom_attributes['plan_name']
+    return 100_000 if ltd_plan_name && plan_name == 'Starter'
+
+    return ChatwootApp.starter_inbox_limit unless plan_name
+    return ChatwootApp.starter_inbox_limit if plan_name === 'Starter'
+
+    ChatwootApp.paid_inbox_limit
   end
 end
 

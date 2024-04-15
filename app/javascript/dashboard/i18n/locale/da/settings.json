@@ -225,6 +225,7 @@
     "MACROS": "Macros",
     "TEAMS": "Teams",
     "BILLING": "Fakturering",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Mapper",
     "CUSTOM_VIEWS_SEGMENTS": "Segmenter",
     "ALL_CONTACTS": "Alle Kontakter",
@@ -266,7 +267,7 @@
     "TITLE": "Fakturering",
     "CURRENT_PLAN": {
       "TITLE": "Nuværende Abonnement",
-      "PLAN_NOTE": "Du abonnerer i øjeblikket på **%{plan}** planen med **%{quantity}** licenser"
+      "PLAN_NOTE": "Du abonnerer i øjeblikket på OneHash Chat **%{plan}** planen med **%{quantity}** licenser"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Administrer dit abonnement",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Chat med os"
     },
     "NO_BILLING_USER": "Din faktureringskonto er ved at blive konfigureret. Opdater venligst siden og prøv igen."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Uh oh! Vi kunne ikke finde nogen Chatwoot-konti. Opret venligst en ny konto for at fortsætte.",
@@ -321,5 +325,16 @@
       "ALT_OR_OPTION_KEY": "Alt. / ¤",
       "FORWARD_SLASH_KEY": "/"
     }
-  }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Kuponkode",
+    "CURRENT_PLAN": {
+        "TITLE": "Nuværende Plan",
+        "PLAN_NOTE": "Du er i øjeblikket abonneret på OneHash Chat **%{plan}** LTD-planen med **%{quantity}** licenser"
+    },
+    "APPLY": "Anvend",
+    "COUPON_ERROR": {
+        "MESSAGE": "Den angivne kuponkode er ugyldig"
+    }
+}
 }

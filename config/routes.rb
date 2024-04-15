@@ -37,6 +37,14 @@ Rails.application.routes.draw do
         member do
           post :update_active_at
           get :cache_keys
+          # ltd
+          post :get_ltd
+          # ltd details
+          get :get_ltd_details
+          # update subuscription
+          post :stripe_checkout
+          # make account subscription
+          post :stripe_subscription
         end
 
         scope module: :accounts do
@@ -288,6 +296,20 @@ Rails.application.routes.draw do
             end
           end
         end
+        # chatbot routes
+        post '/store-to-db', to: 'chatbot#store_to_db'
+        post '/old-bot-train', to: 'chatbot#old_bot_train'
+        get '/chatbot-with-account-id', to: 'chatbot#fetch_chatbot_with_account_id'
+        delete '/chatbot-with-chatbot-id', to: 'chatbot#delete_chatbot_with_chatbot_id'
+        put '/update-bot-info', to: 'chatbot#update_bot_info'
+        post '/toggle-chatbot-status', to: 'chatbot#toggle_chatbot_status'
+        get '/is-inbox-widget', to: 'chatbot#inbox_widget'
+        get '/chatbot-status', to: 'chatbot#chatbot_status'
+        get '/chatbot-id-to-name', to: 'chatbot#chatbot_id_to_name'
+        post '/create-chatbot-microservice', to: 'chatbot#create_chatbot_microservice'
+        delete '/disconnect-chatbot', to: 'chatbot#disconnect_chatbot'
+        # only for testing
+        # get '/delete', to: 'chatbot#del'
       end
     end
 
@@ -414,6 +436,8 @@ Rails.application.routes.draw do
   post 'webhooks/whatsapp/:phone_number', to: 'webhooks/whatsapp#process_payload'
   get 'webhooks/instagram', to: 'webhooks/instagram#verify'
   post 'webhooks/instagram', to: 'webhooks/instagram#events'
+  # OneHash Stripe Billing Route
+  post 'webhooks/stripe', to: 'webhooks/stripe#process_payload'
 
   namespace :twitter do
     resource :callback, only: [:show]
@@ -454,6 +478,7 @@ Rails.application.routes.draw do
         delete :avatar, on: :member, action: :destroy_avatar
       end
 
+      resources :coupon_codes, only: [:index, :show, :edit, :update]
       resources :access_tokens, only: [:index, :show]
       resources :response_sources, only: [:index, :show, :new, :create, :edit, :update, :destroy] do
         get :chat, on: :member
@@ -493,4 +518,5 @@ Rails.application.routes.draw do
   # ----------------------------------------------------------------------
   # Routes for testing
   resources :widget_tests, only: [:index] unless Rails.env.production?
+  # ----------------------------------------------------------------------
 end

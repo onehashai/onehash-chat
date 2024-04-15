@@ -225,6 +225,7 @@
     "MACROS": "Macros",
     "TEAMS": "Komandas",
     "BILLING": "Norēķini",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Mapes",
     "CUSTOM_VIEWS_SEGMENTS": "Segmenti",
     "ALL_CONTACTS": "Visi Kontakti",
@@ -266,7 +267,7 @@
     "TITLE": "Norēķini",
     "CURRENT_PLAN": {
       "TITLE": "Pašreizējais Norēķinu Plāns",
-      "PLAN_NOTE": "Šobrīd Jūs abonējat **%{plan}** plānu ar **%{quantity}** licencēm"
+      "PLAN_NOTE": "Šobrīd Jūs abonējat OneHash Chat **%{plan}** plānu ar **%{quantity}** licencēm"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Pārvaldīt savu abonementu",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Tērzēt ar mums"
     },
     "NO_BILLING_USER": "Jūsu norēķinu konts tiek konfigurēts. Lūdzu, atsvaidziniet lapu un mēģiniet vēlreiz."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Ak, vai! Mēs nevarējām atrast nevienu chatwoot kontu. Lūdzu, izveidojiet jaunu kontu, lai turpinātu.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Kupona kods",
+    "CURRENT_PLAN": {
+        "TITLE": "Pašreizējais plāns",
+        "PLAN_NOTE": "Jūs pašlaik esat abonējis OneHash Chat LTD plānu **%{plan}** ar **%{quantity}** licencēm"
+    },
+    "APPLY": "Pielietot",
+    "COUPON_ERROR": {
+        "MESSAGE": "Nodrošinātais kupona kods nav derīgs"
     }
   }
 }

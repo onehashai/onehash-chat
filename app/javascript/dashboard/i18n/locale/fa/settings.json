@@ -225,6 +225,7 @@
     "MACROS": "ماکروها",
     "TEAMS": "تیم‌ها",
     "BILLING": "صورتحساب",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "پوشه‌ها",
     "CUSTOM_VIEWS_SEGMENTS": "بخش ها",
     "ALL_CONTACTS": "تمام مخاطبین",
@@ -266,7 +267,7 @@
     "TITLE": "صورتحساب",
     "CURRENT_PLAN": {
       "TITLE": "طرح فعلی",
-      "PLAN_NOTE": "شما در حال حاضر مشترک طرح **%{plan}** با مجوز **%{quantity}** هستید"
+      "PLAN_NOTE": "شما در حال حاضر مشترک طرح OneHash Chat **%{plan}** با مجوز **%{quantity}** هستید"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "اشتراک خود را مدیریت کنید",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "با ما گفتگو کنید"
     },
     "NO_BILLING_USER": "صورتحساب حساب شما در حال پیکربندی است. لطفا صفحه را مجددا بارگزاری کرده و دوباره تلاش کنید."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "اوه اوه! ما هیچ حسابی روی Chatwoot پاز شما پیدا نکردیم. لطفاً برای ادامه یک حساب جدید ایجاد کنید.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "کد تخفیف",
+    "CURRENT_PLAN": {
+        "TITLE": "طرح فعلی",
+        "PLAN_NOTE": "شما در حال حاضر در طرح OneHash Chat LTD **%{plan}** با % %{quantity} لایسنس مشترک هستید"
+    },
+    "APPLY": "اعمال",
+    "COUPON_ERROR": {
+        "MESSAGE": "کد تخفیف ارائه شده نامعتبر است"
     }
   }
 }

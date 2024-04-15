@@ -30,4 +30,20 @@ module ChatwootApp
       %w[]
     end
   end
+
+  def self.starter_agent_limit
+    2
+  end
+
+  def self.starter_inbox_limit
+    3
+  end
+
+  def self.paid_agent_limit
+    100_000
+  end
+
+  def self.paid_inbox_limit
+    100_000
+  end
 end

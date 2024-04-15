@@ -26,4 +26,24 @@ class AccountPolicy < ApplicationPolicy
   def checkout?
     @account_user.administrator?
   end
+
+  def get_ltd?
+    account_user.administrator?
+  end
+
+  def get_ltd_details?
+    account_user.administrator?
+  end
+
+  def stripe_checkout?
+    @account_user.administrator?
+  end
+
+  def stripe_subscription?
+    @account_user.administrator?
+  end
+
+  def usage_limits?
+    @account_user.administrator?
+  end
 end

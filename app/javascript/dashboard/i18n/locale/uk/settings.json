@@ -225,6 +225,7 @@
     "MACROS": "Макроси",
     "TEAMS": "Команди",
     "BILLING": "Біллінг",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Папки",
     "CUSTOM_VIEWS_SEGMENTS": "Сегменти",
     "ALL_CONTACTS": "Усі контакти",
@@ -266,7 +267,7 @@
     "TITLE": "Біллінг",
     "CURRENT_PLAN": {
       "TITLE": "Поточний План",
-      "PLAN_NOTE": "Зараз ви підписані на **%{plan}** план з **%{quantity}** ліцензій"
+      "PLAN_NOTE": "Зараз ви підписані на OneHash Chat **%{plan}** план з **%{quantity}** ліцензій"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Керування підпискою",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Почніть розмову з нами"
     },
     "NO_BILLING_USER": "Ваш платіжний обліковий запис налаштовується. Будь ласка, оновіть сторінку та повторіть спробу."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Ой! Ми не змогли знайти жодного облікового запису Chatwoot. Будь ласка, створіть новий обліковий запис, щоб продовжити.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Промокод",
+    "CURRENT_PLAN": {
+        "TITLE": "Поточний план",
+        "PLAN_NOTE": "Наразі ви підписані на план OneHash Chat LTD **%{plan}** із **%{quantity}** ліцензіями"
+    },
+    "APPLY": "Застосувати",
+    "COUPON_ERROR": {
+        "MESSAGE": "Наданий промокод недійсний"
     }
   }
 }

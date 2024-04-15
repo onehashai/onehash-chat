@@ -225,6 +225,7 @@
     "MACROS": "Makrokomandos",
     "TEAMS": "Komandos",
     "BILLING": "Atsiskaitymas",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Aplankas",
     "CUSTOM_VIEWS_SEGMENTS": "Segmentas",
     "ALL_CONTACTS": "Visi Kontaktai",
@@ -266,7 +267,7 @@
     "TITLE": "Atsiskaitymas",
     "CURRENT_PLAN": {
       "TITLE": "Prenumeratos Dabartinis Planas",
-      "PLAN_NOTE": "Šiuo metu užsiprenumeravote **%{plan}** planą su **%{quantity}** licencijomis"
+      "PLAN_NOTE": "Šiuo metu užsiprenumeravote OneHash Chat **%{plan}** planą su **%{quantity}** licencijomis"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Tvarkykite savo prenumeratą",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Pabendraukite su mumis"
     },
     "NO_BILLING_USER": "Jūsų atsiskaitomoji sąskaita konfigūruojama. Atnaujinkite puslapį ir bandykite dar kartą."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Oi! Nepavyko rasti jokių Chatwoot paskyrų. Jei norite tęsti, susikurkite naują paskyrą.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Kupono Kodas",
+    "CURRENT_PLAN": {
+        "TITLE": "Dabartinis Planas",
+        "PLAN_NOTE": "Šiuo metu esate prenumeratos OneHash Chat **%{plan}** LTD plane su **%{quantity}** licencijomis"
+    },
+    "APPLY": "Taikyti",
+    "COUPON_ERROR": {
+        "MESSAGE": "Pateiktas kupono kodas yra neteisingas"
     }
   }
 }

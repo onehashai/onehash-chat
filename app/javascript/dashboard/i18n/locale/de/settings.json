@@ -225,6 +225,7 @@
     "MACROS": "Makros",
     "TEAMS": "Teams",
     "BILLING": "Rechnungen",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Ordner",
     "CUSTOM_VIEWS_SEGMENTS": "Segmente",
     "ALL_CONTACTS": "Alle Kontakte",
@@ -266,7 +267,7 @@
     "TITLE": "Rechnungen",
     "CURRENT_PLAN": {
       "TITLE": "Derzeitiger Plan",
-      "PLAN_NOTE": "Sie haben derzeit den Tarif **%{plan}** mit **%{quantity}** Lizenzen abonniert"
+      "PLAN_NOTE": "Sie haben derzeit den Tarif OneHash Chat **%{plan}** mit **%{quantity}** Lizenzen abonniert"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Abonnement verwalten",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Chatten Sie mit uns"
     },
     "NO_BILLING_USER": "Ihr Rechnungskonto wird konfiguriert. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Oh oh! Wir konnten keine Chatwoot-Konten finden. Bitte erstellen Sie ein neues Konto um fortzufahren.",
@@ -321,5 +325,16 @@
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
     }
-  }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Gutscheincode",
+    "CURRENT_PLAN": {
+        "TITLE": "Aktueller Plan",
+        "PLAN_NOTE": "Sie sind derzeit im OneHash Chat LTD-Plan **%{plan}** mit **%{quantity}** Lizenzen abonniert"
+    },
+    "APPLY": "Anwenden",
+    "COUPON_ERROR": {
+        "MESSAGE": "Der bereitgestellte Gutscheincode ist ungültig"
+    }
+}
 }

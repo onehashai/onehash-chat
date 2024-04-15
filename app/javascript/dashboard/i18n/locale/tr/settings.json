@@ -225,6 +225,7 @@
     "MACROS": "Makrolar",
     "TEAMS": "Ekipler",
     "BILLING": "Fatura",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Klasörler",
     "CUSTOM_VIEWS_SEGMENTS": "Segmentler",
     "ALL_CONTACTS": "Tüm Kişiler",
@@ -266,7 +267,7 @@
     "TITLE": "Fatura",
     "CURRENT_PLAN": {
       "TITLE": "Mevcut Plan",
-      "PLAN_NOTE": "Şu anda **%{plan}** planına **%{quantity}** lisans abonesisiniz"
+      "PLAN_NOTE": "Şu anda OneHash Chat **%{plan}** planına **%{quantity}** lisans abonesisiniz"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Aboneliğinizi yönetin",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Sohbet et"
     },
     "NO_BILLING_USER": "Fatura hesabınız yapılandırılıyor. Lütfen sayfayı yenileyip tekrar deneyin."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Eyvah! Hiçbir Chatwoot hesabı bulunamadı. Devam etmek için yeni bir hesap oluşturun.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Coupon Code",
+    "CURRENT_PLAN": {
+      "TITLE": "Current Plan",
+      "PLAN_NOTE": "You are currently subscribed to the OneHash Chat **%{plan}** LTD plan with **%{quantity}** licenses"
+    },
+    "APPLY": "Apply",
+    "COUPON_ERROR": {
+      "MESSAGE": "The provided coupon code is invalid"
     }
   }
 }

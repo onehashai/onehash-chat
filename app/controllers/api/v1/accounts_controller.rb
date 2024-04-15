@@ -9,6 +9,9 @@ class Api::V1::AccountsController < Api::BaseController
   before_action :validate_captcha, only: [:create]
   before_action :fetch_account, except: [:create]
   before_action :check_authorization, except: [:create]
+  # To removee
+  # skip_before_action :verify_subscription,
+  #                    only: [:billing_subscription, :show, :stripe_checkout], raise: false
 
   rescue_from CustomExceptions::Account::InvalidEmail,
               CustomExceptions::Account::InvalidParams,
@@ -54,6 +57,56 @@ class Api::V1::AccountsController < Api::BaseController
     @current_account_user.active_at = Time.now.utc
     @current_account_user.save!
     head :ok
+  end
+
+  def get_ltd
+    code = CouponCode.find_by(code: params[:coupon_code])
+    if code && (code.partner == 'AppSumo' || code.partner == 'DealMirror')
+      if Time.current > code.expiry_date
+        render json: { message: 'Coupon code has expired' }, status: :unprocessable_entity
+      elsif code.status == 'redeemed'
+        render json: { message: 'Coupon code already used' }, status: :unprocessable_entity
+      elsif @account.coupon_code_used >= 5
+        render json: { message: 'Account limit reached. Cannot add more coupon codes' }, status: :unprocessable_entity
+      else
+        activate_ltd(code)
+        code.update!(account_id: @account.id, account_name: @account.name, status: 'redeemed', redeemed_at: Time.current)
+        if @account.coupon_code_used == 4
+          render json: { message: 'To upgrade to unlimited agents, please apply the fifth code.' }, status: :ok
+        else
+          render json: { message: 'Redemption successful' }, status: :ok
+        end
+      end
+    elsif code && (code.partner == 'PitchGround' || code.partner == 'RocketHub' || code.partner == 'DealFuel' || code.partner == 'OneHash')
+      if Time.current > code.expiry_date
+        render json: { message: 'Coupon code has expired' }, status: :unprocessable_entity
+      elsif code.status == 'redeemed'
+        render json: { message: 'Coupon code already used' }, status: :unprocessable_entity
+      elsif @account.coupon_code_used >= 1
+        render json: { message: 'Account limit reached. Cannot add more coupon codes' }, status: :unprocessable_entity
+      else
+        activate_ltd(code)
+        code.update!(account_id: @account.id, account_name: @account.name, status: 'redeemed', redeemed_at: Time.current)
+        render json: { message: 'Redemption successful' }, status: :ok
+      end
+    else
+      render json: { message: 'The provided coupon code is invalid or does not exist' }, status: :unprocessable_entity
+    end
+  end
+
+  def get_ltd_details
+    render 'api/v1/accounts/ltd/show', format: :json, locals: { resource: @account }
+  end
+
+  def stripe_subscription
+    Account::CreateStripeCustomerJob.perform_later(@account) if stripe_customer_id.blank?
+    head :no_content
+  end
+
+  def stripe_checkout
+    return create_stripe_billing_session(stripe_customer_id) if stripe_customer_id.present?
+
+    render_invalid_billing_details
   end
 
   private
@@ -104,5 +157,111 @@ class Api::V1::AccountsController < Api::BaseController
       account: @account,
       account_user: @current_account_user
     }
+  end
+
+  def stripe_customer_id
+    @account.custom_attributes['stripe_customer_id']
+  end
+
+  def create_stripe_billing_session(stripe_customer_id)
+    session = Enterprise::Billing::CreateStripeSessionService.new.create_stripe_session(stripe_customer_id)
+    render_redirect_url(session.url)
+  end
+
+  def render_redirect_url(redirect_url)
+    render json: { redirect_url: redirect_url }
+  end
+
+  def render_invalid_billing_details
+    render_could_not_create_error('Please subscribe to a plan before viewing the billing details')
+  end
+
+  def activate_ltd(coupon_code)
+    code_prefix = coupon_code.code[0, 2]
+    partner_name = ''
+    if code_prefix == 'AS'
+      partner_name = 'AppSumo'
+    elsif code_prefix == 'DM'
+      partner_name = 'DealMirror'
+    elsif code_prefix == 'PG'
+      partner_name = 'PitchGround'
+    elsif code_prefix == 'RH'
+      partner_name = 'RocketHub'
+    elsif code_prefix == 'DF'
+      partner_name = 'DealFuel'
+    elsif code_prefix == 'OH'
+      partner_name = 'OneHash'
+    end
+
+    if %w[AppSumo DealMirror].include?(partner_name)
+      agent = nil
+      ltd_plan_name = nil
+      coupon_code_used = @account.coupon_code_used
+      if coupon_code_used == 0
+        agent = 3
+        ltd_plan_name = 'Tier 1'
+      elsif coupon_code_used == 1
+        agent = 5
+        ltd_plan_name = 'Tier 2'
+      elsif coupon_code_used == 2
+        agent = 15
+        ltd_plan_name = 'Tier 3'
+      elsif coupon_code_used == 3
+        agent = 15
+        ltd_plan_name = 'Tier 3'
+      elsif coupon_code_used == 4
+        agent = 100_000
+        ltd_plan_name = 'Tier 4'
+      end
+      @account.update(
+        ltd_attributes: {
+          ltd_plan_name: ltd_plan_name,
+          ltd_quantity: agent
+        },
+        limits: {
+          agents: agent,
+          inboxes: 100_000
+        }
+      )
+      if @account.coupon_code_used < 5
+        @account.update(
+          coupon_code_used: @account.coupon_code_used + 1
+        )
+      end
+
+    elsif %w[PitchGround RocketHub DealFuel OneHash].include?(partner_name)
+      tier = coupon_code.code[-2, 2]
+      agent = nil
+      ltd_plan_name = nil
+      coupon_code_used = @account.coupon_code_used
+      if tier == 'T1'
+        agent = 3
+        ltd_plan_name = 'Tier 1'
+      elsif tier == 'T2'
+        agent = 5
+        ltd_plan_name = 'Tier 2'
+      elsif tier == 'T3'
+        agent = 15
+        ltd_plan_name = 'Tier 3'
+      elsif tier == 'T4'
+        agent = 100_000
+        ltd_plan_name = 'Tier 4'
+      end
+      @account.update(
+        ltd_attributes: {
+          ltd_plan_name: ltd_plan_name,
+          ltd_quantity: agent
+        },
+        limits: {
+          agents: agent,
+          inboxes: 100_000
+        }
+      )
+      if @account.coupon_code_used < 1
+        @account.update(
+          coupon_code_used: @account.coupon_code_used + 1
+        )
+      end
+    end
   end
 end

@@ -225,6 +225,7 @@
     "MACROS": "Macros",
     "TEAMS": "Teams",
     "BILLING": "Billing",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Folders",
     "CUSTOM_VIEWS_SEGMENTS": "Segments",
     "ALL_CONTACTS": "All Contacts",
@@ -266,7 +267,7 @@
     "TITLE": "Billing",
     "CURRENT_PLAN": {
       "TITLE": "Current Plan",
-      "PLAN_NOTE": "Þú ert áskrifandi að **%{plan}** áætluninni með **%{quantity}** leyfi"
+      "PLAN_NOTE": "Þú ert áskrifandi að OneHash Chat **%{plan}** áætluninni með **%{quantity}** leyfi"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Manage your subscription",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Spjallaðu við okkur"
     },
     "NO_BILLING_USER": "Verið er að stilla innheimtureikninginn þinn. Endurnýjaðu síðuna og reyndu aftur."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Uh ó! Við fundum enga Chatwoot reikninga. Vinsamlegast búðu til nýjan reikning til að halda áfram.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Afsláttarkóði",
+    "CURRENT_PLAN": {
+        "TITLE": "Núverandi Áætlan",
+        "PLAN_NOTE": "Þú ert núna áskrifandi að OneHash Chat LTD áætlaninu með **%{plan}** og **%{quantity}** leyndarmálasögum"
+    },
+    "APPLY": "Nota",
+    "COUPON_ERROR": {
+        "MESSAGE": "Veittur afsláttarkóði er ógildur"
     }
   }
 }

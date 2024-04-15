@@ -20,6 +20,10 @@
       "BUSINESS_ACCOUNTS_ONLY": "Lütfen giriş yapmak için şirket e-posta adresinizi kullanın",
       "NO_ACCOUNT_FOUND": "E-posta adresinizle ilişkilendirilmiş bir hesap bulunamadı."
     },
+    "OIDC":{
+      "OIDC_LOGIN": "Login with OIDC",
+      "NO_ACCOUNT_FOUND": "We couldn't find an account for your email address."
+    },
     "FORGOT_PASSWORD": "Parolanızı mı unuttunuz?",
     "CREATE_NEW_ACCOUNT": "Yeni hesap oluştur",
     "SUBMIT": "Oturum aç"

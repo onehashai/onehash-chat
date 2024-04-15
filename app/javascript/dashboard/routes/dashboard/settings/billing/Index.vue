@@ -5,18 +5,56 @@
       <p>{{ $t('BILLING_SETTINGS.NO_BILLING_USER') }}</p>
     </div>
     <div v-else class="w-full">
-      <div class="current-plan--details">
+      <div
+        v-if="
+          (['Starter', 'Plus', 'Pro'].includes(planName) &&
+            ltdPlanName === null) ||
+          (['Plus', 'Pro'].includes(planName) && ltdPlanName !== null)
+        "
+        class="current-plan--details"
+      >
         <h6>{{ $t('BILLING_SETTINGS.CURRENT_PLAN.TITLE') }}</h6>
         <div
           v-dompurify-html="
             formatMessage(
               $t('BILLING_SETTINGS.CURRENT_PLAN.PLAN_NOTE', {
                 plan: planName,
-                quantity: subscribedQuantity,
+                quantity: planName === 'Starter' ? 2 : 'Unlimited',
               })
             )
           "
         />
+      </div>
+      <div v-else class="current-plan--details">
+        <h6>{{ $t('LTD_SETTINGS.CURRENT_PLAN.TITLE') }}</h6>
+        <div
+          v-dompurify-html="
+            formatMessage(
+              $t('LTD_SETTINGS.CURRENT_PLAN.PLAN_NOTE', {
+                plan: ltdPlanName,
+                quantity: ltdQuantity !== 100000 ? ltdQuantity : 'Unlimited',
+              })
+            )
+          "
+        />
+      </div>
+      <div class="current-plan--details">
+        <h6>{{ $t('LTD_SETTINGS.TITLE') }}</h6>
+        <div class="input-container">
+          <input
+            id="couponInput"
+            v-model="inputValue"
+            type="text"
+            name="coupon_code"
+            placeholder="Enter a single coupon code"
+          />
+          <woot-submit-button
+            :button-text="$t('LTD_SETTINGS.APPLY')"
+            :loading="uiFlags.isCreating"
+            button-class="medium"
+            @click="applyCouponCode"
+          />
+        </div>
       </div>
       <billing-item
         :title="$t('BILLING_SETTINGS.MANAGE_SUBSCRIPTION.TITLE')"
@@ -24,13 +62,13 @@
         :button-label="$t('BILLING_SETTINGS.MANAGE_SUBSCRIPTION.BUTTON_TXT')"
         @click="onClickBillingPortal"
       />
-      <billing-item
+      <!-- <billing-item
         :title="$t('BILLING_SETTINGS.CHAT_WITH_US.TITLE')"
         :description="$t('BILLING_SETTINGS.CHAT_WITH_US.DESCRIPTION')"
         :button-label="$t('BILLING_SETTINGS.CHAT_WITH_US.BUTTON_TXT')"
         button-icon="chat-multiple"
         @click="onToggleChatWindow"
-      />
+      /> -->
     </div>
   </div>
 </template>
@@ -41,11 +79,20 @@ import messageFormatterMixin from 'shared/mixins/messageFormatterMixin';
 import { mapGetters } from 'vuex';
 import alertMixin from 'shared/mixins/alertMixin';
 import accountMixin from '../../../../mixins/account';
+import AccountAPI from '../../../../api/account';
 import BillingItem from './components/BillingItem.vue';
-// sdds
+
 export default {
   components: { BillingItem },
   mixins: [accountMixin, alertMixin, messageFormatterMixin],
+  data() {
+    return {
+      isValidCouponCode: false,
+      inputValue: '',
+      ltdPlanName: null,
+      ltdQuantity: null,
+    };
+  },
   computed: {
     ...mapGetters({
       getAccount: 'accounts/getAccount',
@@ -57,32 +104,68 @@ export default {
     customAttributes() {
       return this.currentAccount.custom_attributes || {};
     },
+    ltdAttributes() {
+      return this.currentAccount.ltd_attributes || {};
+    },
     hasABillingPlan() {
       return !!this.planName;
     },
     planName() {
       return this.customAttributes.plan_name || '';
     },
-    subscribedQuantity() {
-      return this.customAttributes.subscribed_quantity || 0;
-    },
   },
   mounted() {
     this.fetchAccountDetails();
+    this.fetchLtdDetails();
   },
   methods: {
     async fetchAccountDetails() {
       if (!this.hasABillingPlan) {
-        this.$store.dispatch('accounts/subscription');
+        this.$store.dispatch('accounts/stripe_subscription');
       }
     },
+    async fetchLtdDetails() {
+      AccountAPI.getLtdDetails()
+        .then(response => {
+          this.ltdPlanName = response.data.data.plan_name;
+          this.ltdQuantity = response.data.data.quantity;
+        })
+        .catch(error => {
+          this.showAlert(error.response.data.message);
+        });
+    },
     onClickBillingPortal() {
-      this.$store.dispatch('accounts/checkout');
+      this.$store.dispatch('accounts/stripe_checkout');
     },
     onToggleChatWindow() {
       if (window.$chatwoot) {
         window.$chatwoot.toggle();
       }
+    },
+    checkInput() {
+      const couponInput = document.getElementById('couponInput');
+      const inputValue = couponInput.value;
+      this.isValidCouponCode =
+        /^(AS|DM)[0-9a-zA-Z]{8}$|^(PG-|RH-|DF-|OH-)([0-9a-zA-Z]{4}-){3}[0-9a-zA-Z]{2}$/.test(
+          inputValue
+        );
+      return this.isValidCouponCode;
+    },
+    async applyCouponCode() {
+      const couponCode = this.inputValue;
+      if (!this.checkInput(couponCode)) {
+        this.showAlert(this.$t('LTD_SETTINGS.COUPON_ERROR.MESSAGE'));
+        return;
+      }
+      const payload = { coupon_code: couponCode };
+      AccountAPI.getLTD(payload)
+        .then(response => {
+          this.showAlert(response.data.message);
+          window.location.reload();
+        })
+        .catch(error => {
+          this.showAlert(error.response.data.message);
+        });
     },
   },
 };

@@ -17,6 +17,7 @@
 #To learn more, please read the Rails Internationalization guide
 #available at https://guides.rubyonrails.org/i18n.html.
 is:
+  prompt: "%{client_message}"
   hello: "Hello world"
   messages:
     reset_password_success: Woot! Beiðni um endurstillingu lykilorðs tókst. Skoðaðu póstinn þinn til að fá leiðbeiningar.
@@ -146,6 +147,8 @@ is:
       ways_to_reach_you_message_body: "Give the team a way to reach you."
       email_input_box_message_body: "Get notified by email"
       csat_input_message_body: "Please rate the conversation"
+      bot_entered_chat: "Botti on liittynyt keskusteluun"
+      long_message_issue: "Liian monta merkkiä syötteessä, lyhennä viestiä"
     reply:
       email:
         header:

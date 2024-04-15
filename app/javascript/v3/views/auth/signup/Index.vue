@@ -5,26 +5,28 @@
         class="flex-1 min-h-[640px] inline-flex items-center h-full justify-center overflow-auto py-6"
       >
         <div class="px-8 max-w-[560px] w-full overflow-auto">
-          <div class="mb-4">
+          <div class="mb-4 flex flex-col items-center justify-center">
             <img
               :src="globalConfig.logo"
               :alt="globalConfig.installationName"
-              class="h-8 w-auto block dark:hidden"
+              class="h-14 w-auto block dark:hidden"
             />
             <img
               v-if="globalConfig.logoDark"
               :src="globalConfig.logoDark"
               :alt="globalConfig.installationName"
-              class="h-8 w-auto hidden dark:block"
+              class="h-14 w-auto hidden dark:block"
             />
             <h2
-              class="mb-7 mt-6 text-left text-3xl font-medium text-slate-900 dark:text-woot-50"
+              class="mb-7 mt-2 text-left text-3xl font-medium text-slate-900 dark:text-woot-50"
             >
               {{ $t('REGISTER.TRY_WOOT') }}
             </h2>
           </div>
           <signup-form />
-          <div class="text-sm text-slate-800 dark:text-woot-50 px-1">
+          <div
+            class="text-sm text-slate-800 dark:text-woot-50 px-1 flex justify-center items-center gap-1"
+          >
             <span>{{ $t('REGISTER.HAVE_AN_ACCOUNT') }}</span>
             <router-link class="text-link" to="/app/login">
               {{

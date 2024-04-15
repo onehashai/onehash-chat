@@ -1,21 +1,21 @@
 <template>
   <main
-    class="flex flex-col bg-woot-25 min-h-screen w-full py-20 sm:px-6 lg:px-8 dark:bg-slate-900"
+    class="flex flex-col bg-white min-h-screen w-full py-20 sm:px-6 lg:px-8 dark:bg-slate-900 items-center justify-center"
   >
     <section class="max-w-5xl mx-auto">
       <img
         :src="globalConfig.logo"
         :alt="globalConfig.installationName"
-        class="mx-auto h-8 w-auto block dark:hidden"
+        class="mx-auto h-14 w-auto block dark:hidden"
       />
       <img
         v-if="globalConfig.logoDark"
         :src="globalConfig.logoDark"
         :alt="globalConfig.installationName"
-        class="mx-auto h-8 w-auto hidden dark:block"
+        class="mx-auto h-14 w-auto hidden dark:block"
       />
       <h2
-        class="mt-6 text-center text-3xl font-medium text-slate-900 dark:text-woot-50"
+        class="mt-2 text-center text-3xl font-medium text-slate-900 dark:text-woot-50"
       >
         {{
           useInstallationName($t('LOGIN.TITLE'), globalConfig.installationName)
@@ -32,14 +32,13 @@
       </p>
     </section>
     <section
-      class="bg-white shadow sm:mx-auto mt-11 sm:w-full sm:max-w-lg dark:bg-slate-800 p-11 sm:shadow-lg sm:rounded-lg"
+      class="bg-white shadow sm:mx-auto mt-10 sm:w-full sm:max-w-lg dark:bg-slate-800 p-11 sm:shadow-lg sm:rounded-lg"
       :class="{
         'mb-8 mt-15': !showGoogleOAuth,
         'animate-wiggle': loginApi.hasErrored,
       }"
     >
       <div v-if="!email">
-        <GoogleOAuthButton v-if="showGoogleOAuth" />
         <form class="space-y-5" @submit.prevent="submitLogin">
           <form-input
             v-model.trim="credentials.email"
@@ -82,6 +81,7 @@
             :loading="loginApi.showLoading"
           />
         </form>
+        <GoogleOAuthButton v-if="showGoogleOAuth" />
       </div>
       <div v-else class="flex items-center justify-center">
         <spinner color-scheme="primary" size="" />

@@ -30,6 +30,7 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
+  prompt: "%{client_message}"
   hello: "Hello world"
   messages:
     reset_password_success: Woot! Request for password reset is successful. Check your mail for instructions.
@@ -168,6 +169,8 @@ en:
       ways_to_reach_you_message_body: "Give the team a way to reach you."
       email_input_box_message_body: "Get notified by email"
       csat_input_message_body: "Please rate the conversation"
+      bot_entered_chat: "Bot has entered the chat"
+      long_message_issue: "Too many input characters , please shorten the message"
     reply:
       email:
         header:
@@ -208,7 +211,7 @@ en:
       description: "Make it easier for agents to translate messages by adding a Google Translate Integration. Google translate helps to identify the language automatically and convert it to the language chosen by the agent/account admin."
     openai:
       name: "OpenAI"
-      description: "Integrate powerful AI features into Chatwoot by leveraging the GPT models from OpenAI."
+      description: "Integrate powerful AI features into OneHash Chat by leveraging the GPT models from OpenAI."
   public_portal:
     search:
       search_placeholder: Search for article by title or body...

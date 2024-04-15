@@ -225,6 +225,7 @@
     "MACROS": "Macros",
     "TEAMS": "Timovi",
     "BILLING": "Plaćanje",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Fascikle",
     "CUSTOM_VIEWS_SEGMENTS": "Segmenti",
     "ALL_CONTACTS": "Svi kontakti",
@@ -266,7 +267,7 @@
     "TITLE": "Plaćanje",
     "CURRENT_PLAN": {
       "TITLE": "Trenutni plan",
-      "PLAN_NOTE": "Trenutno ste pretplaćeni na **%{plan}** plan sa **%{quantity}** licenci"
+      "PLAN_NOTE": "Trenutno ste pretplaćeni na OneHash Chat **%{plan}** plan sa **%{quantity}** licenci"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Upravljate vašom pretplatom",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Razgovarajte sa nama"
     },
     "NO_BILLING_USER": "Vaš nalog za plaćanje se podešava. Molim vas osvežite stranicu i pokušajte ponovo."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "O ne! Nismo mogli da pronađemo nijedan Chatwoot nalog. Molim vas kreirajte novi da bi ste nastavili.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Kod kupona",
+    "CURRENT_PLAN": {
+        "TITLE": "Trenutni plan",
+        "PLAN_NOTE": "Trenutno ste pretplaćeni na OneHash Chat LTD plan **%{plan}** sa **%{quantity}** licenci"
+    },
+    "APPLY": "Primeni",
+    "COUPON_ERROR": {
+        "MESSAGE": "Dati kod kupona nije validan"
     }
   }
 }

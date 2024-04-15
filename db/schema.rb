@@ -54,6 +54,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.jsonb "limits", default: {}
     t.jsonb "custom_attributes", default: {}
     t.integer "status", default: 0
+    t.integer "coupon_code_used", default: 0
+    t.jsonb "ltd_attributes", default: {}
     t.index ["status"], name: "index_accounts_on_status"
   end
 
@@ -388,8 +390,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "message_templates", default: {}
-    t.datetime "message_templates_last_updated", precision: nil
+    t.datetime "message_templates_last_updated"
     t.index ["phone_number"], name: "index_channel_whatsapp_on_phone_number", unique: true
+  end
+
+  create_table "chatbots", force: :cascade do |t|
+    t.datetime "last_trained_at"
+    t.string "chatbot_name"
+    t.string "chatbot_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "account_id", default: 0, null: false
+    t.string "website_token"
+    t.integer "inbox_id"
+    t.string "inbox_name"
+    t.boolean "bot_status"
   end
 
   create_table "contact_inboxes", force: :cascade do |t|
@@ -473,6 +488,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.bigint "sla_policy_id"
     t.datetime "waiting_since"
     t.string "cached_label_list"
+    t.boolean "bot_icon_status", default: true
+    t.boolean "is_bot_connected", default: false
     t.index ["account_id", "display_id"], name: "index_conversations_on_account_id_and_display_id", unique: true
     t.index ["account_id", "id"], name: "index_conversations_on_id_and_account_id"
     t.index ["account_id", "inbox_id", "status", "assignee_id"], name: "conv_acid_inbid_stat_asgnid_idx"
@@ -490,6 +507,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.index ["team_id"], name: "index_conversations_on_team_id"
     t.index ["uuid"], name: "index_conversations_on_uuid", unique: true
     t.index ["waiting_since"], name: "index_conversations_on_waiting_since"
+  end
+
+  create_table "coupon_codes", force: :cascade do |t|
+    t.integer "account_id"
+    t.string "account_name"
+    t.string "code"
+    t.string "partner"
+    t.string "status", default: "new"
+    t.datetime "redeemed_at"
+    t.datetime "expiry_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "csat_survey_responses", force: :cascade do |t|
@@ -523,7 +552,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.string "regex_pattern"
     t.string "regex_cue"
     t.index ["account_id"], name: "index_custom_attribute_definitions_on_account_id"
-    t.index ["attribute_key", "attribute_model", "account_id"], name: "attribute_key_model_index", unique: true
+    t.index ["attribute_key", "attribute_model"], name: "attribute_key_model_index", unique: true
   end
 
   create_table "custom_filters", force: :cascade do |t|
@@ -559,6 +588,46 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_data_imports_on_account_id"
+  end
+
+  create_table "ee_account_billing_subscriptions", force: :cascade do |t|
+    t.string "stripe_subscription_id"
+    t.bigint "account_id", null: false
+    t.string "status", default: "true", null: false
+    t.datetime "current_period_end"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_price_id"
+    t.string "stripe_product_id"
+    t.string "plan_name"
+    t.string "subscription_status"
+    t.index ["account_id"], name: "index_ee_account_billing_subscriptions_on_account_id"
+    t.index ["stripe_subscription_id"], name: "subscription_stripe_id_index", unique: true
+  end
+
+  create_table "ee_billing_product_prices", force: :cascade do |t|
+    t.string "price_stripe_id"
+    t.bigint "billing_product_id"
+    t.boolean "active", default: false
+    t.string "stripe_nickname"
+    t.integer "unit_amount"
+    t.integer "features", default: 0, null: false
+    t.jsonb "limits", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["billing_product_id"], name: "index_ee_billing_product_prices_on_billing_product_id"
+    t.index ["price_stripe_id"], name: "index_ee_billing_product_prices_on_price_stripe_id", unique: true
+  end
+
+  create_table "ee_billing_products", force: :cascade do |t|
+    t.string "product_stripe_id"
+    t.string "product_name"
+    t.string "product_description"
+    t.boolean "active", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_stripe_id"], name: "index_ee_billing_products_on_product_stripe_id", unique: true
   end
 
   create_table "email_templates", force: :cascade do |t|
@@ -831,8 +900,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "value_in_business_hours"
-    t.datetime "event_start_time", precision: nil
-    t.datetime "event_end_time", precision: nil
+    t.datetime "event_start_time"
+    t.datetime "event_end_time"
     t.index ["account_id", "name", "created_at"], name: "reporting_events__account_id__name__created_at"
     t.index ["account_id"], name: "index_reporting_events_on_account_id"
     t.index ["conversation_id"], name: "index_reporting_events_on_conversation_id"
@@ -855,6 +924,14 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.index ["account_id"], name: "index_sla_policies_on_account_id"
   end
 
+  create_table "subscription_plans", force: :cascade do |t|
+    t.string "plan_name"
+    t.string "stripe_product_id"
+    t.string "stripe_price_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "taggings", id: :serial, force: :cascade do |t|
     t.integer "tag_id"
     t.string "taggable_type"
@@ -869,9 +946,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_201954) do
     t.index ["taggable_id", "taggable_type", "context"], name: "index_taggings_on_taggable_id_and_taggable_type_and_context"
     t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy"
     t.index ["taggable_id"], name: "index_taggings_on_taggable_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_taggings_on_taggable_type_and_taggable_id"
     t.index ["taggable_type"], name: "index_taggings_on_taggable_type"
     t.index ["tagger_id", "tagger_type"], name: "index_taggings_on_tagger_id_and_tagger_type"
     t.index ["tagger_id"], name: "index_taggings_on_tagger_id"
+    t.index ["tagger_type", "tagger_id"], name: "index_taggings_on_tagger_type_and_tagger_id"
   end
 
   create_table "tags", id: :serial, force: :cascade do |t|

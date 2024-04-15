@@ -225,6 +225,7 @@
     "MACROS": "Macros",
     "TEAMS": "Equipas",
     "BILLING": "Cobrança",
+    "CHATBOT": "Chatbot",
     "CUSTOM_VIEWS_FOLDER": "Pastas",
     "CUSTOM_VIEWS_SEGMENTS": "Segmentos",
     "ALL_CONTACTS": "Todos os contatos",
@@ -266,7 +267,7 @@
     "TITLE": "Cobrança",
     "CURRENT_PLAN": {
       "TITLE": "Plano atual",
-      "PLAN_NOTE": "Atualmente tem o **%{plan}* subscrito com **%{quantity}** licenças"
+      "PLAN_NOTE": "Atualmente tem o OneHash Chat **%{plan}* subscrito com **%{quantity}** licenças"
     },
     "MANAGE_SUBSCRIPTION": {
       "TITLE": "Administrar o seu serviço",
@@ -279,6 +280,9 @@
       "BUTTON_TXT": "Fale connosco"
     },
     "NO_BILLING_USER": "Os seus dados de pagamento estão a ser configurados. Atualize a página e tente novamente."
+  },
+  "CHATBOT": {
+    "TITLE": "Chatbot"
   },
   "CREATE_ACCOUNT": {
     "NO_ACCOUNT_WARNING": "Não conseguimos encontrar nenhuma conta do Chatwoot. Por favor, crie uma nova conta para continuar.",
@@ -320,6 +324,17 @@
       "WINDOWS_KEY_AND_COMMAND_KEY": "Win / ⌘",
       "ALT_OR_OPTION_KEY": "Alt / ⌥",
       "FORWARD_SLASH_KEY": "/"
+    }
+  },
+  "LTD_SETTINGS": {
+    "TITLE": "Código de Cupom",
+    "CURRENT_PLAN": {
+        "TITLE": "Plano Atual",
+        "PLAN_NOTE": "Você está atualmente inscrito no plano OneHash Chat LTD **%{plan}** com **%{quantity}** licenças"
+    },
+    "APPLY": "Aplicar",
+    "COUPON_ERROR": {
+        "MESSAGE": "O código de cupom fornecido é inválido"
     }
   }
 }

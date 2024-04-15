@@ -20,6 +20,10 @@
       "BUSINESS_ACCOUNTS_ONLY": "Veuillez utiliser l'adresse e-mail de votre entreprise pour vous connecter",
       "NO_ACCOUNT_FOUND": "Nous n'avons pas pu trouver de compte pour votre adresse e-mail."
     },
+    "OIDC":{
+      "OIDC_LOGIN": "Login with OIDC",
+      "NO_ACCOUNT_FOUND": "We couldn't find an account for your email address."
+    },
     "FORGOT_PASSWORD": "Mot de passe oublié ?",
     "CREATE_NEW_ACCOUNT": "Créer un nouveau compte",
     "SUBMIT": "Se connecter"
