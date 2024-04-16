@@ -4,6 +4,7 @@ export const SDK_CSS = `
   --s-700: #37546D;
 }
 
+/* helps remove the slider animation */
 .woot-widget-holder {
   box-shadow: 0 5px 40px rgba(0, 0, 0, .16);
   opacity: 1;
@@ -21,6 +22,7 @@ export const SDK_CSS = `
   border: 1px solid var(--b-100);
 }
 
+/* gives CSS to chat box field */
 .woot-widget-holder iframe {
   border: 0;
   height: 100% !important;
@@ -37,6 +39,7 @@ export const SDK_CSS = `
   border: 0;
 }
 
+/* gives css to outer circle that has a beak on it */
 .woot-widget-bubble {
   background: #1f93ff;
   border-radius: 100px;
@@ -65,34 +68,6 @@ export const SDK_CSS = `
   overflow: hidden;
 }
 
-// /* Blue dot on the left */
-// .woot-widget-bubble::before {
-//   content: ''; /* Create a pseudo-element */
-//   position: absolute; /* Position it absolutely within the .woot-widget-bubble */
-//   top: 50%; /* Position at the middle vertically */
-//   left: calc(50% - 20px); /* Position horizontally */
-//   transform: translate(-50%, -50%); /* Center it precisely */
-//   width: 8px; /* Adjust size as needed */
-//   height: 8px; /* Adjust size as needed */
-//   background-color: #007bff; /* Blue color */
-//   border-radius: 50%; /* Shape it as a circle */
-//   z-index: 1; /* Ensure the blue dot is above the other dots */
-// }
-
-// /* Blue dot on the right */
-// .woot-widget-bubble::after {
-//   content: ''; /* Create a pseudo-element */
-//   position: absolute; /* Position it absolutely within the .woot-widget-bubble */
-//   top: 50%; /* Position at the middle vertically */
-//   left: calc(50% + 20px); /* Position horizontally */
-//   transform: translate(-50%, -50%); /* Center it precisely */
-//   width: 8px; /* Adjust size as needed */
-//   height: 8px; /* Adjust size as needed */
-//   background-color: #007bff; /* Blue color */
-//   border-radius: 50%; /* Shape it as a circle */
-//   z-index: 1; /* Ensure the blue dot is above the other dots */
-// }
-
 .woot-widget-bubble.woot-widget-bubble--flat {
   border-radius: 0;
 }
@@ -106,16 +81,13 @@ export const SDK_CSS = `
   width: 56px;
 }
 
-.woot-widget-bubble.woot-widget-bubble--flat svg {
-  margin: 16px;
-}
-
 .woot-widget-bubble.woot-widget-bubble--flat.woot--close::before,
 .woot-widget-bubble.woot-widget-bubble--flat.woot--close::after {
   left: 28px;
   top: 16px;
 }
 
+/* must be for notification, do confirm before any update to this property */
 .woot-widget-bubble.unread-notification::after {
   content: '';
   position: absolute;
@@ -153,16 +125,12 @@ export const SDK_CSS = `
   color: var(--s-700);
 }
 
-.woot-widget-bubble.woot-widget--expanded svg {
-  height: 20px;
-  margin: 14px 8px 14px 16px;
-  width: 20px;
-}
-
+/* fixes widget to the bottom right corner */
 .woot-widget-bubble.woot-elements--left {
   left: 20px;
 }
 
+/* fixes widget to the bottom right corner */
 .woot-widget-bubble.woot-elements--right {
   right: 20px;
 }
@@ -172,19 +140,30 @@ export const SDK_CSS = `
   // box-shadow: 0 8px 32px rgba(0, 0, 0, .4) !important;
 }
 
-/* // change inner white circle i.e. svg from here */
+.woot-widget-bubble.woot-widget-bubble--flat svg {
+  margin: 16px;
+}
+
+.woot-widget-bubble.woot-widget--expanded svg {
+  height: 20px;
+  margin: 14px 8px 14px 16px;
+  width: 20px;
+}
+
+/* change inner white circle i.e. svg from here */
 .woot-widget-bubble svg {
   all: revert;
-  height: 38px;
+  height: 138px;
   margin: 13.5px;
-  width: 38px;
-  border-radius: 50%;
+  width: 138px;
+  border-radius: 0%;
 }
 
 .woot-widget-bubble.woot-widget-bubble-color--lighter path{
   fill: var(--s-700);
 }
 
+/* makes the chat box appear close to the widget */
 @media only screen and (min-width: 667px) {
   .woot-widget-holder.woot-elements--left {
     left: 20px;
@@ -198,6 +177,7 @@ export const SDK_CSS = `
   opacity: 1;
 }
 
+/* gives close icon when widget is opened */
 .woot--close::before, .woot--close::after {
   background-color: #fff;
   content: ' ';
@@ -213,14 +193,17 @@ export const SDK_CSS = `
   background-color: var(--s-700);
 }
 
+/* gives an angle to the close icon lines */
 .woot--close::before {
   transform: rotate(45deg);
 }
 
+/* gives an angle to the close icon lines */
 .woot--close::after {
   transform: rotate(-45deg);
 }
 
+/* makes widget animation */
 .woot--hide {
   bottom: -100vh !important;
   top: unset !important;
@@ -232,6 +215,8 @@ export const SDK_CSS = `
 .woot-widget--without-bubble {
   bottom: 20px !important;
 }
+
+/* gives proper animation to the chat box field when opened */
 .woot-widget-holder.woot--hide{
   transform: translateY(40px);
 }
@@ -244,12 +229,15 @@ export const SDK_CSS = `
   transition: transform 300ms ease, opacity 200ms ease, visibility 0ms linear 500ms, bottom 0ms ease 200ms;
 }
 
+/* gives the widget proper animation when clicked to either open or close the chat box */
 .woot-widget-bubble {
   transform-origin: center;
   will-change: transform, opacity;
   transform: translateX(0) scale(1) rotate(0deg);
   transition: transform 300ms ease, opacity 100ms ease, visibility 0ms linear 0ms, bottom 0ms linear 0ms;
 }
+
+/* gives the widget proper animation when clicked to either open or close the chat box */
 .woot-widget-bubble.woot--hide {
   transform: translateX(8px) scale(.75) rotate(-30deg);
   transition: transform 300ms ease, opacity 200ms ease, visibility 0ms linear 500ms, bottom 0ms ease 200ms;
@@ -319,6 +307,7 @@ export const SDK_CSS = `
   }
 }
 
+/* helps in showing the chat box area in the UI */
 @media only screen and (min-width: 667px) {
   .woot-widget-holder {
     border-radius: 16px;

@@ -34,6 +34,8 @@
         :style="{ background: color }"
         @click="toggleWidget"
       >
+        <!-- prev src=~dashboard/assets/images/bubble-logo.svg -->
+        <!-- new src=~dashboard/assets/images/white-chat-icon.svg -->
         <img
           v-if="!isWidgetVisible"
           src="~dashboard/assets/images/bubble-logo.svg"

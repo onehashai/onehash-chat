@@ -122,7 +122,6 @@ import alertMixin from 'shared/mixins/alertMixin';
 import ChatbotAPI from '../../../../api/chatbot';
 
 // remove bruh
-
 (function (d, t) {
   var BASE_URL = 'http://localhost:3000';
   var g = d.createElement(t);
@@ -133,7 +132,7 @@ import ChatbotAPI from '../../../../api/chatbot';
   s.parentNode.insertBefore(g, s);
   g.onload = function () {
     window.chatwootSDK.run({
-      websiteToken: 't4XApWaRfc9WH5JWTMdwVdDB',
+      websiteToken: 'RcYu2Qrgv17oKZe4nyUx63mD',
       baseUrl: BASE_URL,
     });
   };
