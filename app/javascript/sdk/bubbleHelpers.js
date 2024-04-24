@@ -2,8 +2,11 @@ import { addClasses, removeClasses, toggleClass } from './DOMHelpers';
 import { IFrameHelper } from './IFrameHelper';
 import { isExpandedView } from './settingsHelper';
 
-export const bubbleSVG =
+export const bubbleSVGStandard =
   'M33,0A33,33,0,1,0,66,33,33,33,0,0,0,33,0ZM20,37.38A4.38,4.38,0,1,1,24.34,33,4.38,4.38,0,0,1,20,37.38Zm13,0A4.38,4.38,0,1,1,37.38,33,4.38,4.38,0,0,1,33,37.38Zm13,0A4.38,4.38,0,1,1,50.42,33,4.38,4.38,0,0,1,46,37.38Z';
+
+export const bubbleSVGExpanded =
+  'M197.48,196.66c1-.9,1.9-1.82,2.84-2.75A113.59,113.59,0,1,0,39.68,33.27a113.59,113.59,0,0,0,0,160.64,112.71,112.71,0,0,0,66.67,32.46l83.85,12.69c18.8,3.22,18-1.45,13.16-19.9ZM79.3,127.27A13.68,13.68,0,1,1,93,113.59,13.68,13.68,0,0,1,79.3,127.27Zm40.7,0a13.68,13.68,0,1,1,13.68-13.68A13.68,13.68,0,0,1,120,127.27Zm40.7,0a13.68,13.68,0,1,1,13.68-13.68A13.69,13.69,0,0,1,160.7,127.27Z';
 
 export const body = document.getElementsByTagName('body')[0];
 export const widgetHolder = document.createElement('div');

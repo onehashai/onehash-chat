@@ -121,23 +121,6 @@ import accountMixin from '../../../../mixins/account';
 import alertMixin from 'shared/mixins/alertMixin';
 import ChatbotAPI from '../../../../api/chatbot';
 
-// remove bruh
-(function (d, t) {
-  var BASE_URL = 'http://localhost:3000';
-  var g = d.createElement(t);
-  var s = d.getElementsByTagName(t)[0];
-  g.src = BASE_URL + '/packs/js/sdk.js';
-  g.defer = true;
-  g.async = true;
-  s.parentNode.insertBefore(g, s);
-  g.onload = function () {
-    window.chatwootSDK.run({
-      websiteToken: 'RcYu2Qrgv17oKZe4nyUx63mD',
-      baseUrl: BASE_URL,
-    });
-  };
-})(document, 'script');
-
 export default {
   mixins: [adminMixin, accountMixin, alertMixin],
   data() {
