@@ -110,9 +110,9 @@ class Api::V1::Widget::ChatbotController < ApplicationController
       chatbot = Chatbot.find_by(chatbot_id: chatbot_id)
       if chatbot
         chatbot.update(bot_status: false)
-        chatbot.upadte(website_token: nil)
-        chatbot.upadte(inbox_id: nil)
-        chatbot.upadte(inbox_name: 'No Inbox Connected')
+        chatbot.update(website_token: nil)
+        chatbot.update(inbox_id: nil)
+        chatbot.update(inbox_name: 'No Inbox Connected')
         render json: { message: 'Successfully deleted chatbot' }, status: :ok
       else
         render json: { error: 'Chatbot not found' }, status: :not_found
