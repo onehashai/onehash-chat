@@ -71,7 +71,7 @@
       ]
     },
     "BANNER": {
-      "CREATING":"A notification will be sent to you once the chatbot has been built.",
+      "CREATING":"An Email will be sent to you once the chatbot has been built.",
       "CREATED":"Chatbot creation completed",
       "FAIL":"The construction of chatbot was unsuccessful."
     }

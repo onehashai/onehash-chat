@@ -2,7 +2,14 @@
   <div
     class="border border-slate-25 dark:border-slate-800/60 bg-white dark:bg-slate-900 h-full p-6 w-full max-w-full md:w-3/4 md:max-w-[75%] flex-shrink-0 flex-grow-0"
   >
+    <template v-if="isHamburgerMenuOpen">
+      <back-button class="absolute top-[17px] left-[420px]" />
+    </template>
+    <template v-else>
+      <back-button class="absolute top-[17px] left-[240px]" />
+    </template>
     <woot-button
+      :is-disabled="!isButtonActive"
       class-names="button--fixed-top"
       color-scheme="primary"
       @click="createChatbot"
@@ -42,14 +49,6 @@
       @close="dismissUpdateBanner"
     />
     <banner
-      v-if="!userDismissedBotCreatedMessage && showBotCreatedMessage"
-      color-scheme="primary"
-      :banner-message="botCreatedMessage"
-      has-close-button
-      class="fixed top-0 left-0 w-full z-50"
-      @close="dismissUpdateBanner"
-    />
-    <banner
       v-if="
         !userDismissedBotCreationFailureMessage && showBotCreationFailureMessage
       "
@@ -63,15 +62,17 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import ChatbotAPI from '../../../../../api/chatbot';
 import PageHeader from '../../SettingsSubPageHeader.vue';
 import Banner from '../../../../../../dashboard/components/ui/Banner.vue';
+import BackButton from '../../../../../components/widgets/BackButton.vue';
 
 export default {
   components: {
     PageHeader,
     Banner,
+    BackButton,
   },
   data() {
     return {
@@ -81,12 +82,11 @@ export default {
       inbox_id: '',
       inbox_name: '',
       showBotCreatingMessage: false,
-      showBotCreatedMessage: false,
       showBotCreationFailureMessage: false,
       userDismissedBotCreatingMessage: false,
-      userDismissedBotCreatedMessage: false,
       userDismissedBotCreationFailureMessage: false,
       chatbot_id: '',
+      isHamburgerMenuOpen: true,
     };
   },
   computed: {
@@ -106,28 +106,35 @@ export default {
     botCreatingMessage() {
       return this.$t('CHATBOT_SETTINGS.BANNER.CREATING');
     },
-    botCreatedMessage() {
-      return this.$t('CHATBOT_SETTINGS.BANNER.CREATED');
-    },
     botCreationFailureMessage() {
       return this.$t('CHATBOT_SETTINGS.BANNER.FAIL');
     },
+  },
+  watch: {
+    'uiSettings.show_secondary_sidebar': function (newVal) {
+      this.isHamburgerMenuOpen = newVal;
+    },
+  },
+  created() {
+    this.isHamburgerMenuOpen = this.uiSettings.show_secondary_sidebar;
   },
   methods: {
     async createChatbot() {
       try {
         this.showBotCreatingMessage = true;
+        // saving bot info to backend DB
         const payload = new FormData();
         payload.append('accountId', this.currentAccountId);
         payload.append('website_token', this.website_token);
         payload.append('inbox_id', this.inbox_id);
         payload.append('inbox_name', this.inbox_name);
         const res = await ChatbotAPI.storeToDb(payload);
+        // saving bot info to microservice DB
         const formData = new FormData();
         formData.append('bot_text', this.botText);
         formData.append('chatbot_id', res.chatbot_id);
-        this.chatbot_id = res.chatbot_id;
         formData.append('temperature', 0.1);
+        this.chatbot_id = res.chatbot_id;
         for (let i = 0; i < this.botFiles.length; i += 1) {
           formData.append('bot_files', this.botFiles[i]);
         }
@@ -135,21 +142,15 @@ export default {
           formData.append('bot_urls', this.botUrls[i]);
         }
         await ChatbotAPI.createChatbot(formData);
-        this.showBotCreatingMessage = false;
-        this.showBotCreatedMessage = true;
-        await this.$router.push({
-          name: 'chatbot_index', // Name of the route to redirect to
-          params: { accountId: this.currentAccountId }, // Parameters to pass to the route if any
-        });
       } catch (error) {
         this.showBotCreatingMessage = false;
-        await ChatbotAPI.deleteChatbotWithChatbotId(this.chatbot_id);
+        this.userDismissedBotCreationFailureMessage = false;
         this.showBotCreationFailureMessage = true;
+        await ChatbotAPI.deleteChatbotWithChatbotId(this.chatbot_id);
       }
     },
     dismissUpdateBanner() {
       this.userDismissedBotCreatingMessage = true;
-      this.userDismissedBotCreatedMessage = true;
       this.userDismissedBotCreationFailureMessage = true;
     },
     allotWebsiteToken() {

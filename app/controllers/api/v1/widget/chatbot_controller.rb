@@ -58,11 +58,6 @@ class Api::V1::Widget::ChatbotController < ApplicationController
     end
   end
 
-  # def del
-  #   Chatbot.delete_all
-  #   render json: {message: "Chatbots deleted"}, status: :ok
-  # end
-
   # [GET] http://localhost:3000/api/v1/widget/chatbot-status
   def chatbot_status
     conversation_id = params[:conversation_id]
@@ -73,18 +68,6 @@ class Api::V1::Widget::ChatbotController < ApplicationController
         status = conversation.is_bot_connected
         render json: { status: status }, status: :ok
       end
-    rescue StandardError => e
-      render json: { error: e.message }, status: :unprocessable_entity
-    end
-  end
-
-  # [POST] http://localhost:3000/api/v1/widget/old-bot-train
-  def old_bot_train
-    chatbot_id = params[:chatbot_id]
-
-    begin
-      OldBotTrainWorker.perform_async(chatbot_id)
-      render json: { message: 'Old bot training job enqueued successfully' }, status: :ok
     rescue StandardError => e
       render json: { error: e.message }, status: :unprocessable_entity
     end
@@ -155,6 +138,30 @@ class Api::V1::Widget::ChatbotController < ApplicationController
     end
   end
 
+  # [POST] http://localhost:3000/api/v1/widget/chatbot-constructed
+  def chatbot_constructor
+    chatbot_id = params[:chatbot_id] || params[:chatbot][:chatbot_id]
+    chatbot = Chatbot.find_by(chatbot_id: chatbot_id)
+    return unless chatbot
+
+    account_id = chatbot.account_id
+    account_user = AccountUser.find_by(account_id: account_id)
+    return unless account_user
+
+    user_id = account_user.user_id
+    user = User.find_by(id: user_id)
+    return unless user
+
+    email = user.email
+
+    # Sends the mail immediately (Synchronous)
+    ApplicationMailer.chatbot_creation_email(email, chatbot).deliver_now
+    # sends mail by pushing it to background process queue
+    # TODO: deliver_later must be used with sidekiq / Resque, as it's a poor fit for production as with default configurations it drops pending jobs on server restart [https://guides.rubyonrails.org/action_mailer_basics.html]
+    # ApplicationMailer.chatbot_creation_email(email, chatbot).deliver_later
+    render json: { message: 'Successfully created chatbot' }, status: :ok
+  end
+
   # [DELETE] http://localhost:3000/api/v1/widget/disconnect-chatbot
   def disconnect_chatbot
     chatbot_id = params[:chatbot_id]
@@ -200,17 +207,5 @@ class Api::V1::Widget::ChatbotController < ApplicationController
     rescue StandardError => e
       render json: { error: e.message }, status: :unprocessable_entity
     end
-  end
-end
-
-# app/workers/old_bot_train_worker.rb
-class OldBotTrainWorker
-  include Sidekiq::Worker
-
-  def perform(chatbot_id)
-    chatbot = Chatbot.find_by(chatbot_id: chatbot_id)
-    raise 'Chatbot not found' unless chatbot
-
-    chatbot.update(last_trained_at: DateTime.now.strftime('%B %d, %Y at %I:%M %p'))
   end
 end

@@ -75,6 +75,21 @@ class Api::V1::Widget::MessagesController < Api::V1::Widget::BaseController
 
   private
 
+  def trigger_chatbot_typing_status(conversation_id, typing_status)
+    # Fetch the conversation object based on the conversation_id
+    @conversation = Conversation.find(conversation_id)
+    # Get the current_user object (or an appropriate user object)
+    @current_user = @conversation.assignee
+
+    typing_status_manager = ::Conversations::TypingStatusManager.new(
+      @conversation,
+      @current_user,
+      typing_status: typing_status ? 'on' : 'off',
+      is_private: false
+    )
+    typing_status_manager.toggle_typing_status
+  end
+
   def build_attachment
     return if params[:message][:attachments].blank?
 
@@ -115,20 +130,5 @@ class Api::V1::Widget::MessagesController < Api::V1::Widget::BaseController
 
   def set_message
     @message = @web_widget.inbox.messages.find(permitted_params[:id])
-  end
-
-  def trigger_chatbot_typing_status(conversation_id, typing_status)
-    # Fetch the conversation object based on the conversation_id
-    @conversation = Conversation.find(conversation_id)
-    # Get the current_user object (or an appropriate user object)
-    @current_user = @conversation.assignee
-
-    typing_status_manager = ::Conversations::TypingStatusManager.new(
-      @conversation,
-      @current_user,
-      typing_status: typing_status ? 'on' : 'off',
-      is_private: false
-    )
-    typing_status_manager.toggle_typing_status
   end
 end

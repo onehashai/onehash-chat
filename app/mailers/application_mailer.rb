@@ -22,6 +22,14 @@ class ApplicationMailer < ActionMailer::Base
     ENV.fetch('SMTP_ADDRESS', nil).present? || Rails.env.development?
   end
 
+  def chatbot_creation_email(email, chatbot)
+    @chatbot = chatbot
+    mail(to: email, subject: 'Your Chatbot has been successfully created') do |format|
+      format.html { render template: 'chatbot/chatbot_creation_email' }
+      format.text { render plain: 'Your chatbot has been successfully created.' }
+    end
+  end
+
   private
 
   def handle_smtp_exceptions(message)
