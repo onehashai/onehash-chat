@@ -105,6 +105,7 @@ import Banner from 'dashboard/components/ui/Banner.vue';
 
 // stores and apis
 import { mapGetters } from 'vuex';
+import AccountAPI from '../../../../../javascript/dashboard/api/account';
 
 // mixins
 import conversationMixin, {
@@ -157,6 +158,7 @@ export default {
       isPopoutReplyBox: false,
       messageSentSinceOpened: false,
       labelSuggestions: [],
+      ltdPlanName: null,
     };
   },
 
@@ -171,6 +173,7 @@ export default {
       appIntegrations: 'integrations/getAppIntegrations',
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
       currentAccountId: 'getCurrentAccountId',
+      getAccount: 'accounts/getAccount',
     }),
     isOpen() {
       return this.currentChat?.status === wootConstants.STATUS_TYPE.OPEN;
@@ -213,6 +216,12 @@ export default {
       const messages = this.currentChat.messages || [];
       if (this.isAWhatsAppChannel) {
         return filterDuplicateSourceMessages(messages);
+      }
+      if (this.ltdPlanName === null && this.planName === 'Starter') {
+        const cutoffTime = Date.now() - 90 * 24 * 60 * 60 * 1000;
+        return messages.filter(
+          message => message.created_at * 1000 >= cutoffTime
+        );
       }
       return messages;
     },
@@ -302,6 +311,21 @@ export default {
 
       return { incoming, outgoing };
     },
+    currentAccount() {
+      return this.getAccount(this.currentAccountId) || {};
+    },
+    customAttributes() {
+      return this.currentAccount.custom_attributes || {};
+    },
+    // ltdAttributes() {
+    //   return this.currentAccount.ltd_attributes || {};
+    // },
+    hasABillingPlan() {
+      return !!this.planName;
+    },
+    planName() {
+      return this.customAttributes.plan_name || '';
+    },
   },
 
   watch: {
@@ -330,6 +354,7 @@ export default {
     this.addScrollListener();
     this.fetchAllAttachmentsFromCurrentChat();
     this.fetchSuggestions();
+    this.fetchLtdDetails();
   },
 
   beforeDestroy() {
@@ -525,6 +550,15 @@ export default {
         }
         return false;
       });
+    },
+    async fetchLtdDetails() {
+      AccountAPI.getLtdDetails()
+        .then(response => {
+          this.ltdPlanName = response.data.data.plan_name;
+        })
+        .catch(error => {
+          this.showAlert(error.response.data.message);
+        });
     },
   },
 };

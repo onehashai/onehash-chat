@@ -112,6 +112,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isInboxView: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     ...mapGetters({
@@ -153,7 +157,7 @@ export default {
       if (snoozedUntil) {
         return `${this.$t(
           'CONVERSATION.HEADER.SNOOZED_UNTIL'
-        )} ${conversationReopenTime(snoozedUntil)}`;
+        )} ${snoozedReopenTime(snoozedUntil)}`;
       }
       return this.$t('CONVERSATION.HEADER.SNOOZED_UNTIL_NEXT_REPLY');
     },

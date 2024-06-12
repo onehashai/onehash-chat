@@ -104,9 +104,9 @@ export default {
     customAttributes() {
       return this.currentAccount.custom_attributes || {};
     },
-    ltdAttributes() {
-      return this.currentAccount.ltd_attributes || {};
-    },
+    // ltdAttributes() {
+    //   return this.currentAccount.ltd_attributes || {};
+    // },
     hasABillingPlan() {
       return !!this.planName;
     },
