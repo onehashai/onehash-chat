@@ -17,6 +17,7 @@ const state = {
     isCreatingSlack: false,
     isUpdatingSlack: false,
     isFetchingSlackChannels: false,
+    isFetchingViasocket: false,
   },
 };
 
@@ -141,6 +142,24 @@ export const actions = {
       commit(types.default.SET_INTEGRATIONS_UI_FLAG, { isDeletingHook: false });
       throw new Error(error);
     }
+  },
+  // viasocket
+  getViasocket: async ({ commit }) => {
+    commit(types.default.SET_INTEGRATIONS_UI_FLAG, {
+      isFetchingViasocket: true,
+    });
+    try {
+      const response = await IntegrationsAPI.getViasocketEmbedToken();
+      commit(types.default.SET_INTEGRATIONS_UI_FLAG, {
+        isFetchingViasocket: false,
+      });
+      return response.data;
+    } catch (error) {
+      commit(types.default.SET_INTEGRATIONS_UI_FLAG, {
+        isFetchingViasocket: false,
+      });
+    }
+    return null;
   },
 };
 

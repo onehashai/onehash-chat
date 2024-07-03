@@ -33,6 +33,11 @@
               integration-action="/dashboard-apps"
             />
           </div>
+          <div
+            class="bg-white dark:bg-slate-800 border border-solid border-slate-75 dark:border-slate-700/50 rounded-sm mb-4 p-4"
+          >
+            <viasocket-integration />
+          </div>
         </div>
       </div>
     </div>
@@ -41,10 +46,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import Integration from './Integration.vue';
+import ViasocketIntegration from './ViasocketIntegration.vue';
 
 export default {
   components: {
     Integration,
+    ViasocketIntegration,
   },
   computed: {
     ...mapGetters({

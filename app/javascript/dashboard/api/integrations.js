@@ -32,6 +32,10 @@ class IntegrationsAPI extends ApiClient {
   deleteHook(hookId) {
     return axios.delete(`${this.baseUrl()}/integrations/hooks/${hookId}`);
   }
+
+  getViasocketEmbedToken() {
+    return axios.get(`${this.baseUrl()}/integrations/viasocket/embed_token`);
+  }
 }
 
 export default new IntegrationsAPI();

@@ -231,6 +231,11 @@ Rails.application.routes.draw do
                 post :add_participant_to_meeting
               end
             end
+            resource :viasocket, controller: 'viasocket', only: [] do
+              collection do
+                get :embed_token
+              end
+            end
           end
           resources :working_hours, only: [:update]
 
