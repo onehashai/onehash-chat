@@ -33,8 +33,11 @@ class IntegrationsAPI extends ApiClient {
     return axios.delete(`${this.baseUrl()}/integrations/hooks/${hookId}`);
   }
 
-  getViasocketEmbedToken() {
-    return axios.get(`${this.baseUrl()}/integrations/viasocket/embed_token`);
+  getViasocketEmbedToken(data) {
+    return axios.post(
+      `${this.baseUrl()}/integrations/viasocket/embed_token`,
+      data
+    );
   }
 }
 

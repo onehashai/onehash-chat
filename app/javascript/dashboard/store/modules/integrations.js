@@ -144,12 +144,12 @@ export const actions = {
     }
   },
   // viasocket
-  getViasocket: async ({ commit }) => {
+  getViasocket: async ({ commit }, data) => {
     commit(types.default.SET_INTEGRATIONS_UI_FLAG, {
       isFetchingViasocket: true,
     });
     try {
-      const response = await IntegrationsAPI.getViasocketEmbedToken();
+      const response = await IntegrationsAPI.getViasocketEmbedToken(data);
       commit(types.default.SET_INTEGRATIONS_UI_FLAG, {
         isFetchingViasocket: false,
       });

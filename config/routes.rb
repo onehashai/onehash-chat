@@ -233,7 +233,7 @@ Rails.application.routes.draw do
             end
             resource :viasocket, controller: 'viasocket', only: [] do
               collection do
-                get :embed_token
+                post :embed_token
               end
             end
           end
@@ -259,7 +259,7 @@ Rails.application.routes.draw do
 
       namespace :keycloak do
         resources :logout, only: [:create]
-        resources :check_keycloak_session, only: [:create] 
+        resources :check_keycloak_session, only: [:create]
       end
 
       namespace :integrations do
@@ -435,7 +435,7 @@ Rails.application.routes.draw do
   post 'webhooks/whatsapp/:phone_number', to: 'webhooks/whatsapp#process_payload'
   get 'webhooks/instagram', to: 'webhooks/instagram#verify'
   post 'webhooks/instagram', to: 'webhooks/instagram#events'
-  #OneHash Stripe Billing Route
+  # OneHash Stripe Billing Route
   post 'webhooks/stripe', to: 'webhooks/stripe#process_payload'
 
   namespace :twitter do

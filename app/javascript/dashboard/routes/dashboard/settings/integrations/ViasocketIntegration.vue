@@ -1,7 +1,7 @@
 <template>
   <div
     id="viasocket"
-    class="flex flex-col md:flex-row justify-start items-start md:items-center"
+    class="flex flex-col md:flex-row justify-start items-start md:items-center h-screen"
   />
 </template>
 <script>
@@ -26,15 +26,21 @@ export default {
   },
   methods: {
     async fetchViasocket() {
+      const data = { access_token: this.currentUser.access_token };
       try {
-        const res = await this.$store.dispatch('integrations/getViasocket');
+        const res = await this.$store.dispatch(
+          'integrations/getViasocket',
+          data
+        );
         const embedToken = res.token;
+        const serviceData = res.service_data;
         if (embedToken) {
           const script = document.createElement('script');
           script.id = 'viasocket-embed-main-script';
           script.setAttribute('embedToken', embedToken);
           script.src = 'https://embed.viasocket.com/prod-embedcomponent.js';
           script.setAttribute('parentId', 'viasocket');
+          script.setAttribute('serviceData', serviceData);
           document.body.appendChild(script);
         }
       } catch (error) {
@@ -44,6 +50,7 @@ export default {
     handleMessage(event) {
       if (event.origin === 'https://flow.viasocket.com') {
         const receivedData = event.data;
+        // eslint-disable-next-line no-console
         console.log('Received data:', receivedData);
       }
     },
