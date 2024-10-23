@@ -58,10 +58,26 @@ class WidgetsController < ActionController::Base
   def ensure_location_is_supported; end
 
   def additional_attributes
-    if @web_widget.inbox.account.feature_enabled?('ip_lookup')
-      { created_at_ip: request.remote_ip }
+    return {} unless @web_widget.inbox.account.feature_enabled?('ip_lookup')
+
+    ip_address = request.remote_ip
+    geo_data = lookup_geo_data(ip_address)
+    build_attributes(ip_address, geo_data)
+  end
+
+  def lookup_geo_data(ip_address)
+    Geocoder.search(ip_address).first
+  end
+
+  def build_attributes(ip_address, geo_data)
+    if geo_data
+      {
+        created_at_ip: ip_address,
+        city: geo_data.city || 'Unknown City',
+        country_code: geo_data.country_code || 'Unknown Country'
+      }
     else
-      {}
+      { created_at_ip: ip_address }
     end
   end
 
