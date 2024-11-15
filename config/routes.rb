@@ -8,6 +8,9 @@ Rails.application.routes.draw do
     omniauth_callbacks: 'devise_overrides/omniauth_callbacks'
   }, via: [:get, :post]
 
+  # Custom route for OneHash Chat mobile authentication
+  post 'mobile_auth', to: 'onehash_chat_android_app#authenticate'
+
   ## renders the frontend paths only if its not an api only server
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('CW_API_ONLY_SERVER', false))
     root to: 'api#index'
@@ -19,7 +22,8 @@ Rails.application.routes.draw do
     get '/app/accounts/:account_id/settings/inboxes/new/twitter', to: 'dashboard#index', as: 'app_new_twitter_inbox'
     get '/app/accounts/:account_id/settings/inboxes/new/microsoft', to: 'dashboard#index', as: 'app_new_microsoft_inbox'
     get '/app/accounts/:account_id/settings/inboxes/new/:inbox_id/agents', to: 'dashboard#index', as: 'app_twitter_inbox_agents'
-    get '/app/accounts/:account_id/settings/inboxes/new/:inbox_id/agents', to: 'dashboard#index', as: 'app_microsoft_inbox_agents'
+    get '/app/accounts/:account_id/settings/inboxes/new/:inbox_id/agents', to: 'dashboard#index', as: 'app_email_inbox_agents'
+    get '/app/accounts/:account_id/settings/inboxes/:inbox_id', to: 'dashboard#index', as: 'app_email_inbox_settings'
 
     resource :widget, only: [:show]
     namespace :survey do
@@ -37,13 +41,9 @@ Rails.application.routes.draw do
         member do
           post :update_active_at
           get :cache_keys
-          # ltd
           post :get_ltd
-          # ltd details
           get :get_ltd_details
-          # update subuscription
           post :stripe_checkout
-          # make account subscription
           post :stripe_subscription
         end
 
@@ -114,6 +114,8 @@ Rails.application.routes.draw do
               post :unread
               post :custom_attributes
               get :attachments
+              post :disable_chatbot
+              post :enable_chatbot
             end
           end
 
@@ -212,9 +214,18 @@ Rails.application.routes.draw do
             resource :authorization, only: [:create]
           end
 
+          namespace :google do
+            resource :authorization, only: [:create]
+          end
+
           resources :webhooks, only: [:index, :create, :update, :destroy]
           namespace :integrations do
             resources :apps, only: [:index, :show]
+            resource :captain, controller: 'captain', only: [] do
+              collection do
+                get :sso_url
+              end
+            end
             resources :hooks, only: [:show, :create, :update, :destroy] do
               member do
                 post :process_event
@@ -236,6 +247,18 @@ Rails.application.routes.draw do
                 post :embed_token
               end
             end
+            resource :linear, controller: 'linear', only: [] do
+              collection do
+                get :teams
+                get :team_entities
+                post :create_issue
+                post :link_issue
+                post :unlink_issue
+                get :search_issue
+                get :linked_issues
+              end
+            end
+            resource :onehash_cal, only: [:create, :destroy], controller: 'onehash_cal'
           end
           resources :working_hours, only: [:update]
 
@@ -252,6 +275,19 @@ Rails.application.routes.draw do
           end
 
           resources :upload, only: [:create]
+
+          resources :chatbots, only: [:index, :show, :update] do
+            collection do
+              post :fetch_links
+              get :check_crawling_status
+              post :create_chatbot
+              delete :destroy_chatbot
+              post :retrain_chatbot
+              get :saved_data
+              post :process_pdf
+              delete :destroy_attachment
+            end
+          end
         end
       end
       # end of account scoped api routes
@@ -260,6 +296,7 @@ Rails.application.routes.draw do
       namespace :keycloak do
         resources :logout, only: [:create]
         resources :check_keycloak_session, only: [:create]
+        resources :create_redirect_url, only: [:create]
       end
 
       namespace :integrations do
@@ -306,6 +343,11 @@ Rails.application.routes.draw do
             collection do
               post :add_participant_to_meeting
             end
+          end
+        end
+        resource :chatbots, only: [] do
+          collection do
+            post :connect_with_team
           end
         end
       end
@@ -448,6 +490,7 @@ Rails.application.routes.draw do
   end
 
   get 'microsoft/callback', to: 'microsoft/callbacks#show'
+  get 'google/callback', to: 'google/callbacks#show'
 
   # ----------------------------------------------------------------------
   # Routes for external service verifications
@@ -517,4 +560,29 @@ Rails.application.routes.draw do
   # ----------------------------------------------------------------------
   # Routes for testing
   resources :widget_tests, only: [:index] unless Rails.env.production?
+
+  # ----------------------------------------------------------------------
+  # Routes for Chatbot
+  post 'chatbots/callback/update_status', to: 'chatbots/callbacks#update_status'
+  post 'chatbots/callback/query_reply', to: 'chatbots/callbacks#query_reply'
+  post 'chatbots/callback/links_crawled', to: 'chatbots/callbacks#links_crawled'
+
+  # Routes for OneHash Cross App Integration
+  namespace :onehash do
+    namespace :api do
+      resources :accounts, only: [:index]
+      resources :contacts, only: [:create, :index]
+      resources :users, only: [:index, :update, :destroy]
+    end
+  end
+
+  get 'api/oh/integrations/accounts', to: 'onehash/api/accounts#index'
+  get 'api/oh/integrations/contacts', to: 'onehash/api/contacts#index'
+  post 'api/oh/integrations/contacts', to: 'onehash/api/contacts#create'
+  patch 'api/oh/integrations/cal_event', to: 'onehash/api/cal_event#update'
+  get 'api/oh/integrations/cal_event', to: 'onehash/api/cal_event#index'
+  delete 'api/oh/integrations/cal_event', to: 'onehash/api/cal_event#destroy'
+
+  post 'api/send_cal_event/', to: 'onehash/send_cal_event#send_event_handler'
+  post 'api/send_cal_event_confirmation/', to: 'onehash/send_cal_event_confirmation#send_confirmation_handler'
 end

@@ -1,6 +1,6 @@
 class ConversationReplyMailer < ApplicationMailer
   include ConversationReplyMailerHelper
-  default from: ENV.fetch('MAILER_SENDER_EMAIL', 'Chatwoot <accounts@chatwoot.com>')
+  default from: ENV.fetch('MAILER_SENDER_EMAIL', 'OneHash <alerts@reply.chat.onehash.ai>')
   layout :choose_layout
 
   def reply_with_summary(conversation, last_queued_id)
@@ -194,9 +194,8 @@ class ConversationReplyMailer < ApplicationMailer
   end
 
   def choose_layout
-    if action_name == 'reply_without_summary' || action_name == 'email_reply'
-      return 'mailer/email_reply'
-    end
-    return 'mailer/base'
+    return 'mailer/email_reply' if action_name == 'reply_without_summary' || action_name == 'email_reply'
+
+    'mailer/base'
   end
 end

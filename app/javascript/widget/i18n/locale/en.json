@@ -70,7 +70,8 @@
         "REQUIRED_ERROR": "Phone Number is required",
         "DIAL_CODE_VALID_ERROR": "Please select a country code",
         "VALID_ERROR": "Please enter a valid phone number",
-        "DROPDOWN_EMPTY": "No results found"
+        "DROPDOWN_EMPTY": "No results found",
+        "DROPDOWN_SEARCH": "Search country"
       },
       "MESSAGE": {
         "LABEL": "Message",
@@ -90,7 +91,8 @@
   },
   "EMOJI": {
     "PLACEHOLDER": "Search emojis",
-    "NOT_FOUND": "No emoji match your search"
+    "NOT_FOUND": "No emoji match your search",
+    "ARIA_LABEL": "Emoji picker"
   },
   "CSAT": {
     "TITLE": "Rate your conversation",
@@ -104,7 +106,7 @@
   },
   "INTEGRATIONS": {
     "DYTE": {
-      "CLICK_HERE_TO_JOIN": "Click here to join",
+      "CLICK_HERE_TO_JOIN": " Connect",
       "LEAVE_THE_ROOM": "Leave the call"
     }
   },
@@ -132,5 +134,9 @@
     "fallback": {
       "CONTENT": "has shared a url"
     }
-  }
+  },
+  "FOOTER_REPLY_TO": {
+    "REPLY_TO": "Replying to:"
+  },
+  "CAL_EVENT_CONFIRMATION_RESPONSE": "<br/>Meeting with <strong>%{organizer}</strong> is scheduled at <strong>%{time}</strong> on <strong>%{date}</strong> in <strong>%{timezone}</strong>."
 }

@@ -38,7 +38,8 @@ class Attachment < ApplicationRecord
   has_one_attached :file
   validate :acceptable_file
   validates :external_url, length: { maximum: Limits::URL_LENGTH_LIMIT }
-  enum file_type: [:image, :audio, :video, :file, :location, :fallback, :share, :story_mention, :contact]
+  enum file_type: { :image => 0, :audio => 1, :video => 2, :file => 3, :location => 4, :fallback => 5, :share => 6, :story_mention => 7,
+                    :contact => 8, :ig_reel => 9 }
 
   def push_event_data
     return unless file_type
@@ -80,7 +81,7 @@ class Attachment < ApplicationRecord
       height: file.metadata[:height]
     }
 
-    metadata[:data_url] = metadata[:thumb_url] = external_url if message.inbox.instagram?
+    metadata[:data_url] = metadata[:thumb_url] = external_url if message.inbox.instagram? && message.incoming?
     metadata
   end
 

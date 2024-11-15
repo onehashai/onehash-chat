@@ -1,4 +1,5 @@
 class DefaultMailbox < ApplicationMailbox
+  include IncomingEmailValidityHelper
   attr_accessor :channel, :account, :inbox, :conversation, :processed_mail
 
   before_processing :find_channel,
@@ -8,16 +9,8 @@ class DefaultMailbox < ApplicationMailbox
   def process
     Rails.logger.info "Processing email #{mail.message_id} from #{original_sender_email} to #{mail.to} with subject #{mail.subject}"
 
-    # to turn off spam conversation creation
-    return unless @account.active?
-    # prevent loop from chatwoot notification emails
-    return if notification_email_from_chatwoot?
-
-    # return if email doesn't have a valid sender
-    # This can happen in cases like bounce emails for invalid contact email address
-    # TODO: Handle the bounce seperately and mark the contact as invalid
-    # we are checking for @ since the returned value could be "\"\"" for some email clients
-    return unless original_sender_email.include?('@')
+    # Skip processing email if it belongs to any of the edge cases
+    return unless incoming_email_from_valid_email?
 
     ActiveRecord::Base.transaction do
       find_or_create_contact
@@ -32,17 +25,18 @@ class DefaultMailbox < ApplicationMailbox
   def find_channel
     find_channel_with_forward_to_mail if @channel.blank?
 
-    raise 'Email channel/inbox not found' if @channel.nil?
+    raise 'Email channel/inbox not found in default mailbox' if @channel.nil?
+
     @channel
   end
 
   def find_channel_with_forward_to_mail
-    Rails.logger.info  "Mail-Header: #{mail.header}"
+    Rails.logger.info "Mail-Header: #{mail.header}"
     email_header = mail.header.to_s
     forward_to_email = email_header.match(/for <([^>]+)>/)[1]
     Rails.logger.info  "Forward-To Email: #{forward_to_email}"
 
-    @channel = Channel::Email.find_by('lower(forward_to_email) = ?',forward_to_email)
+    @channel = Channel::Email.find_by('lower(forward_to_email) = ?', forward_to_email)
   end
 
   def load_account

@@ -92,7 +92,10 @@ class Message < ApplicationRecord
     incoming_email: 8,
     input_csat: 9,
     integrations: 10,
-    sticker: 11
+    sticker: 11,
+    input_connect_with_team: 12,
+    cal_event: 13,
+    cal_event_confirmation: 14
   }
   enum status: { sent: 0, delivered: 1, read: 2, failed: 3 }
   # [:submitted_email, :items, :submitted_values] : Used for bot message types
@@ -120,7 +123,7 @@ class Message < ApplicationRecord
   belongs_to :account
   belongs_to :inbox
   belongs_to :conversation, touch: true
-  belongs_to :sender, polymorphic: true, required: false
+  belongs_to :sender, polymorphic: true, optional: true
 
   has_many :attachments, dependent: :destroy, autosave: true, before_add: :validate_attachments_limit
   has_one :csat_survey_response, dependent: :destroy_async
