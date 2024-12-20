@@ -62,7 +62,8 @@ export default {
         : [];
     },
     inboxes() {
-      return this.$store.getters['inboxes/getInboxes'];
+      const allInboxes = this.$store.getters['inboxes/getInboxes'];
+      return allInboxes.filter(inbox => inbox.provider === 'whatsapp_cloud');
     },
     isStep1Valid() {
       return (
