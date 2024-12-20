@@ -61,31 +61,30 @@ class Api::V1::Accounts::CampaignsController < Api::V1::Accounts::BaseController
     }, status: :unprocessable_entity
   end
 
-  # In campaigns_controller.rb
-def fetchCampaignContacts
-  processed_contacts = @campaign.processed_contacts.map do |contact|
-    {
-      id: contact.id,
-      name: contact.name,
-      phone_number: contact.phone_number,
-      processed_at: contact.campaign_contacts.find_by(campaign: @campaign)&.processed_at
+  def fetchCampaignContacts
+    processed_contacts = @campaign.processed_contacts.map do |contact|
+      {
+        id: contact.id,
+        name: contact.name,
+        phone_number: contact.phone_number,
+        processed_at: contact.campaign_contacts.find_by(campaign: @campaign)&.processed_at
+      }
+    end
+
+    failed_contacts = @campaign.failed_contacts.map do |contact|
+      {
+        id: contact.id,
+        name: contact.name,
+        phone_number: contact.phone_number,
+        error_message: contact.campaign_contacts.find_by(campaign: @campaign)&.error_message
+      }
+    end
+
+    render json: {
+      processed_contacts: processed_contacts,
+      failed_contacts: failed_contacts
     }
   end
-
-  failed_contacts = @campaign.failed_contacts.map do |contact|
-    {
-      id: contact.id,
-      name: contact.name,
-      phone_number: contact.phone_number,
-      error_message: contact.campaign_contacts.find_by(campaign: @campaign)&.error_message
-    }
-  end
-
-  render json: {
-    processed_contacts: processed_contacts,
-    failed_contacts: failed_contacts
-  }
-end
 
   def update
     if @campaign.update(campaign_params)
