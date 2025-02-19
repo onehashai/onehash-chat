@@ -43,7 +43,6 @@ export default {
     } else {
       this.localItems = this.items;
     }
-    console.log('Items after assignment:', this.localItems); // Debug log
   },
   computed: {
     classObject() {
@@ -53,7 +52,6 @@ export default {
       if (!Array.isArray(this.localItems)) {
         return -1;
       }
-      console.log('Items in activeIndex:', this.localItems); // Debug log
       return this.localItems.findIndex(i => i.route === this.$route.name);
     },
   },
@@ -66,7 +64,6 @@ export default {
     },
   },
   mounted() {
-    console.log('Mounted items:', this.localItems); // Log the value of items when the component is mounted
   },
 };
 </script>
