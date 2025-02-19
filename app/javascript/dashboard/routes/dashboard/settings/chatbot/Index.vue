@@ -81,89 +81,39 @@ const confirmDeletion = () => {
     <template #body>
       <table class="min-w-full divide-y divide-slate-75 dark:divide-slate-700">
         <thead>
-          <th
-            v-for="thHeader in $t('CHATBOTS.LIST.TABLE_HEADER')"
-            :key="thHeader"
-            class="py-4 ltr:pr-4 rtl:pl-4 text-left font-semibold text-slate-700 dark:text-slate-300"
-          >
-            {{ thHeader }}
-          </th>
+          <tr>
+            <th class="py-4  text-left">{{ $t('CHATBOTS.NAME') }}</th>
+            <th class="py-4  text-center">{{ $t('CHATBOTS.STATUS') }}</th>
+            <th class="py-4  text-center">{{ $t('CHATBOTS.LAST_TRAINED_AT') }}</th>
+            <th class="py-4  text-center">{{ $t('CHATBOTS.ACTIONS') }}</th>
+          </tr>
         </thead>
-        <tbody
-          class="divide-y divide-slate-50 dark:divide-slate-800 text-slate-700 dark:text-slate-300"
-        >
+        <tbody>
           <ChatbotTableRow
-            v-for="(chatbot, index) in records"
-            :key="index"
+            v-for="chatbot in records"
+            :key="chatbot.id"
             :chatbot="chatbot"
             @delete="openDeletePopup(chatbot)"
           />
         </tbody>
       </table>
       <woot-delete-modal
-        :show.sync="showDeleteConfirmationPopup"
-        :on-close="closeDeletePopup"
-        :on-confirm="confirmDeletion"
-        :title="$t('LABEL_MGMT.DELETE.CONFIRM.TITLE')"
-        :message="$t('CHATBOTS.DELETE.CONFIRM.MESSAGE')"
-        :message-value="deleteMessage"
-        :confirm-text="$t('CHATBOTS.DELETE.CONFIRM.YES')"
-        :reject-text="$t('CHATBOTS.DELETE.CONFIRM.NO')"
-      />
-      <!-- <table -->
-      <!-- v-else
-        class="min-w-full divide-y divide-slate-75 dark:divide-slate-700"
-      >
-        <tbody class="divide-y divide-slate-50 dark:divide-slate-800">
-          <tr v-for="chatbot in records" :key="chatbot.id">
-            <td class="py-4 pr-4">
-              <span class="block font-medium capitalize">{{ team.name }}</span>
-              <p class="mb-0">{{ team.description }}</p>
-            </td>
-          </tr> -->
-
-      <!-- <div class="w-full lg:w-3/5">
-        <div v-if="!records.length" class="p-3">
-          <p class="flex h-full items-center flex-col justify-center">
-            {{ $t('CHATBOTS.LIST.404') }}
-          </p>
-        </div>
-        <table v-if="records.length" class="woot-table">
-          <thead>
-            <th
-              v-for="thHeader in $t('CHATBOTS.LIST.TABLE_HEADER')"
-              :key="thHeader"
-            >
-              {{ thHeader }}
-            </th>
-          </thead>
-          <tbody>
-            <ChatbotTableRow
-              v-for="(chatbot, index) in records"
-              :key="index"
-              :chatbot="chatbot"
-              @delete="openDeletePopup(chatbot, index)"
-            />
-          </tbody>
-        </table>
-      </div>
-      <div class="hidden lg:block w-1/3">
-        <span v-dompurify-html="$t('CHATBOTS.SIDEBAR_TXT')" />
-      </div> -->
-      <!-- </div> -->
-      <!-- <woot-confirm-delete-modal
-      v-if="showDeletePopup"
-      :show.sync="showDeletePopup"
-      :title="confirmDeleteTitle"
+      :show.sync="showDeleteConfirmationPopup"
+      :on-close="closeDeletePopup"
+      :on-confirm="confirmDeletion"
+      :title="$t('LABEL_MGMT.DELETE.CONFIRM.TITLE')"
+      :reject-text="$t('CHATBOTS.DELETE.CONFIRM.NO')"
       :message="$t('CHATBOTS.DELETE.CONFIRM.MESSAGE')"
-      :confirm-text="deleteConfirmText"
-      :reject-text="deleteRejectText"
-      :confirm-value="selectedChatbot.name"
-      :confirm-place-holder-text="confirmPlaceHolderText"
-      @onConfirm="confirmDeletion"
-      @onClose="closeDelete"
-    />
-  </div> -->
+      :message-value="deleteMessage"
+      :confirm-text="$t('CHATBOTS.DELETE.CONFIRM.YES')"
+      :show="showDeleteConfirmationPopup"
+        @confirm="confirmDeletion"
+        @close="closeDeletePopup"
+      >
+        <template #message>
+          {{ $t('CHATBOTS.DELETE.CONFIRM.MESSAGE', { name: selectedChatbot.name }) }}
+        </template>
+      </woot-delete-modal>
     </template>
   </SettingsLayout>
 </template>

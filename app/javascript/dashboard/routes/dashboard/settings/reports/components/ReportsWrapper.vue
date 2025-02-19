@@ -23,7 +23,7 @@
       @apply bg-n-slate-1 border border-n-weak m-0 min-h-[2.875rem] pt-0;
 
       input[type='text'] {
-        @apply bg-n-alpha-3 border-n-weak !min-h-[2.375rem] !h-[2.375rem] !ps-0.5 !py-0 !text-sm;
+        @apply bg-n-alpha-3 border-n-weak min-h-[2.375rem] h-[2.375rem] ps-0.5 py-0 text-sm;
       }
     }
 
@@ -40,17 +40,17 @@
     }
 
     .multiselect__input {
-      @apply text-sm !h-[2.375rem] mb-0 !py-0;
+      @apply text-sm h-[2.375rem] mb-0 py-0;
     }
 
     .multiselect__tags,
     .multiselect__input,
     .multiselect {
-      @apply bg-n-alpha-3 !border-n-weak text-n-slate-12 rounded-lg text-sm min-h-[2.5rem];
+      @apply bg-n-alpha-3 border-n-weak text-n-slate-12 rounded-lg text-sm min-h-[2.5rem];
     }
 
     .mx-input-wrapper {
-      @apply bg-n-alpha-3 !border-n-weak text-n-slate-12 rounded-lg text-sm;
+      @apply bg-n-alpha-3 border-n-weak text-n-slate-12 rounded-lg text-sm;
 
       input {
         @apply border-n-weak text-sm;

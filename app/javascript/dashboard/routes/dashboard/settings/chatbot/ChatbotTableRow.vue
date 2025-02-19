@@ -17,13 +17,11 @@ const canEdit = computed(() => {
 </script>
 
 <template>
-  <tr>
-    <td class="py-4 ltr:pr-4 rtl:pl-4 truncate">{{ chatbot.name }}</td>
-    <td class="py-4 ltr:pr-4 rtl:pl-4 truncate">{{ chatbot.status }}</td>
-    <td class="py-4 ltr:pr-4 rtl:pl-4 truncate">
-      {{ chatbot.last_trained_at }}
-    </td>
-    <td class="py-4 flex justify-end gap-1">
+  <tr class="">
+    <td class="py-4 ltr:pr-4 pl-4">{{ chatbot.name }}</td>
+    <td class="py-4 ltr:pr-4 text-center">{{ chatbot.status }}</td>
+    <td class="py-4 ltr:pr-4 rtl:pl-4 text-center ">{{ chatbot.last_trained_at }}</td>
+    <td class="py-4 flex justify-center gap-1 ">
       <router-link
         :to="{ name: 'chatbots_setting', params: { chatbotId: chatbot.id } }"
       >
