@@ -36,6 +36,7 @@ export default {
   mounted() {
     this.$emitter.on(CMD_MUTE_CONVERSATION, this.mute);
     this.$emitter.on(CMD_UNMUTE_CONVERSATION, this.unmute);
+    // console.log("MOreActions current chat id: ",this.currentChat.id)
     this.$emitter.on(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
   },
   destroyed() {
@@ -45,6 +46,7 @@ export default {
   },
   methods: {
     mute() {
+      // console.log(this)
       this.$store.dispatch('muteConversation', this.currentChat.id);
       useAlert(this.$t('CONTACT_PANEL.MUTED_SUCCESS'));
     },

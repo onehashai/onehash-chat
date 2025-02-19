@@ -4,8 +4,30 @@
         "dompurify"
     ],
     "workbench.colorCustomizations": {
-        "activityBar.background": "#41233D",
-        "titleBar.activeBackground": "#5B3155",
-        "titleBar.activeForeground": "#FCF9FC"
-    }
+        "activityBar.background": "#000000",
+        "titleBar.activeBackground": "#00000000",
+        "titleBar.activeForeground": "#000000"
+    },
+    "terminal.integrated.cursorStyle": "line",
+    "editor.overtypeCursorStyle": "line"
 }
+
+
+
+
+<script>
+(function(d,t) {
+  var BASE_URL="http://localhost:3000";
+  var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+  g.src=BASE_URL+"/packs/js/sdk.js";
+  g.defer = true;
+  g.async = true;
+  s.parentNode.insertBefore(g,s);
+  g.onload=function(){
+    window.chatwootSDK.run({
+      websiteToken: 'o7fmFQye3SCKy6MEyYUxaJi2',
+      baseUrl: BASE_URL
+    })
+  }
+})(document,"script");
+</script>

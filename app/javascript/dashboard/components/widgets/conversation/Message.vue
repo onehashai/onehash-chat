@@ -321,6 +321,23 @@ export default {
     },
     isSentByBot() {
       if (this.isPending || this.isFailed) return false;
+      if (
+        this.data.content ===
+          "I understand that you need to talk to an agent! I'm connecting you to a human agent now. Please hold on for a moment." &&
+        !this.isIncoming &&
+        !this.isOutgoing
+      ) {
+        this.$store.dispatch('disableChatbot', this.data.conversation_id);
+      }
+      if (
+        this.data.content.includes(
+          'Thank you for your inquiry! Someone from our team will respond to you shortly.'
+        ) &&
+        !this.isIncoming &&
+        !this.isOutgoing
+      ) {
+        this.$store.dispatch('disableChatbot', this.data.conversation_id);
+      }
       return !this.sender.type || this.sender.type === 'agent_bot';
     },
     shouldShowContextMenu() {
