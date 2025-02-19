@@ -82,10 +82,10 @@ const confirmDeletion = () => {
       <table class="min-w-full divide-y divide-slate-75 dark:divide-slate-700">
         <thead>
           <tr>
-            <th class="py-4  text-left">{{ $t('CHATBOTS.NAME') }}</th>
-            <th class="py-4  text-center">{{ $t('CHATBOTS.STATUS') }}</th>
-            <th class="py-4  text-center">{{ $t('CHATBOTS.LAST_TRAINED_AT') }}</th>
-            <th class="py-4  text-center">{{ $t('CHATBOTS.ACTIONS') }}</th>
+            <th class="py-4  text-left">{{ $t('CHATBOTS.LIST.TABLE_HEADER[0]') }}</th>
+            <th class="py-4  text-center">{{ $t('CHATBOTS.LIST.TABLE_HEADER[1]') }}</th>
+            <th class="py-4  text-center">{{ $t('CHATBOTS.LIST.TABLE_HEADER[2]') }}</th>
+            <th class="py-4  text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
