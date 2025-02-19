@@ -1,41 +1,72 @@
 <script>
 /* eslint no-console: 0 */
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
-import chatbots from 'dashboard/i18n/locale/en/chatbots.json';
 
 export default {
   mixins: [globalConfigMixin],
+  props: {
+    items: {
+      type: [Array, String],
+      default: () => [
+        {
+          "title": "Upload Files",
+          "route": "chatbots_new",
+          "body": "Upload files and urls"
+        },
+        {
+          "title": "Connect Inbox",
+          "route": "chatbots_connect_inbox",
+          "body": "Connect to website widget inbox."
+        }
+      ],
+    },
+  },
   data() {
     return {
-      items: [],
+      localItems: [],
     };
   },
   created() {
-    if (chatbots.CHATBOTS.CREATE_FLOW && Array.isArray(chatbots.CHATBOTS.CREATE_FLOW.WIZARD)) {
-      this.items = chatbots.CHATBOTS.CREATE_FLOW.WIZARD;
+    if (this.items === 'CHATBOTS.CREATE_FLOW.WIZARD') {
+      this.localItems = [
+        {
+          "title": this.$t('CHATBOTS.CREATE_FLOW.WIZARD[0].title'),
+          "route": "chatbots_new",
+          "body": this.$t('CHATBOTS.CREATE_FLOW.WIZARD[0].body')
+        },
+        {
+          "title": this.$t('CHATBOTS.CREATE_FLOW.WIZARD[1].title'),
+          "route": "chatbots_connect_inbox",
+          "body": this.$t('CHATBOTS.CREATE_FLOW.WIZARD[1].body')
+        }
+      ];
+    } else {
+      this.localItems = this.items;
     }
+    console.log('Items after assignment:', this.localItems); // Debug log
   },
   computed: {
     classObject() {
       return 'w-full';
     },
     activeIndex() {
-      if (!Array.isArray(this.items)) {
+      if (!Array.isArray(this.localItems)) {
         return -1;
       }
-      return this.items.findIndex(i => i.route === this.$route.name);
+      console.log('Items in activeIndex:', this.localItems); // Debug log
+      return this.localItems.findIndex(i => i.route === this.$route.name);
     },
   },
   methods: {
     isActive(item) {
-      return this.items.indexOf(item) === this.activeIndex;
+      return this.localItems.indexOf(item) === this.activeIndex;
     },
     isOver(item) {
-      return this.items.indexOf(item) < this.activeIndex;
+      return this.localItems.indexOf(item) < this.activeIndex;
     },
   },
   mounted() {
-    // console.log('Mounted items:', this.items); //log
+    console.log('Mounted items:', this.localItems); // Log the value of items when the component is mounted
   },
 };
 </script>
@@ -48,7 +79,7 @@ export default {
     :class="classObject"
   >
     <div
-      v-for="item in items"
+      v-for="item in localItems"
       :key="item.route"
       class="item"
       :class="{ active: isActive(item), over: isOver(item) }"
@@ -67,7 +98,7 @@ export default {
         </span>
       </div>
       <span class="step">
-        {{ items.indexOf(item) + 1 }}
+        {{ localItems.indexOf(item) + 1 }}
       </span>
       <p class="pl-6 m-0 text-sm text-slate-600 dark:text-slate-300">
         {{ item.body }}
