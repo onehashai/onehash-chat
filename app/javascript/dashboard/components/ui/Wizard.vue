@@ -1,20 +1,28 @@
 <script>
 /* eslint no-console: 0 */
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
+import chatbots from 'dashboard/i18n/locale/en/chatbots.json';
 
 export default {
   mixins: [globalConfigMixin],
-  props: {
-    items: {
-      type: Array,
-      default: () => [],
-    },
+  data() {
+    return {
+      items: [],
+    };
+  },
+  created() {
+    if (chatbots.CHATBOTS.CREATE_FLOW && Array.isArray(chatbots.CHATBOTS.CREATE_FLOW.WIZARD)) {
+      this.items = chatbots.CHATBOTS.CREATE_FLOW.WIZARD;
+    }
   },
   computed: {
     classObject() {
       return 'w-full';
     },
     activeIndex() {
+      if (!Array.isArray(this.items)) {
+        return -1;
+      }
       return this.items.findIndex(i => i.route === this.$route.name);
     },
   },
@@ -25,6 +33,9 @@ export default {
     isOver(item) {
       return this.items.indexOf(item) < this.activeIndex;
     },
+  },
+  mounted() {
+    // console.log('Mounted items:', this.items); //log
   },
 };
 </script>
