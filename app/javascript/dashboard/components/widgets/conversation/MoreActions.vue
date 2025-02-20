@@ -47,27 +47,29 @@ export default {
     emitter.off(CMD_UNMUTE_CONVERSATION, this.unmute);
     emitter.off(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
   },
-  methods: {
-    mute() {
-      this.$store.dispatch('muteConversation', this.currentChat.id);
-      useAlert(this.$t('CONTACT_PANEL.MUTED_SUCCESS'));
-    },
-    unmute() {
-      this.$store.dispatch('unmuteConversation', this.currentChat.id);
-      useAlert(this.$t('CONTACT_PANEL.UNMUTED_SUCCESS'));
-    },
-    toggleEmailActionsModal() {
-      this.showEmailActionsModal = !this.showEmailActionsModal;
-    },
-    disableBot() {
-      this.$store.dispatch('disableChatbot', this.currentChat.id);
-      useAlert(this.$t('CHATBOTS.DISABLED_SUCCESS'));
-    },
-    enableBot() {
-      this.$store.dispatch('enableChatbot', this.currentChat.id);
-      useAlert(this.$t('CHATBOTS.ENABLED_SUCCESS'));
-    },
+ methods: {
+  async mute() {
+    await this.$store.dispatch('muteConversation', this.currentChat.id);
+    this.currentChat.muted = true; // Manually update UI state
+    useAlert(this.$t('CONTACT_PANEL.MUTED_SUCCESS'));
   },
+  async unmute() {
+    await this.$store.dispatch('unmuteConversation', this.currentChat.id);
+    this.currentChat.muted = false; // Manually update UI state
+    useAlert(this.$t('CONTACT_PANEL.UNMUTED_SUCCESS'));
+  },
+  async disableBot() {
+    await this.$store.dispatch('disableChatbot', this.currentChat.id);
+    this.currentChat.chatbot_attributes.status = 'Disabled'; // Ensure UI updates
+    useAlert(this.$t('CHATBOTS.DISABLED_SUCCESS'));
+  },
+  async enableBot() {
+    await this.$store.dispatch('enableChatbot', this.currentChat.id);
+    this.currentChat.chatbot_attributes.status = 'Enabled'; // Ensure UI updates
+    useAlert(this.$t('CHATBOTS.ENABLED_SUCCESS'));
+  },
+}
+
 };
 </script>
 
@@ -77,17 +79,17 @@ export default {
       <ButtonV4
         v-if="isChatbotEnabled"
         v-tooltip.left="$t('CHATBOTS.DISABLE_BOT')"
-        variant="smooth"
-        color-scheme="primary"
-        icon="chatbot-icon"
+        variant="faded"
+        color="blue"
+        icon="i-ph-magic-wand"
         @click="disableBot"
       />
       <ButtonV4
         v-else
         v-tooltip.left="$t('CHATBOTS.ENABLE_BOT')"
-        variant="smooth"
-        color-scheme="alert"
-        icon="chatbot-icon"
+        variant="faded"
+        color="ruby"
+        icon="i-ph-magic-wand"
         @click="enableBot"
       />
     </div>
