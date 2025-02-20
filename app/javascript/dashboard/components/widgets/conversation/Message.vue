@@ -285,8 +285,8 @@ export default {
         messageType === MESSAGE_TYPE.TEMPLATE;
       return showTooltip
         ? {
-            content: `${this.$t('CONVERSATION.SENT_BY')} ${name}`,
-          }
+          content: `${this.$t('CONVERSATION.SENT_BY')} ${name}`,
+        }
         : false;
     },
     errorMessageTooltip() {
@@ -328,6 +328,21 @@ export default {
     },
     isSentByBot() {
       if (this.isPending || this.isFailed) return false;
+      if (
+        this.data.content ===
+        "I understand that you need to talk to an agent! I'm connecting you to a human agent now. Please hold on for a moment." &&
+        !this.isIncoming &&
+        !this.isOutgoing
+      ) {
+        this.$store.dispatch('disableChatbot', this.data.conversation_id);
+      }
+      if (
+        this.data.content.includes('Thank you for your inquiry! Someone from our team will respond to you shortly.') &&
+        !this.isIncoming &&
+        !this.isOutgoing
+      ) {
+        this.$store.dispatch('disableChatbot', this.data.conversation_id);
+      }
       return !this.sender.type || this.sender.type === 'agent_bot';
     },
     shouldShowContextMenu() {
@@ -447,40 +462,18 @@ export default {
 
 <!-- eslint-disable-next-line vue/no-root-v-if -->
 <template>
-  <li
-    v-if="shouldRenderMessage"
-    :id="`message${data.id}`"
-    class="group/context-menu"
-    :class="[alignBubble]"
-  >
+  <li v-if="shouldRenderMessage" :id="`message${data.id}`" class="group/context-menu" :class="[alignBubble]">
     <div :class="wrapClass">
-      <div
-        v-if="isFailed && !hasOneDayPassed && !isAnEmailInbox"
-        class="message-failed--alert"
-      >
-        <woot-button
-          v-tooltip.top-end="$t('CONVERSATION.TRY_AGAIN')"
-          size="tiny"
-          color-scheme="alert"
-          variant="clear"
-          icon="arrow-clockwise"
-          @click="retrySendMessage"
-        />
+      <div v-if="isFailed && !hasOneDayPassed && !isAnEmailInbox" class="message-failed--alert">
+        <woot-button v-tooltip.top-end="$t('CONVERSATION.TRY_AGAIN')" size="tiny" color-scheme="alert" variant="clear"
+          icon="arrow-clockwise" @click="retrySendMessage" />
       </div>
       <div :class="bubbleClass" @contextmenu="openContextMenu($event)">
-        <BubbleMailHead
-          :email-attributes="contentAttributes.email"
-          :cc="emailHeadAttributes.cc"
-          :bcc="emailHeadAttributes.bcc"
-          :is-incoming="isIncoming"
-        />
+        <BubbleMailHead :email-attributes="contentAttributes.email" :cc="emailHeadAttributes.cc"
+          :bcc="emailHeadAttributes.bcc" :is-incoming="isIncoming" />
         <InstagramStoryReply v-if="storyUrl" :story-url="storyUrl" />
-        <BubbleReplyTo
-          v-if="inReplyToMessageId && inboxSupportsReplyTo.incoming"
-          :message="inReplyTo"
-          :message-type="data.message_type"
-          :parent-has-attachments="hasAttachments"
-        />
+        <BubbleReplyTo v-if="inReplyToMessageId && inboxSupportsReplyTo.incoming" :message="inReplyTo"
+          :message-type="data.message_type" :parent-has-attachments="hasAttachments" />
         <div v-if="isUnsupported">
           <template v-if="isAFacebookInbox && isInstagram">
             {{ $t('CONVERSATION.UNSUPPORTED_MESSAGE_INSTAGRAM') }}
@@ -492,106 +485,50 @@ export default {
             {{ $t('CONVERSATION.UNSUPPORTED_MESSAGE') }}
           </template>
         </div>
-        <BubbleText
-          v-else-if="data.content"
-          :message="message"
-          :is-email="isEmailContentType"
-          :display-quoted-button="displayQuotedButton"
-        />
-        <BubbleIntegration
-          :message-id="data.id"
-          :content-attributes="contentAttributes"
-          :inbox-id="data.inbox_id"
-        />
-        <span
-          v-if="isPending && hasAttachments"
-          class="chat-bubble has-attachment agent"
-        >
+        <BubbleText v-else-if="data.content" :message="message" :is-email="isEmailContentType"
+          :display-quoted-button="displayQuotedButton" />
+        <BubbleIntegration :message-id="data.id" :content-attributes="contentAttributes" :inbox-id="data.inbox_id" />
+        <span v-if="isPending && hasAttachments" class="chat-bubble has-attachment agent">
           {{ $t('CONVERSATION.UPLOADING_ATTACHMENTS') }}
         </span>
         <div v-if="!isPending && hasAttachments">
           <div v-for="attachment in attachments" :key="attachment.id">
-            <InstagramStory
-              v-if="isAnInstagramStory"
-              :story-url="attachment.data_url"
-              @error="onMediaLoadError"
-            />
-            <BubbleImageAudioVideo
-              v-else-if="isAttachmentImageVideoAudio(attachment.file_type)"
-              :attachment="attachment"
-              @error="onMediaLoadError"
-            />
-            <BubbleLocation
-              v-else-if="attachment.file_type === 'location'"
-              :latitude="attachment.coordinates_lat"
-              :longitude="attachment.coordinates_long"
-              :name="attachment.fallback_title"
-            />
-            <BubbleContact
-              v-else-if="attachment.file_type === 'contact'"
-              :name="data.content"
-              :phone-number="attachment.fallback_title"
-            />
+            <InstagramStory v-if="isAnInstagramStory" :story-url="attachment.data_url" @error="onMediaLoadError" />
+            <BubbleImageAudioVideo v-else-if="isAttachmentImageVideoAudio(attachment.file_type)"
+              :attachment="attachment" @error="onMediaLoadError" />
+            <BubbleLocation v-else-if="attachment.file_type === 'location'" :latitude="attachment.coordinates_lat"
+              :longitude="attachment.coordinates_long" :name="attachment.fallback_title" />
+            <BubbleContact v-else-if="attachment.file_type === 'contact'" :name="data.content"
+              :phone-number="attachment.fallback_title" />
             <BubbleFile v-else :url="attachment.data_url" />
           </div>
         </div>
-        <BubbleActions
-          :id="data.id"
-          :sender="data.sender"
-          :story-sender="storySender"
-          :external-error="errorMessageTooltip"
-          :story-id="`${storyId}`"
-          :is-a-tweet="isATweet"
-          :is-a-whatsapp-channel="isAWhatsAppChannel"
-          :is-email="isEmailContentType"
-          :is-private="data.private"
-          :message-type="data.message_type"
-          :message-status="status"
-          :source-id="data.source_id"
-          :inbox-id="data.inbox_id"
-          :created-at="createdAt"
-        />
+        <BubbleActions :id="data.id" :sender="data.sender" :story-sender="storySender"
+          :external-error="errorMessageTooltip" :story-id="`${storyId}`" :is-a-tweet="isATweet"
+          :is-a-whatsapp-channel="isAWhatsAppChannel" :is-email="isEmailContentType" :is-private="data.private"
+          :message-type="data.message_type" :message-status="status" :source-id="data.source_id"
+          :inbox-id="data.inbox_id" :created-at="createdAt" />
       </div>
       <Spinner v-if="isPending" size="tiny" />
-      <div
-        v-if="showAvatar"
-        v-tooltip.left="tooltipForSender"
-        class="sender--info"
-      >
-        <woot-thumbnail
-          :src="sender.thumbnail"
-          :username="senderNameForAvatar"
-          size="16px"
-        />
-        <a
-          v-if="isATweet && isIncoming"
-          class="sender--available-name"
-          :href="twitterProfileLink"
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-        >
+      <div v-if="showAvatar" v-tooltip.left="tooltipForSender" class="sender--info">
+        <woot-thumbnail :src="sender.thumbnail" :username="senderNameForAvatar" size="16px" />
+        <a v-if="isATweet && isIncoming" class="sender--available-name" :href="twitterProfileLink" target="_blank"
+          rel="noopener noreferrer nofollow">
           {{ sender.name }}
         </a>
       </div>
     </div>
     <div v-if="shouldShowContextMenu" class="context-menu-wrap">
-      <ContextMenu
-        v-if="isBubble && !isMessageDeleted"
-        :context-menu-position="contextMenuPosition"
-        :is-open="showContextMenu"
-        :enabled-options="contextMenuEnabledOptions"
-        :message="data"
-        @open="openContextMenu"
-        @close="closeContextMenu"
-        @reply-to="handleReplyTo"
-      />
+      <ContextMenu v-if="isBubble && !isMessageDeleted" :context-menu-position="contextMenuPosition"
+        :is-open="showContextMenu" :enabled-options="contextMenuEnabledOptions" :message="data" @open="openContextMenu"
+        @close="closeContextMenu" @reply-to="handleReplyTo" />
     </div>
   </li>
 </template>
 
 <style lang="scss">
 .wrap {
-  > .bubble {
+  >.bubble {
     @apply min-w-[128px];
 
     &.is-unsupported {
@@ -610,13 +547,13 @@ export default {
       .video {
         @apply max-w-[20rem] p-0.5;
 
-        > img,
-        > video {
+        >img,
+        >video {
           /** ensure that the bubble radius and image radius match*/
           @apply rounded-[0.4rem];
         }
 
-        > video {
+        >video {
           @apply h-full w-full object-cover;
         }
       }
@@ -626,8 +563,8 @@ export default {
       }
     }
 
-    &.is-image.is-text > .message-text__wrap,
-    &.is-video.is-text > .message-text__wrap {
+    &.is-image.is-text>.message-text__wrap,
+    &.is-video.is-text>.message-text__wrap {
       @apply max-w-[20rem] py-2 px-4;
     }
 
@@ -645,11 +582,11 @@ export default {
       }
     }
 
-    &.is-private.is-text > .message-text__wrap .link {
+    &.is-private.is-text>.message-text__wrap .link {
       @apply text-woot-600 dark:text-woot-200;
     }
 
-    &.is-private.is-text > .message-text__wrap .prosemirror-mention-node {
+    &.is-private.is-text>.message-text__wrap .prosemirror-mention-node {
       @apply font-bold bg-none rounded-sm p-0 bg-yellow-100 dark:bg-yellow-700 text-slate-700 dark:text-slate-25 underline;
     }
 
@@ -681,7 +618,7 @@ export default {
       @apply absolute bottom-1 right-1;
     }
 
-    > .is-image.is-text.bubble > .message-text__wrap {
+    >.is-image.is-text.bubble>.message-text__wrap {
       @apply p-0;
     }
   }
