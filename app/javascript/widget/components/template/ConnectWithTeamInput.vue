@@ -61,7 +61,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '~widget/assets/scss/variables.scss';
+@import 'app/javascript/widget/assets/scss/_variables.scss';
 
 .connect-button {
   margin: $space-small 0;
