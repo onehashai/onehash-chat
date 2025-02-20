@@ -30,10 +30,11 @@ export default {
       uiFlags: 'chatbots/getUIFlags',
     }),
     selectedTabKey() {
+      console.log('Selected Tab Key:', this.tabs[this.selectedTabIndex]?.key);
       return this.tabs[this.selectedTabIndex]?.key;
     },
     tabs() {
-      let tabs = [
+      return [
         {
           key: 'chatbot_settings',
           name: this.$t('CHATBOTS.TABS.SETTINGS'),
@@ -43,7 +44,6 @@ export default {
           name: this.$t('CHATBOTS.TABS.RETRAIN'),
         },
       ];
-      return tabs;
     },
     currentChatbotId() {
       return this.$route.params.chatbotId;
@@ -97,6 +97,7 @@ export default {
       }
     },
     onTabChange(selectedTabIndex) {
+      console.log('Tab changed to index:', selectedTabIndex);
       this.selectedTabIndex = selectedTabIndex;
     },
   },
@@ -115,10 +116,13 @@ export default {
         @change="onTabChange"
       >
         <woot-tabs-item
-          v-for="tab in tabs"
+          v-for="(tab, index) in tabs"
           :key="tab.key"
+          :class="{ 'active-tab': selectedTabIndex === index }"
           :name="tab.name"
+          :index= "index"
           :show-badge="false"
+          @click="onTabChange(index)"
         />
       </woot-tabs>
     </SettingIntroBanner>
