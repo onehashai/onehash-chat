@@ -30,7 +30,6 @@ export default {
       uiFlags: 'chatbots/getUIFlags',
     }),
     selectedTabKey() {
-      console.log('Selected Tab Key:', this.tabs[this.selectedTabIndex]?.key);
       return this.tabs[this.selectedTabIndex]?.key;
     },
     tabs() {
@@ -97,7 +96,6 @@ export default {
       }
     },
     onTabChange(selectedTabIndex) {
-      console.log('Tab changed to index:', selectedTabIndex);
       this.selectedTabIndex = selectedTabIndex;
     },
   },
