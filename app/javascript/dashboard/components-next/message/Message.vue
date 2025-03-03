@@ -201,7 +201,7 @@ const orientation = computed(() => {
   if (isMyMessage.value) {
     return ORIENTATION.RIGHT;
   }
-
+  if(props.messageType === MESSAGE_TYPES.TEMPLATE) return ORIENTATION.RIGHT
   if (props.messageType === MESSAGE_TYPES.ACTIVITY) return ORIENTATION.CENTER;
 
   return ORIENTATION.LEFT;

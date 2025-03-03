@@ -439,6 +439,12 @@ const menuItems = computed(() => {
           icon: 'i-lucide-briefcase',
           to: accountScopedRoute('auditlogs_list'),
         },
+        // {
+        //   name:'Settings Chabot',
+        //   label:'Chatbots',
+        //   icon:'i-lucide-briefcase',
+        //   to:accountScopedRoute('chatbots_wrapper')
+        // },
         {
           name: 'Settings Custom Roles',
           label: t('SIDEBAR.CUSTOM_ROLES'),
@@ -459,6 +465,12 @@ const menuItems = computed(() => {
         },
       ],
     },
+    {
+      name:'Chatbots',
+      label:'Chatbots',
+      icon:'i-lucide-briefcase',
+      to:accountScopedRoute('chatbots_wrapper')
+    }
   ];
 });
 </script>

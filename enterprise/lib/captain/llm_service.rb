@@ -2,7 +2,7 @@ require 'openai'
 
 class Captain::LlmService
   def initialize(config)
-    @client = OpenAI::Client.new(access_token: config[:api_key]) do |f|
+    @client = OpenAI::Client.new(access_token:  ENV.fetch('OPENAI_API_KEY', nil)) do |f|
       f.response :logger, Logger.new($stdout), bodies: true
     end
     @logger = Rails.logger
