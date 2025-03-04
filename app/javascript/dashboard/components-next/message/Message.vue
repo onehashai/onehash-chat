@@ -203,6 +203,7 @@ const orientation = computed(() => {
   }
   if(props.messageType === MESSAGE_TYPES.TEMPLATE) return ORIENTATION.RIGHT
   if (props.messageType === MESSAGE_TYPES.ACTIVITY) return ORIENTATION.CENTER;
+  if(props.messageType === MESSAGE_TYPES.OUTGOING) return ORIENTATION.RIGHT 
 
   return ORIENTATION.LEFT;
 });
