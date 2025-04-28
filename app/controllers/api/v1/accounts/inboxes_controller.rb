@@ -80,8 +80,11 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
 
   def create_channel
     return unless %w[web_widget api email line telegram whatsapp sms].include?(permitted_params[:channel][:type])
-
-    account_channels_method.create!(permitted_params(channel_type_from_params::EDITABLE_ATTRS)[:channel].except(:type))
+    
+    channel_params = permitted_params[:channel].except(:type)
+  # Create the channel with the permitted params (including web_widget_script)
+  account_channels_method.create!(channel_params)
+    # account_channels_method.create!(permitted_params(channel_type_from_params::EDITABLE_ATTRS)[:channel].except(:type))
   end
 
   def update_inbox_working_hours
@@ -110,7 +113,8 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
 
   def reauthorize_and_update_channel(channel_attributes)
     @inbox.channel.reauthorized! if @inbox.channel.respond_to?(:reauthorized!)
-    @inbox.channel.update!(permitted_params(channel_attributes)[:channel])
+    channel_params = permitted_params(channel_attributes)[:channel].except(:type)
+    @inbox.channel.update!(channel_params)
   end
 
   def update_channel_feature_flags
@@ -122,15 +126,26 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   end
 
   def inbox_attributes
-    [:name, :avatar, :greeting_enabled, :greeting_message, :enable_email_collect, :csat_survey_enabled,
+    attributes = [:name, :avatar, :greeting_enabled, :greeting_message, :enable_email_collect, :csat_survey_enabled,
      :enable_auto_assignment, :working_hours_enabled, :out_of_office_message, :timezone, :allow_messages_after_resolved,
      :lock_to_single_conversation, :portal_id, :sender_name_type, :business_name]
+    
+    # Add web_widget_script for whatsapp channel
+    attributes << :web_widget_script if params.dig(:channel, :type) == 'whatsapp'
+    
+    attributes
   end
 
   def permitted_params(channel_attributes = [])
     # We will remove this line after fixing https://linear.app/chatwoot/issue/CW-1567/null-value-passed-as-null-string-to-backend
     params.each { |k, v| params[k] = params[k] == 'null' ? nil : v }
+    
+    channel_type = params.dig(:channel, :type)
+  # Fetch base channel attributes based on channel type
+  channel_attributes = get_channel_attributes(channel_type)
 
+  # Add web_widget_script to channel attributes if the channel type is 'api'
+  channel_attributes += [:web_widget_script] if channel_type == 'whatsapp'
     params.permit(
       *inbox_attributes,
       channel: [:type, *channel_attributes]
@@ -150,8 +165,20 @@ class Api::V1::Accounts::InboxesController < Api::V1::Accounts::BaseController
   end
 
   def get_channel_attributes(channel_type)
-    if channel_type.constantize.const_defined?(:EDITABLE_ATTRS)
-      channel_type.constantize::EDITABLE_ATTRS.presence
+    # Map lowercase channel types to their corresponding class names
+    channel_class_name = {
+      'web_widget' => 'Channel::WebWidget',
+      'api' => 'Channel::Api',
+      'email' => 'Channel::Email',
+      'line' => 'Channel::Line',
+      'telegram' => 'Channel::Telegram',
+      'whatsapp' => 'Channel::Whatsapp',
+      'sms' => 'Channel::Sms'
+    }[channel_type]
+  
+    # Check if the class exists and has EDITABLE_ATTRS
+    if channel_class_name && Object.const_defined?(channel_class_name) && channel_class_name.constantize.const_defined?(:EDITABLE_ATTRS)
+      channel_class_name.constantize::EDITABLE_ATTRS.presence
     else
       []
     end
