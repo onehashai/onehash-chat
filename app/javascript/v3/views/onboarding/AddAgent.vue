@@ -79,6 +79,9 @@ const addAgent = async () => {
     }
     await store.dispatch('agents/create', payload);
     useAlert(t('AGENT_MGMT.ADD.API.SUCCESS_MESSAGE'));
+    await store.dispatch('accounts/update', {
+      onboarding_step: 'setup-inbox',
+    });
 
     router.push({ name: 'onboarding_setup_inbox' });
   } catch (error) {
@@ -101,10 +104,18 @@ const addAgent = async () => {
     useAlert(errorResponse || attrError || errorMessage);
   }
 };
+
+// Function to handle "Skip" button click
+const skipToNextStep = async () => {
+  await store.dispatch('accounts/update', {
+    onboarding_step: 'setup-inbox',
+  });
+  router.push({ name: 'onboarding_setup_inbox' });
+};
 </script>
 
 <template>
-  <onboarding-base-modal
+  <OnboardingBaseModal
     :title="$t('AGENT_MGMT.ADD.TITLE')"
     :subtitle="$t('AGENT_MGMT.ADD.DESC')"
   >
@@ -151,17 +162,18 @@ const addAgent = async () => {
         </label>
       </div>
 
-      <div class="flex flex-row w-full gap-2 px-0 py-2">
-        <div class="w-full">
-          <woot-submit-button
-            :disabled="v$.$invalid || uiFlags.isCreating"
-            :button-text="$t('AGENT_MGMT.ADD.FORM.SUBMIT')"
-            :loading="uiFlags.isCreating"
-          />
-        </div>
+      <div class="flex flex-row justify-start w-full gap-2 px-0 py-2">
+        <woot-submit-button
+          :disabled="v$.$invalid || uiFlags.isCreating"
+          :button-text="$t('AGENT_MGMT.ADD.FORM.SUBMIT')"
+          :loading="uiFlags.isCreating"
+        />
+        <button type="button" class="button clear" @click="skipToNextStep">
+          {{ $t('AGENT_MGMT.ADD.FORM.SKIP') }}
+        </button>
       </div>
     </form>
-  </onboarding-base-modal>
+  </OnboardingBaseModal>
 </template>
 
 <style scoped>

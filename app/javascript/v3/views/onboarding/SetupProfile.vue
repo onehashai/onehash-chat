@@ -4,15 +4,14 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, helpers } from '@vuelidate/validators';
 import { useStore } from 'vuex';
+import { useAlert } from 'dashboard/composables';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import parsePhoneNumber from 'libphonenumber-js';
 import { checkFileSizeLimit } from 'shared/helpers/FileHelper';
-import alertMixin from 'shared/mixins/alertMixin';
 
 import WithLabel from 'v3/components/Form/WithLabel.vue';
 import FormInput from 'v3/components/Form/Input.vue';
-import FormTextArea from 'v3/components/Form/Textarea.vue';
 import OnboardingBaseModal from 'v3/views/onboarding/BaseModal.vue';
 import SubmitButton from 'dashboard/components/buttons/FormSubmitButton.vue';
 
@@ -23,10 +22,8 @@ export default {
     WithLabel,
     FormInput,
     SubmitButton,
-    FormTextArea,
     OnboardingBaseModal,
   },
-  mixins: [alertMixin],
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -60,7 +57,7 @@ export default {
       phoneNumber,
     });
 
-    const currentUser = computed(() => store.getters['getCurrentUser']);
+    const currentUser = computed(() => store.getters.getCurrentUser);
     const getAccount = computed(() => store.getters['accounts/getAccount']);
     const intelligentData = computed(() => {
       const { clearbit_data: data } = getAccount.value;
@@ -115,8 +112,13 @@ export default {
           message_signature: signature.value || '',
         });
 
+        await store.dispatch('accounts/update', {
+          onboarding_step: 'add-agent',
+        });
         router.push({ name: 'onboarding_add_agent' });
-      } catch (error) {}
+      } catch (error) {
+        useAlert(error.message);
+      }
     };
 
     const deleteAvatar = event => {
@@ -135,14 +137,14 @@ export default {
         avatarFile.value = file;
         avatarUrl.value = URL.createObjectURL(file);
       } else {
-        showAlert(
-          t(
-            'PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.IMAGE_UPLOAD_SIZE_ERROR',
-            {
-              size: MAXIMUM_FILE_UPLOAD_SIZE,
-            }
-          )
-        );
+        // showAlert(
+        //   t(
+        //     'PROFILE_SETTINGS.FORM.MESSAGE_SIGNATURE_SECTION.IMAGE_UPLOAD_SIZE_ERROR',
+        //     {
+        //       size: MAXIMUM_FILE_UPLOAD_SIZE,
+        //     }
+        //   )
+        // );
       }
       event.target.value = '';
     };
@@ -153,9 +155,9 @@ export default {
       fileInputElement.click();
     };
 
-    const showAlert = message => {
-      store.dispatch('showAlert', message);
-    };
+    // const showAlert = message => {
+    //   store.dispatch('showAlert', message);
+    // };
 
     return {
       avatarUrl,
@@ -175,14 +177,14 @@ export default {
 </script>
 
 <template>
-  <onboarding-base-modal
+  <OnboardingBaseModal
     :title="$t('START_ONBOARDING.PROFILE.TITLE')"
     :subtitle="$t('START_ONBOARDING.PROFILE.BODY')"
   >
     <form class="space-y-6" @submit="onSubmit">
       <div class="space-y-6">
         <div>
-          <with-label name="user_avatar">
+          <WithLabel name="user_avatar">
             <template #label>
               {{ $t('START_ONBOARDING.PROFILE.AVATAR.LABEL') }}
             </template>
@@ -239,9 +241,9 @@ export default {
                 {{ $t('PROFILE_SETTINGS.DELETE_AVATAR') }}
               </woot-button>
             </div>
-          </with-label>
+          </WithLabel>
         </div>
-        <form-input
+        <FormInput
           v-model="fullName"
           name="full_name"
           spacing="compact"
@@ -250,7 +252,7 @@ export default {
           :placeholder="$t('START_ONBOARDING.PROFILE.FULL_NAME.PLACEHOLDER')"
           :error-message="$t('START_ONBOARDING.PROFILE.FULL_NAME.ERROR')"
         />
-        <form-input
+        <FormInput
           v-model="displayName"
           name="display_name"
           spacing="compact"
@@ -259,7 +261,7 @@ export default {
           :placeholder="$t('START_ONBOARDING.PROFILE.DISPLAY_NAME.PLACEHOLDER')"
           :error-message="$t('START_ONBOARDING.PROFILE.DISPLAY_NAME.ERROR')"
         />
-        <form-input
+        <!-- <form-input
           v-model="phoneNumber"
           name="phone_number"
           spacing="compact"
@@ -276,12 +278,12 @@ export default {
           :allow-resize="false"
           :label="$t('START_ONBOARDING.PROFILE.SIGNATURE.LABEL')"
           :placeholder="$t('START_ONBOARDING.PROFILE.SIGNATURE.PLACEHOLDER')"
-        />
+        /> -->
       </div>
-      <submit-button
+      <SubmitButton
         button-class="flex justify-center w-full text-sm text-center"
         :button-text="$t('START_ONBOARDING.PROFILE.SUBMIT.BUTTON')"
       />
     </form>
-  </onboarding-base-modal>
+  </OnboardingBaseModal>
 </template>

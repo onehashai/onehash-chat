@@ -1,5 +1,3 @@
-require 'countries'
-
 class EnrichmentJob < ApplicationJob
   queue_as :default
 
@@ -53,8 +51,10 @@ class EnrichmentJob < ApplicationJob
   end
 
   def country_code_from_country_name(country_str)
-    country = ISO3166::Country.find_country_by_any_name(country_str)
-    country.alpha2
+    file = File.read('./shared/people_data_labs_countries.json')
+    countries_json = JSON.parse(file)
+    c_code = countries_json[country_str]
+    c_code
   end
 
   def display_country_name_from_code(country_code)
@@ -64,7 +64,7 @@ class EnrichmentJob < ApplicationJob
     required_country['name']
   end
 
-  def enrich_from_people_data_labs(email, _name, _company_name) # rubocop:disable Metrics/MethodLength
+  def enrich_from_people_data_labs(email, name, company_name) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     response = get_data_from_pdf(email, name, company_name)
     json_body = JSON.parse(response.body)
 

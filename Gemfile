@@ -30,7 +30,7 @@ gem 'haikunator'
 # Template parsing safely
 gem 'liquid'
 # Parse Markdown to HTML
-gem 'commonmarker'
+gem 'commonmarker', '0.23.10'
 # Validate Data against JSON Schema
 gem 'json_schemer'
 # Rack middleware for blocking & throttling abusive requests
@@ -182,9 +182,8 @@ gem 'reverse_markdown'
 gem 'iso-639'
 gem 'ruby-openai'
 
-gem 'concurrent-ruby', '1.3.4'
-gem 'countries'
 gem 'shopify_api'
+gem 'concurrent-ruby', '1.3.4'
 
 ### Gems required only in specific deployment environments ###
 ##############################################################
@@ -215,8 +214,6 @@ group :development do
   gem 'stackprof'
   # Should install the associated chrome extension to view query logs
   gem 'meta_request', '>= 0.8.3'
-
-  gem 'tapioca', require: false
 end
 
 group :test do

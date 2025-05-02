@@ -2,15 +2,17 @@
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import OnboardingBaseModal from './BaseModal.vue';
 import ChannelItem from 'dashboard/components/widgets/ChannelItem.vue';
 import PageHeader from '../../../dashboard/routes/dashboard/settings/SettingsSubPageHeader.vue';
+import { DEFAULT_REDIRECT_URL } from 'dashboard/constants/globals';
 
 const store = useStore();
 const router = useRouter();
 const { t } = useI18n();
-
+const route = useRoute();
 const selectedChannel = ref(null);
 
 const globalConfig = computed(() => store.getters['globalConfig/get']);
@@ -49,17 +51,30 @@ const selectChannel = channel => {
     })
     .catch(err => {});
 };
+
+const skipToNextStep = async () => {
+  await store.dispatch('accounts/update', {
+    onboarding_step: 'true',
+  });
+  const accountId = route.params.accountId;
+  if (accountId) {
+    window.location = `/app/accounts/${accountId}/dashboard`;
+  } else {
+    window.location = DEFAULT_REDIRECT_URL;
+  }
+};
 </script>
 
 <template>
-  <onboarding-base-modal
+  <OnboardingBaseModal
     :title="$t('INBOX_MGMT.ADD.AUTH.TITLE')"
     :subtitle="$t('INBOX_MGMT.ADD.AUTH.DESC_SHORT')"
   >
     <div class="space-y-6">
-      <page-header :header-title="$t('INBOX_MGMT.ADD.AUTH.TITLE')" />
+      <PageHeader :header-title="$t('INBOX_MGMT.ADD.AUTH.TITLE')" />
+
       <div class="grid">
-        <channel-item
+        <ChannelItem
           v-for="channel in channelList"
           :key="channel.key"
           :channel="channel"
@@ -67,6 +82,10 @@ const selectChannel = channel => {
           @channel-item-click="selectChannel(channel)"
         />
       </div>
+
+      <button type="button" class="button clear w-39" @click="skipToNextStep">
+        {{ $t('START_ONBOARDING.INVITE_TEAM.SKIP') }}
+      </button>
     </div>
 
     <router-view v-slot="{ Component }">
@@ -74,7 +93,7 @@ const selectChannel = channel => {
         <component :is="Component" :key="$route.fullPath" />
       </transition>
     </router-view>
-  </onboarding-base-modal>
+  </OnboardingBaseModal>
 </template>
 
 <style scoped>
