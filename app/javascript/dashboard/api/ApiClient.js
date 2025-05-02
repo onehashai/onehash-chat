@@ -34,7 +34,6 @@ class ApiClient {
 
     if (this.options.accountScoped && this.accountIdFromRoute) {
       url = `${url}/accounts/${this.accountIdFromRoute}`;
-      console.log(`baseUrl: made request to: ${url}`);
     }
 
     return url;
