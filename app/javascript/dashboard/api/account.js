@@ -8,7 +8,6 @@ class AccountAPI extends ApiClient {
 
   getById(id) {
     let url = `${this.apiVersion}/accounts/${id}`;
-    console.log(`getById: made request to: ${url}`);
     return axios.get(url);
   }
 

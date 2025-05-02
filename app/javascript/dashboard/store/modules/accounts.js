@@ -67,14 +67,8 @@ export const actions = {
   getAccountById: async ({ commit, getters }, id) => {
     commit(types.default.SET_ACCOUNT_UI_FLAG, { isFetchingItem: true });
     try {
-      console.log('world');
-      let rec = getters.getAccount(id)
-      console.log('First rec: ', rec);
       const response = await AccountAPI.getById(id);
       commit(types.default.ADD_ACCOUNT, response.data);
-      console.log('Got from by id: ', response.data);
-      rec = getters.getAccount(id)
-      console.log('Second rec: ', rec);
       commit(types.default.SET_ACCOUNT_UI_FLAG, {
         isFetchingItem: false,
       });
