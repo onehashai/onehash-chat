@@ -39,7 +39,13 @@
           "LABEL": "Email Address",
           "PLACEHOLDER": "Please enter an email address of the agent"
         },
-        "SUBMIT": "Add Agent"
+        "INBOXES": {
+          "LABEL": "Assigned Inboxes",
+          "PLACEHOLDER": "Please select inboxes to assign to the agent",
+          "VALIDATION_ERROR": "Invalid input"
+        },
+        "SUBMIT": "Add Agent",
+        "SKIP": "Skip this step"
       },
       "API": {
         "SUCCESS_MESSAGE": "Agent added successfully",

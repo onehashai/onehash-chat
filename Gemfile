@@ -30,7 +30,7 @@ gem 'haikunator'
 # Template parsing safely
 gem 'liquid'
 # Parse Markdown to HTML
-gem 'commonmarker'
+gem 'commonmarker', '0.23.10'
 # Validate Data against JSON Schema
 gem 'json_schemer'
 # Rack middleware for blocking & throttling abusive requests
@@ -179,9 +179,11 @@ gem 'pgvector'
 # Convert Website HTML to Markdown
 gem 'reverse_markdown'
 
-# Reading files
-gem 'pdf-reader'
+gem 'iso-639'
 gem 'ruby-openai'
+
+gem 'shopify_api'
+gem 'concurrent-ruby', '1.3.4'
 
 ### Gems required only in specific deployment environments ###
 ##############################################################
