@@ -16,6 +16,7 @@ export default {
       inboxName: '',
       channelWebsiteUrl: '',
       channelWidgetColor: '#009CE0',
+      channelLogoColors: { dot1: '#33a854', dot2: '#fabc05', dot3: '#ea4234' },
       channelWelcomeTitle: '',
       channelWelcomeTagline: '',
       greetingEnabled: false,
@@ -49,6 +50,7 @@ export default {
               type: 'web_widget',
               website_url: this.channelWebsiteUrl,
               widget_color: this.channelWidgetColor,
+              logoColors: this.channelLogoColors,
               welcome_title: this.channelWelcomeTitle,
               welcome_tagline: this.channelWelcomeTagline,
             },
@@ -107,7 +109,7 @@ export default {
         </label>
       </div>
 
-      <div class="w-full">
+      <div class="flex flex-row gap-6">
         <label>
           {{ $t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.WIDGET_COLOR.LABEL') }}
           <woot-color-picker v-model="channelWidgetColor" />
