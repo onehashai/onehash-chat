@@ -16,7 +16,7 @@ const buildInboxData = inboxParams => {
   Object.keys(inboxProperties).forEach(key => {
     formData.append(key, inboxProperties[key]);
   });
-  const { selectedFeatureFlags, logoColors,  ...channelParams } = channel;
+  const { selectedFeatureFlags, logoColors, ...channelParams } = channel;
   // selectedFeatureFlags needs to be empty when creating a website channel
   if (selectedFeatureFlags) {
     if (selectedFeatureFlags.length) {
@@ -27,8 +27,8 @@ const buildInboxData = inboxParams => {
       formData.append('channel[selected_feature_flags][]', '');
     }
   }
-  if(logoColors) {
-      formData.append('channel[logo_colors]', JSON.stringify(logoColors));
+  if (logoColors) {
+    formData.append('channel[logo_colors]', JSON.stringify(logoColors));
   }
   Object.keys(channelParams).forEach(key => {
     formData.append(`channel[${key}]`, channel[key]);
@@ -119,6 +119,11 @@ export const getters = {
         (item.channel_type === INBOX_TYPES.TWILIO && item.medium === 'sms')
     );
   },
+  getEmailInboxes($state) {
+    return $state.records.filter(
+      item => item.channel_type === INBOX_TYPES.EMAIL
+    );
+  },
   dialogFlowEnabledInboxes($state) {
     return $state.records.filter(
       item => item.channel_type !== INBOX_TYPES.EMAIL
@@ -148,7 +153,6 @@ export const actions = {
     commit(types.default.SET_INBOXES_UI_FLAG, { isFetching: true });
     try {
       const response = await InboxesAPI.get(true);
-      console.log("GOT inboxes", response.data.payload)
       commit(types.default.SET_INBOXES_UI_FLAG, { isFetching: false });
       commit(types.default.SET_INBOXES, response.data.payload);
     } catch (error) {
@@ -209,6 +213,7 @@ export const actions = {
       throw new Error(error);
     }
   },
+
   updateInbox: async ({ commit }, { id, formData = true, ...inboxParams }) => {
     commit(types.default.SET_INBOXES_UI_FLAG, { isUpdating: true });
     try {
@@ -223,6 +228,7 @@ export const actions = {
       throwErrorMessage(error);
     }
   },
+
   updateInboxIMAP: async ({ commit }, { id, ...inboxParams }) => {
     commit(types.default.SET_INBOXES_UI_FLAG, { isUpdatingIMAP: true });
     try {

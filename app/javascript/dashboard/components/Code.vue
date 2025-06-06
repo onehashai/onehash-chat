@@ -16,6 +16,10 @@ const props = defineProps({
     type: String,
     default: 'javascript',
   },
+  maxHeight: {
+    type: Number,
+    default: 400,
+  },
   enableCodePen: {
     type: Boolean,
     default: false,
@@ -86,6 +90,8 @@ const onCopy = async e => {
         @click="onCopy"
       />
     </div>
-    <highlightjs v-if="script" :language="lang" :code="scrubbedScript" />
+    <div class="overflow-auto" :style="{ maxHeight: `${maxHeight}px` }">
+      <highlightjs v-if="script" :language="lang" :code="scrubbedScript" />
+    </div>
   </div>
 </template>

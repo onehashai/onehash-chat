@@ -307,9 +307,10 @@ export default {
             welcome_tagline: this.channelWelcomeTagline || '',
             selectedFeatureFlags: this.selectedFeatureFlags,
             reply_time: this.replyTime || 'in_a_few_minutes',
-            continuity_via_email: this.continuityViaEmail,
+            continuity_via_email: this.continuityViaEmail
           },
         };
+
         if (this.avatarFile) {
           payload.avatar = this.avatarFile;
         }

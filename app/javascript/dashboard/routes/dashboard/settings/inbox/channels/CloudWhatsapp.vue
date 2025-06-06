@@ -37,6 +37,7 @@ export default {
       }
 
       try {
+        const formattedPhoneNumber = this.phoneNumber.replace(/^\+/, '');
         const whatsappChannel = await this.$store.dispatch(
           'inboxes/createChannel',
           {
@@ -45,6 +46,9 @@ export default {
               type: 'whatsapp',
               phone_number: this.phoneNumber,
               provider: 'whatsapp_cloud',
+              web_widget_options: {
+                position: 'right',
+              },
               provider_config: {
                 api_key: this.apiKey,
                 phone_number_id: this.phoneNumberId,

@@ -3,15 +3,18 @@ import { useAlert } from 'dashboard/composables';
 import inboxMixin from 'shared/mixins/inboxMixin';
 import SettingsSection from '../../../../../components/SettingsSection.vue';
 import ImapSettings from '../ImapSettings.vue';
+import InputRadioGroup from '../components/InputRadioGroup.vue';
 import SmtpSettings from '../SmtpSettings.vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
+import { getWebWidgetScript } from '../../../../../helper/inbox';
 
 export default {
   components: {
     SettingsSection,
     ImapSettings,
     SmtpSettings,
+    InputRadioGroup,
   },
   mixins: [inboxMixin],
   props: {
@@ -27,10 +30,38 @@ export default {
     return {
       hmacMandatory: false,
       whatsAppInboxAPIKey: '',
+      widgetBubblePosition: 'right',
     };
   },
   validations: {
     whatsAppInboxAPIKey: { required },
+  },
+  computed: {
+    widgetBubblePositions() {
+      return [
+        {
+          id: 'left',
+          title: this.$t(
+            'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_POSITION.LEFT'
+          ),
+          checked: this.widgetBubblePosition === 'left',
+        },
+        {
+          id: 'right',
+          title: this.$t(
+            'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_POSITION.RIGHT'
+          ),
+          checked: this.widgetBubblePosition === 'right',
+        },
+      ];
+    },
+    webWidgetScript() {
+      return getWebWidgetScript(
+        this.widgetBubblePosition,
+        this.inbox.phone_number,
+        this.inbox.name
+      );
+    },
   },
   watch: {
     inbox() {
@@ -40,9 +71,44 @@ export default {
   mounted() {
     this.setDefaults();
   },
+
   methods: {
     setDefaults() {
       this.hmacMandatory = this.inbox.hmac_mandatory || false;
+
+      if (this.isAWhatsAppChannel) {
+        this.widgetBubblePosition = this.inbox.web_widget_options['position'];
+      }
+    },
+    async handleWidgetBubblePositionChange(item) {
+      this.widgetBubblePosition = item.id;
+      console.log(
+        `updated this.widgetBubblePosition: ${this.widgetBubblePosition}`
+      );
+      try {
+        const payload = {
+          id: this.inbox.id,
+          formData: false,
+          channel: {
+            web_widget_options: {
+              position: this.widgetBubblePosition,
+            },
+          },
+        };
+        await this.$store.dispatch('inboxes/updateInbox', payload);
+        useAlert(
+          this.$t(
+            'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.UPDATE.API.SUCCESS_MESSAGE'
+          )
+        );
+      } catch (error) {
+        useAlert(
+          error.message ||
+            this.$t(
+              'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.UPDATE.API.ERROR_MESSAGE'
+            )
+        );
+      }
     },
     handleHmacFlag() {
       this.updateInbox();
@@ -194,6 +260,27 @@ export default {
   </div>
   <div v-else-if="isAWhatsAppChannel && !isATwilioChannel">
     <div v-if="inbox.provider_config" class="mx-8">
+      <SettingsSection
+        :title="$t('INBOX_MGMT.SETTINGS_POPUP.MESSENGER_HEADING')"
+        :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.MESSENGER_SUB_HEAD')"
+      >
+        <InputRadioGroup
+          name="widget-bubble-position"
+          :label="
+            $t(
+              'INBOX_MGMT.WIDGET_BUILDER.WIDGET_OPTIONS.WIDGET_BUBBLE_POSITION_LABEL'
+            )
+          "
+          :items="widgetBubblePositions"
+          :action="handleWidgetBubblePositionChange"
+        />
+        <woot-code
+          :script="webWidgetScript"
+          lang="html"
+          :codepen-title="`${inbox.name} - OneHash Chat Widget Test`"
+          enable-code-pen
+        />
+      </SettingsSection>
       <SettingsSection
         :title="$t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_WEBHOOK_TITLE')"
         :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_WEBHOOK_SUBHEADER')"

@@ -8,6 +8,7 @@
 #  phone_number                   :string           not null
 #  provider                       :string           default("default")
 #  provider_config                :jsonb
+#  web_widget_options             :jsonb
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  account_id                     :integer          not null
@@ -22,7 +23,7 @@ class Channel::Whatsapp < ApplicationRecord
   include Reauthorizable
 
   self.table_name = 'channel_whatsapp'
-  EDITABLE_ATTRS = [:phone_number, :provider, { provider_config: {} }].freeze
+  EDITABLE_ATTRS = [:phone_number, :provider, {web_widget_options: {} , provider_config: {} }].freeze
 
   # default at the moment is 360dialog lets change later.
   PROVIDERS = %w[default whatsapp_cloud].freeze
@@ -30,7 +31,11 @@ class Channel::Whatsapp < ApplicationRecord
 
   validates :provider, inclusion: { in: PROVIDERS }
   validates :phone_number, presence: true, uniqueness: true
-  validate :validate_provider_config
+  validate :validate_provider_config, if: :other_than_web_widget_options_changed?
+
+  def other_than_web_widget_options_changed?
+    (attribute_names.select { |attr| will_save_change_to_attribute?(attr) } - ['web_widget_options']).any?
+  end
 
   after_create :sync_templates
 
@@ -69,6 +74,7 @@ class Channel::Whatsapp < ApplicationRecord
   end
 
   def validate_provider_config
+    Rails.logger.info("Provider config:  #{provider_config}")
     errors.add(:provider_config, 'Invalid Credentials') unless provider_service.validate_provider_config?
   end
 end
