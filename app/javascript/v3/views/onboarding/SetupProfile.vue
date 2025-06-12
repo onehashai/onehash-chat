@@ -13,7 +13,7 @@ import { checkFileSizeLimit } from 'shared/helpers/FileHelper';
 import WithLabel from 'v3/components/Form/WithLabel.vue';
 import FormInput from 'v3/components/Form/Input.vue';
 import OnboardingBaseModal from 'v3/views/onboarding/BaseModal.vue';
-import SubmitButton from 'dashboard/components/buttons/FormSubmitButton.vue';
+import SubmitButton from 'dashboard/components-next/button/Button.vue';
 
 const MAXIMUM_FILE_UPLOAD_SIZE = 4;
 
@@ -282,7 +282,7 @@ export default {
       </div>
       <SubmitButton
         button-class="flex justify-center w-full text-sm text-center"
-        :button-text="$t('START_ONBOARDING.PROFILE.SUBMIT.BUTTON')"
+        :label="$t('START_ONBOARDING.PROFILE.SUBMIT.BUTTON')"
       />
     </form>
   </OnboardingBaseModal>

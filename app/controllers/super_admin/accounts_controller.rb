@@ -35,7 +35,13 @@ class SuperAdmin::AccountsController < SuperAdmin::ApplicationController
   #
   def resource_params
     permitted_params = super
+
+    [:agents, :inboxes, :captain_responses, :captain_documents].each do |key|
+      permitted_params[:limits][key] = permitted_params[:limits][key].to_i
+    end
+
     permitted_params[:limits] = permitted_params[:limits].to_h.compact
+
     permitted_params[:selected_feature_flags] = params[:enabled_features].keys.map(&:to_sym) if params[:enabled_features].present?
     permitted_params
   end
@@ -66,3 +72,5 @@ class SuperAdmin::AccountsController < SuperAdmin::ApplicationController
     # rubocop:enable Rails/I18nLocaleTexts
   end
 end
+
+SuperAdmin::AccountsController.prepend_mod_with('SuperAdmin::AccountsController')

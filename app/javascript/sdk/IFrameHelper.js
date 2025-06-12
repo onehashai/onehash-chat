@@ -20,10 +20,15 @@ import {
   removeUnreadClass,
   bubbleSVGStandard,
   bubbleSVGExpanded,
+  createCloseBubbleIcon,
 } from './bubbleHelpers';
 import { isWidgetColorLighter } from 'shared/helpers/colorHelper';
 import { dispatchWindowEvent } from 'shared/helpers/CustomEventHelper';
-import { CHATWOOT_ERROR, CHATWOOT_READY } from '../widget/constants/sdkEvents';
+import {
+  CHATWOOT_ERROR,
+  CHATWOOT_POSTBACK,
+  CHATWOOT_READY,
+} from '../widget/constants/sdkEvents';
 import { SET_USER_ERROR } from '../widget/constants/errorTypes';
 import { getUserCookieName, setCookieWithDomain } from './cookieHelpers';
 import {
@@ -79,6 +84,7 @@ export const IFrameHelper = {
 
     addClasses(widgetHolder, holderClassName);
     widgetHolder.id = 'cw-widget-holder';
+    widgetHolder.dataset.turboPermanent = true;
     widgetHolder.appendChild(iframe);
     body.appendChild(widgetHolder);
     IFrameHelper.initPostMessageCommunication();
@@ -222,12 +228,17 @@ export const IFrameHelper = {
     setCampaignReadOn() {
       updateCampaignReadStatus(window.$chatwoot.baseDomain);
     },
-
     openBubble: () => {
       let bubbleState = {};
       bubbleState.toggleValue = true;
 
       onBubbleClick(bubbleState);
+    },
+    postback(data) {
+      dispatchWindowEvent({
+        eventName: CHATWOOT_POSTBACK,
+        data,
+      });
     },
 
     toggleBubble: state => {
@@ -367,16 +378,31 @@ export const IFrameHelper = {
           ? bubbleSVGStandard
           : bubbleSVGExpanded,
       target: chatBubble,
-      logoColors: logoColors
+      logoColors: logoColors,
+      widgetColor:
+        window.$chatwoot.type === 'standard' ? widgetColor : '#FFFFFF',
     });
 
-    addClasses(closeBubble, closeBtnClassName);
-
-    chatIcon.style.background = widgetColor;
-    closeBubble.style.background = widgetColor;
+    // chatIcon.style.background = widgetColor;
 
     bubbleHolder.appendChild(chatIcon);
-    bubbleHolder.appendChild(closeBubble);
+
+    if (window.$chatwoot.type === 'standard') {
+      const closeIcon = createCloseBubbleIcon({
+        className: closeBtnClassName,
+        target: closeBubble,
+        widgetColor,
+      });
+
+      bubbleHolder.appendChild(closeIcon);
+    } else {
+      chatIcon.style.background = widgetColor;
+      closeBubble.style.background = widgetColor;
+      closeBubble.title = 'Close chat window';
+      addClasses(closeBubble, closeBtnClassName);
+      bubbleHolder.appendChild(closeBubble);
+    }
+
     onClickChatBubble();
   },
   toggleCloseButton: () => {
