@@ -33,7 +33,7 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
 
   def add_to_inbox(inbox_id, user_id)
     inbox = Current.account.inboxes.find(inbox_id)
-    inbox.add_member(user_id)
+    inbox.add_members([user_id])
   end
 
   def update
@@ -86,7 +86,7 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   end
 
   def allowed_agent_params
-    [:name, :email, :name, :role, :availability, :auto_offline]
+    [:name, :email, :role, :availability, :auto_offline]
   end
 
   def agent_params
