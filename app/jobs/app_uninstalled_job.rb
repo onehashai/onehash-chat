@@ -17,7 +17,9 @@ class AppUninstalledJob < ActiveJob::Base
     end
 
     shop.with_shopify_session do |session|
-    ## webhook processing logic
+      @hook = Integrations::Hook.find_by!(reference_id: shop_domain)
+      @hook.destroy!
+      shop.destroy!
     end
   end
 end

@@ -83,8 +83,7 @@ class Api::V1::Widget::ContactsController < Api::V1::Widget::BaseController
   def send_verification_otp
     code = Array.new(6) { rand(0..9) }.join
 
-    # ContactMailer.otp_email(contact: @contact, subject: "Otp verification for your shopify account", otp: code, account: inbox.account).deliver_now
-    sleep 2
+    ContactMailer.otp_email(contact: @contact, subject: "Otp verification for your shopify account", otp: code, account: inbox.account).deliver_now
 
     @contact.update(custom_attributes: @contact.custom_attributes.merge({
       shopify_otp: code,

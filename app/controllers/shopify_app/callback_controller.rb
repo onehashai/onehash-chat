@@ -42,6 +42,7 @@ module ShopifyApp
 
       
       webhooks = ShopifyAPI::Webhook.all(session: api_session)
+
       webhooks.each { |w| Rails.logger.info "Webhook configured: #{w.topic} - #{w.address}" }
 
       # Below is testing code, you can run in rails console to verify registration of a webhook
