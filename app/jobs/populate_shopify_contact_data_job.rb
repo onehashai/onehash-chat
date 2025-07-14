@@ -13,6 +13,8 @@ class PopulateShopifyContactDataJob < ApplicationJob
   def populate(params)
     account_id, id, email, phone_number = params.values_at(:account_id, :id, :email, :phone_number)
 
+    contact = Contact.find_by(id: id)
+
     customers = fetch_customers(email, phone_number)
 
     if customers.empty? then
@@ -22,8 +24,6 @@ class PopulateShopifyContactDataJob < ApplicationJob
 
     customer = customers.first
     Rails.logger.info("Populating shopify account: #{account_id} and customer data #{customer['id']}")
-
-    contact = Contact.find_by(id: id)
 
     old_shopify_customer_id = contact.custom_attributes['shopify_customer_id']
 

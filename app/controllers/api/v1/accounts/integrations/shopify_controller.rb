@@ -49,6 +49,8 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
   end
 
   def destroy
+    shop = Shop.find_by(shopify_domain: @hook.reference_id)
+    shop.destroy!
     @hook.destroy!
     head :ok
   rescue StandardError => e
