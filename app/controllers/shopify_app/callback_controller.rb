@@ -40,7 +40,6 @@ module ShopifyApp
         }
       )
 
-      
       webhooks = ShopifyAPI::Webhook.all(session: api_session)
 
       webhooks.each { |w| Rails.logger.info "Webhook configured: #{w.topic} - #{w.address}" }
@@ -69,8 +68,10 @@ module ShopifyApp
       if ShopifyApp::VERSION < "23.0"
         # deprecated in 23.0
         if ShopifyApp.configuration.custom_post_authenticate_tasks.present?
+          Rails.logger.info("Performing custom tasks")
           ShopifyApp.configuration.post_authenticate_tasks.perform(api_session)
         else
+          Rails.logger.info("Performing basic tasks")
           perform_post_authenticate_jobs(api_session)
         end
       else
@@ -207,7 +208,10 @@ module ShopifyApp
     end
 
     def install_webhooks(session)
+      Rails.logger.info("Installing webhooks #{ShopifyApp.configuration.has_webhooks?}")
       return unless ShopifyApp.configuration.has_webhooks?
+
+      Rails.logger.info("Installing webhooks #{ShopifyApp.configuration.webhooks}")
 
       WebhooksManager.queue(session.shop, session.access_token)
     end

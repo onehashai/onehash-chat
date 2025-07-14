@@ -215,10 +215,13 @@ const reverseFulfillmentLineItems = ref([]);
  * @type {import('vue').Ref<FulfillmentLineItem[]>}
  */
 const fulfillmentLineItems = ref([]);
+ 
+const orderInfo = ref(null);
 
 const getOrderInfo = async () => {
   const result = await OrdersAPI.orderDetails({ orderId: props.order.id });
 
+  orderInfo.value = result.data.order;
 
   suggestedRefund.value = result.data.order.suggestedRefund;
 
@@ -230,7 +233,6 @@ const getOrderInfo = async () => {
   fulfillmentLineItems.value = fulfillments.value.flatMap(
     e => e.fulfillmentLineItems
   );
-
 
   reverseFulfillmentLineItems.value = result.data.order.returns.nodes.flatMap(
     e =>
@@ -275,7 +277,6 @@ const getOrderInfo = async () => {
       e.fulfillmentLineItems.map(e => [e.id, e.quantity])
     )
   );
-
 };
 
 onMounted(() => {
@@ -513,7 +514,6 @@ const createReturn = async $t => {
         currencyCode: props.order.currency,
       },
     };
-
 
     await OrdersAPI.returnCreate(payload);
 
@@ -762,6 +762,13 @@ function onBlur() {
               </span>
             </div>
           </div>
+        </div>
+
+        <div
+          class="flex flex-row h-full w-full items-center justify-center"
+          v-if="orderInfo !== null && fulfillments.length === 0"
+        >
+          {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.NO_RETURNS') }}
         </div>
       </div>
 

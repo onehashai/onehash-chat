@@ -434,13 +434,8 @@ GRAPHQL
         id: orderGid,
       )
       
-      Rails.logger.info "Before serialization: #{response.data.order.fulfillments[0].fulfillmentLineItems.nodes[0].quantity}"
-
-
       result =  {order: deep_symbolize(response.data.order)}
       
-      Rails.logger.info "After serialization: #{result[:order][:fulfillments][0][:fulfillmentLineItems][:nodes][0][:quantity]}"
-
       render json: result
     end
   end

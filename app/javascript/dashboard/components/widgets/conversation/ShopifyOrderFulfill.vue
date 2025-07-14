@@ -316,8 +316,12 @@ const fulfillmentOrderLineItems = ref([]);
 
 const assignedLocation = ref(null);
 
+const orderInfo = ref(null);
+
 const getOrderInfo = async () => {
   const result = await OrdersAPI.fulfillmentOrders({ orderId: props.order.id });
+
+  orderInfo.value = result.data.order;
 
   assignedLocation.value =
     result.data.order.fulfillmentOrders.nodes[0].assignedLocation;
@@ -483,7 +487,10 @@ const buttonText = () => {
       :header-content="$t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.DESC')"
     />
     <form>
-      <div class="h-[24.4rem] overflow-auto justify-between">
+      <div
+        v-if="fulfillmentOrders.length > 0"
+        class="h-[24.4rem] overflow-auto justify-between"
+      >
         <div v-for="fli in fulfillmentOrders" class="flex flex-col gap-2">
           <table
             class="woot-table items-table overflow-auto max-h-2 table-fixed"
@@ -535,6 +542,12 @@ const buttonText = () => {
           </table>
         </div>
         <SimpleDivider></SimpleDivider>
+      </div>
+      <div
+        class="flex flex-row h-full w-full items-center justify-center"
+        v-if="orderInfo !== null && fulfillmentOrders.length === 0"
+      >
+        {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.NO_RETURNS') }}
       </div>
 
       <div class="flex flex-col">
