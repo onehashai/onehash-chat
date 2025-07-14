@@ -254,8 +254,12 @@ const orderLineItems = ref([]);
 
 const reverseFulfillmentLineItems = ref([]);
 
+const orderInfo = ref(null);
+
 const getOrderInfo = async () => {
   const result = await OrdersAPI.orderDetails({ orderId: props.order.id });
+
+  orderInfo.value = result.data.order;
 
   reverseFulfillmentLineItems.value = result.data.order.returns.nodes.flatMap(
     returnItem =>
@@ -623,7 +627,7 @@ const refundOrder = async $t => {
       refundLineItems: refundLineItems,
     };
 
-    console.log("Payload: ", payload)
+    console.log('Payload: ', payload);
 
     const response = await OrdersAPI.refundOrder(payload);
 
@@ -803,9 +807,8 @@ const buttonText = () => {
               </tr>
             </tbody>
           </table>
+          <SimpleDivider></SimpleDivider>
         </div>
-
-        <SimpleDivider></SimpleDivider>
 
         <div
           v-if="
@@ -928,8 +931,22 @@ const buttonText = () => {
               </tr>
             </tbody>
           </table>
+          <SimpleDivider></SimpleDivider>
         </div>
-        <SimpleDivider></SimpleDivider>
+
+        <div
+          class="flex flex-row h-full w-full items-center justify-center"
+          v-if="
+            orderInfo !== null &&
+            Object.values(lineItemsSegmentedByFulfillType).filter(
+              e =>
+                e.fulfilled_and_refundable > 0 ||
+                e.unfulfilled_and_refundable > 0
+            ).length === 0
+          "
+        >
+          {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.REFUND.NO_REFUNDS') }}
+        </div>
       </div>
 
       <div

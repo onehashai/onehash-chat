@@ -329,6 +329,7 @@
         "BUTTON_TEXT": "Fulfill",
         "TITLE": "Fulfill order",
         "DESC": "You can directly fulfill the shopify order of a customer from here",
+        "NO_FULFILLMENTS": "No fulfillable items available",
         "TABLE": {
           "PRODUCT": "Product",
           "ITEM_PRICE": "Item Price",
@@ -357,6 +358,7 @@
         "DESC": "You can directly return the shopify order of a customer from here",
         "ITEM_INSUFFICIENT": "Insufficient quantities selected for line items",
         "BUTTON_TEXT": "Return",
+        "NO_RETURNS": "No returnable items available",
         "TABLE": {
           "PRODUCT": "Product",
           "ITEM_PRICE": "Item Price",
@@ -387,6 +389,8 @@
         "TITLE": "Refund order",
         "DESC": "You can directly refund the shopify order of a customer from here",
         "BUTTON_TEXT": "Refund",
+
+        "NO_REFUNDS": "No refundable items available",
         "TABLE": {
           "PRODUCT": "Product",
           "ITEM_PRICE": "Item Price",

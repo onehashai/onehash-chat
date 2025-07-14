@@ -36,6 +36,10 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
 
   def orders
     if !contact.custom_attributes['shopify_customer_id'].present?
+      PopulateShopifyContactDataJob.perform_now(account_id: Current.account.id, id: contact.id, email: contact.email, phone_number: contact.phone_number)
+    end
+
+    if !contact.custom_attributes['shopify_customer_id'].present?
       render json: {orders: []} 
       return
     end
