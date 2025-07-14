@@ -33,12 +33,12 @@ const handleReportIssue = () => {
   >
     <!-- Order Header -->
     <div class="flex flex-row justify-between items-start mb-4">
-      <div class="flex flex-col justify-start items-start">
+      <div class="flex flex-col justify-start items-start ">
         <a
           :href="order.order_status_url"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-base font-semibold text-gray-900"
+          class="text-base font-semibold text-gray-900 underline"
         >
           Order #{{ order.id }}
         </a>
@@ -46,12 +46,18 @@ const handleReportIssue = () => {
         <span
           class="rounded text-xs font-medium bg-gray-100 text-gray-700 uppercase"
         >
-          {{ order.fulfillment_status }}
+          {{ order.fulfillment_status || "No fulfillment" }}
         </span>
       </div>
-      <div class="text-right flex flex-col items-end">
+      <div class="text-center flex flex-col">
         <div class="text-base font-semibold text-gray-900">
           ₹{{ order.total_price }}
+        </div>
+
+        <div
+          class="rounded text-xs px-2 py-1 w-full font-medium bg-n-teal-5 uppercase border"
+        >
+          {{ order.financial_status }}
         </div>
       </div>
     </div>
@@ -65,18 +71,11 @@ const handleReportIssue = () => {
         class="text-base font-semibold text-gray-900"
       >
         <button
-          class="w-[120px] bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-2 rounded-lg text-sm transition-all duration-200 border border-gray-200 shadow-md hover:shadow-lg"
+          class="w-[120px] bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-2 rounded-lg text-sm transition-all duration-200 border border-gray-200 shadow-md hover:shadow-lg"
         >
           View
         </button>
       </a>
-
-      <!-- <button
-        @click="handleReportIssue"
-        class="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-2 rounded-lg text-sm transition-all duration-200 border border-gray-200 shadow-md hover:shadow-lg"
-      >
-        Report
-      </button> -->
     </div>
 
     <!-- Order Items -->

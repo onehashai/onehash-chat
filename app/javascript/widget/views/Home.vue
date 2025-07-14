@@ -45,7 +45,7 @@ export default {
       @start-conversation="startConversation"
     />
 
-    <ArticleContainer />
     <ShopifyOrdersContainer v-if="hasShop" :limit="3" :compact="true" />
+    <ArticleContainer />
   </div>
 </template>
