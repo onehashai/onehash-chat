@@ -63,6 +63,10 @@ export default {
     isOnArticleViewer() {
       return ['article-viewer'].includes(this.$route.name);
     },
+
+    isOnOrdersViewer() {
+      return ['shopify-orders-block'].includes(this.$route.name);
+    },
     isOnHomeView() {
       return ['home'].includes(this.$route.name);
     },
@@ -147,10 +151,10 @@ export default {
 
       <WidgetTabs v-if="routeTab !== null" :active-tab-index="routeTab" />
 
-      <router-view class="h-full"/>
+      <router-view class="h-full" />
       <div class="flex-1" />
 
-      <Branding v-if="!isOnArticleViewer" :disable-branding="disableBranding" />
+    <Branding v-if="!isOnArticleViewer && !isOnOrdersViewer" :disable-branding="disableBranding" />
     </div>
   </div>
 </template>
