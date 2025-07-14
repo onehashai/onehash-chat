@@ -32,8 +32,8 @@ const handleReportIssue = () => {
     class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 w-full max-w-sm mb-4"
   >
     <!-- Order Header -->
-    <div class="flex justify-between items-start mb-4">
-      <div>
+    <div class="flex flex-row justify-between items-start mb-4">
+      <div class="flex flex-col justify-start items-start">
         <a
           :href="order.order_status_url"
           target="_blank"
@@ -42,17 +42,17 @@ const handleReportIssue = () => {
         >
           Order #{{ order.id }}
         </a>
-        <span class="text-sm text-gray-600"> Shipment </span>
+
+        <span
+          class="rounded text-xs font-medium bg-gray-100 text-gray-700 uppercase"
+        >
+          {{ order.fulfillment_status }}
+        </span>
       </div>
       <div class="text-right flex flex-col items-end">
         <div class="text-base font-semibold text-gray-900">
           ₹{{ order.total_price }}
         </div>
-        <span
-          class="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700 uppercase"
-        >
-          {{ order.fulfillment_status }}
-        </span>
       </div>
     </div>
 
@@ -88,7 +88,7 @@ const handleReportIssue = () => {
       >
         <!-- Product Image Placeholder -->
 
-        <div
+        <!-- <div
           class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center flex-shrink-0"
         >
           <svg
@@ -102,7 +102,7 @@ const handleReportIssue = () => {
               clip-rule="evenodd"
             />
           </svg>
-        </div>
+        </div> -->
 
         <!-- Product Details -->
         <div class="flex-1 min-w-0">
