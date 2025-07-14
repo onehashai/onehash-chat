@@ -192,7 +192,7 @@ class Contact < ApplicationRecord
 
   def has_verfied_shopify_account
     Rails.logger.info("SHOPIFY NEW LOGIN: #{custom_attributes['shopify_new_login']}")
-    return false if custom_attributes['shopify_new_login'] == false 
+    return false if custom_attributes['shopify_new_login'] == true 
     return false if !email.present? || !custom_attributes['shopify_verified_email'].present?
     verfied_email = email == custom_attributes['shopify_verified_email'] 
     return verfied_email
