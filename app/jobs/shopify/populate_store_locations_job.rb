@@ -51,6 +51,7 @@ GRAPHQL
 
         locations.each do |elem|
           location_id = (elem.id.split('/').last);
+
           account.shopify_locations.create!(
             id: location_id,
             name: elem.name,
@@ -60,7 +61,7 @@ GRAPHQL
             updated_at: elem.updatedAt,
             is_active: elem.isActive,
             address: elem.address
-          )
+          ) unless account.shopify_locations.find_by(id: location_id).present?
         end
     end
 
