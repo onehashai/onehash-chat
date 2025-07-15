@@ -5,6 +5,17 @@ import { useI18n } from 'vue-i18n';
 import { emitter } from 'shared/helpers/mitt';
 import { BUS_EVENTS } from '../../../../shared/constants/busEvents';
 
+const props = defineProps({
+  order: {
+    type: Object,
+    required: true,
+  },
+  shop: {
+    type: String,
+    required: true,
+  },
+});
+
 const cancel_reasons = {
   CUSTOMER: 'The customer wanted to cancel the order.',
   DECLINED: 'Payment was declined.',
@@ -31,17 +42,6 @@ const financial_statuses = {
 const isOrderInFinancialStatus = status => {
   return props.order.financial_status.toUpperCase() === status;
 };
-
-const props = defineProps({
-  order: {
-    type: Object,
-    required: true,
-  },
-  shop: {
-    type: String,
-    required: true,
-  },
-});
 
 const emitCancelOrder = () => {
   emitter.emit(BUS_EVENTS.CANCEL_ORDER, props.order);

@@ -1,26 +1,3 @@
-<template>
-  <div class="w-24 mx-auto text-center relative">
-    <input
-      :disabled="max === 0"
-      v-model.number="value"
-      type="number"
-      step="1"
-      :min="min"
-      :max="max"
-      @input="handleInput"
-      @blur="handleBlur"
-      class="leading-none box-border"
-      style="transform: translateY(8px); padding-right: 24px;"
-    />
-    <span
-      class="absolute inset-y-0 right-2 flex items-center text-gray-400 pointer-events-none text-xs"
-      style="transform: translateY(8px)"
-    >
-      /{{ max }}
-    </span>
-  </div>
-</template>
-
 <script setup>
 import { computed, ref, watch } from 'vue';
 
@@ -44,9 +21,9 @@ const emit = defineEmits(['update:modelValue', 'input_val']);
 // Internal value to handle clamping
 const internalValue = ref(props.modelValue);
 
-const clamp = (val) => {
+const clamp = val => {
   const num = Number(val);
-  if (isNaN(num)) return props.min;
+  if (Number.isNaN(num)) return props.min;
   return Math.max(props.min, Math.min(props.max, num));
 };
 
@@ -62,17 +39,16 @@ const value = computed({
 });
 
 // Handle input event for real-time clamping
-const handleInput = (event) => {
+const handleInput = event => {
   const inputValue = event.target.value;
   if (inputValue === '') return; // Allow empty input temporarily
-  
+
   const clampedVal = clamp(inputValue);
   // Always update to clamped value
   internalValue.value = clampedVal;
   emit('update:modelValue', clampedVal);
   emit('input_val', clampedVal);
 
-  
   // Update the input field if it was clamped
   if (clampedVal !== Number(inputValue)) {
     event.target.value = clampedVal;
@@ -80,9 +56,9 @@ const handleInput = (event) => {
 };
 
 // Handle blur event to ensure valid value when user leaves field
-const handleBlur = (event) => {
+const handleBlur = event => {
   const inputValue = event.target.value;
-  if (inputValue === '' || isNaN(Number(inputValue))) {
+  if (inputValue === '' || Number.isNaN(Number(inputValue))) {
     // If empty or invalid, set to minimum
     event.target.value = props.min;
     internalValue.value = props.min;
@@ -91,10 +67,37 @@ const handleBlur = (event) => {
 };
 
 // Watch for prop changes
-watch(() => props.modelValue, (newVal) => {
-  internalValue.value = clamp(newVal);
-}, { immediate: true });
+watch(
+  () => props.modelValue,
+  newVal => {
+    internalValue.value = clamp(newVal);
+  },
+  { immediate: true }
+);
 </script>
+
+<template>
+  <div class="w-24 mx-auto text-center relative">
+    <input
+      :disabled="max === 0"
+      v-model.number="value"
+      type="number"
+      step="1"
+      :min="min"
+      :max="max"
+      @input="handleInput"
+      @blur="handleBlur"
+      class="leading-none box-border"
+      style="transform: translateY(8px); padding-right: 24px"
+    />
+    <span
+      class="absolute inset-y-0 right-2 flex items-center text-gray-400 pointer-events-none text-xs"
+      style="transform: translateY(8px)"
+    >
+      /{{ max }}
+    </span>
+  </div>
+</template>
 
 <style scoped>
 /* Approach 1: Style native spinner buttons */

@@ -154,7 +154,10 @@ export default {
       <router-view class="h-full" />
       <div class="flex-1" />
 
-    <Branding v-if="!isOnArticleViewer && !isOnOrdersViewer" :disable-branding="disableBranding" />
+      <Branding
+        v-if="!isOnArticleViewer && !isOnOrdersViewer"
+        :disable-branding="disableBranding"
+      />
     </div>
   </div>
 </template>

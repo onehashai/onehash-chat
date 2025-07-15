@@ -3,8 +3,9 @@ import ShopifyOrdersBlock from '../components/pageComponents/Home/ShopifyOrders/
 
 import ShopifyOrdersContainer from '../components/pageComponents/Home/ShopifyOrders/ShopifyOrdersContainer.vue';
 </script>
+
 <template>
   <div class="m-4 h-full">
-    <ShopifyOrdersContainer></ShopifyOrdersContainer>
+    <ShopifyOrdersContainer />
   </div>
 </template>

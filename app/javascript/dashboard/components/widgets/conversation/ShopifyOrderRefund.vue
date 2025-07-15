@@ -20,23 +20,33 @@ import { useAlert } from 'dashboard/composables';
 import { useStore } from 'vuex';
 import { useMapGetter } from 'dashboard/composables/store';
 
+const props = defineProps({
+  order: {
+    type: Object,
+    required: true,
+  },
+});
+
 const store = useStore();
 
 const currentChat = useMapGetter('getSelectedChat');
 const currentUser = useMapGetter('getCurrentUser');
+
+const locations = ref([]);
+
+const unfulfilledQuantityStates = ref(
+  Object.fromEntries(props.order.line_items.map(e => [e.id, 0]))
+);
+
+const fulfilledQuantityStates = ref(
+  Object.fromEntries(props.order.line_items.map(e => [e.id, 0]))
+);
 
 const sender = computed(() => {
   return {
     name: currentUser.value.name,
     thumbnail: currentUser.value.avatar_url,
   };
-});
-
-const props = defineProps({
-  order: {
-    type: Object,
-    required: true,
-  },
 });
 
 const reasons = [
@@ -97,18 +107,18 @@ const formState = reactive(initialFormState);
 watch(
   stockParameters,
   (newVal, oldVal) => {
-    for (var key of Object.keys(newVal)) {
-      var newStockParam = newVal[key];
+    Object.keys(newVal).forEach(key => {
+      const newStockParam = newVal[key];
 
-      var oldStockParam = oldVal ? oldVal[key] : null;
+      const oldStockParam = oldVal ? oldVal[key] : null;
       if (
         newStockParam.fulfilled &&
         newStockParam.restock &&
         (!oldVal || !oldStockParam.restock)
       ) {
-        formState.stockParameters[stockParam].location = locations[0].id;
+        formState.stockParameters[key].location = locations.value[0].id;
       }
-    }
+    });
   },
   { immediate: true, deep: true }
 );
@@ -164,6 +174,17 @@ const rules = computed(() => {
 
 const v$ = useVuelidate(rules, formState);
 
+const calculatedRefundForLineItems = ref(
+  Object.fromEntries(
+    props.order.line_items
+      .map(e => [
+        [`ful_${e.id}`, { refund: 0, tax: 0 }],
+        [`unful_${e.id}`, { refund: 0, tax: 0 }],
+      ])
+      .flatMap(e => e)
+  )
+);
+
 const item_total_price = (item, pref) => {
   return calculatedRefundForLineItems.value[`${pref}_${item.id}`].refund;
 };
@@ -171,7 +192,7 @@ const item_total_price = (item, pref) => {
 let cancellationTimeout = null;
 
 const onOrderUpdate = data => {
-  if (data.order.id != props.order.id) return;
+  if (data.order.id !== props.order.id) return;
 
   onClose();
   emitter.emit('newToastMessage', {
@@ -181,8 +202,6 @@ const onOrderUpdate = data => {
 
   clearTimeout(cancellationTimeout);
 };
-
-const locations = ref([]);
 
 const getAvailableLocations = async () => {
   try {
@@ -263,14 +282,13 @@ const getOrderInfo = async () => {
 
   reverseFulfillmentLineItems.value = result.data.order.returns.nodes.flatMap(
     returnItem =>
-      returnItem.reverseFulfillmentOrders.nodes.flatMap(e =>
-        e.lineItems.nodes.flatMap(e => ({
+      returnItem.reverseFulfillmentOrders.nodes.flatMap(rfo =>
+        rfo.lineItems.nodes.flatMap(e => ({
           returnStatus: returnItem.status,
           ...e.fulfillmentLineItem,
         }))
       )
   );
-  console.log('Reverse fulfillments: ', reverseFulfillmentLineItems.value);
 
   suggestedRefund.value = result.data.order.suggestedRefund;
 
@@ -279,23 +297,21 @@ const getOrderInfo = async () => {
   );
 
   const pendingReturns = {};
-  for (const reverseFLI of reverseFulfillmentLineItems.value) {
+  reverseFulfillmentLineItems.value.forEach(reverseFLI => {
     const lid = reverseFLI.lineItem.id;
     if (
-      reverseFLI.returnStatus != 'OPEN' &&
-      reverseFLI.returnStatus != 'REQUESTED'
+      reverseFLI.returnStatus !== 'OPEN' &&
+      reverseFLI.returnStatus !== 'REQUESTED'
     ) {
-      continue;
+      return;
     }
     if (lid in pendingReturns) {
       pendingReturns[lid] += reverseFLI.quantity;
     } else {
       pendingReturns[lid] = reverseFLI.quantity;
     }
-  }
-  console.log('Pending returns: ', pendingReturns);
-
-  for (var e of result.data.order.lineItems.nodes) {
+  });
+  result.data.order.lineItems.nodes.forEach(e => {
     const refundableQuantity = e.refundableQuantity;
     const unfulfilledQuantity = e.unfulfilledQuantity;
 
@@ -303,7 +319,7 @@ const getOrderInfo = async () => {
 
     const fulfilled_and_refundable = Math.max(
       refundableQuantity -
-        unfulfilledQuantity /* - pendingReturnQuantity, NOTE:  This should be subtracted but currently giving wrong value*/,
+        unfulfilledQuantity /* - pendingReturnQuantity, NOTE:  This should be subtracted but currently giving wrong value */,
       0
     );
 
@@ -317,7 +333,7 @@ const getOrderInfo = async () => {
         i => e.id === `gid://shopify/LineItem/${i.id}`
       ),
     };
-  }
+  });
 
   orderLineItems.value = result.data.order.lineItems.nodes;
 };
@@ -333,25 +349,18 @@ onUnmounted(() => {
   clearTimeout(cancellationTimeout);
 });
 
-const unfulfilledQuantityStates = ref(
-  Object.fromEntries(props.order.line_items.map(e => [e.id, 0]))
-);
-
-const fulfilledQuantityStates = ref(
-  Object.fromEntries(props.order.line_items.map(e => [e.id, 0]))
-);
-
 watch(
   lineItemsSegmentedByFulfillType,
   newVal => {
-    for (const segmentKey in lineItemsSegmentedByFulfillType.keys) {
-      const segment = lineItemsSegmentedByFulfillType[segmentKey];
+    Object.keys(lineItemsSegmentedByFulfillType.value).forEach(segmentKey => {
+      const segment = lineItemsSegmentedByFulfillType.value[segmentKey];
       if (segment.unfulfilled_and_refundable > 0) {
-        unfulfilledQuantityStates.value[key] =
+        unfulfilledQuantityStates.value[segment.id] =
           segment.unfulfilled_and_refundable;
       }
       if (segment.fulfilled_and_refundable > 0) {
-        fulfilledQuantityStates.value[key] = segment.fulfilled_and_refundable;
+        fulfilledQuantityStates.value[segment.id] =
+          segment.fulfilled_and_refundable;
       }
 
       if (
@@ -360,63 +369,22 @@ watch(
       ) {
         stockParameters.value[`ful_${segment.id}`] = {
           fulfilled: true,
-          restock: true,
-          location: locations.value[0].id,
+          restock: false,
+          location: null,
         };
 
         stockParameters.value[`unful_${segment.id}`] = {
           fulfilled: false,
-          restock: true,
-          location: locations.value[0].id,
+          restock: false,
+          location: null,
         };
       }
-    }
+    });
   },
   {
     immediate: true,
     deep: true,
   }
-);
-
-// watch(
-//   refundableLineItemsQuantity,
-//   newLimits => {
-//     if (newLimits == null) {
-//       return;
-//     }
-//     refundQuantityStates.value = Object.fromEntries(
-//       Object.keys(newLimits).map(id => [id, 0])
-//     );
-//   },
-//   { immediate: true }
-// );
-
-// watch(
-//   fulfilledRefundableLineItemsQuantity,
-//   newLimits => {
-//     if (newLimits == null) {
-//       return;
-//     }
-//     fulfilledRefundQuantityStates.value = Object.fromEntries(
-//       Object.keys(newLimits).map(id => [id, 0])
-//     );
-//   },
-//   { immediate: true }
-// );
-
-const debouncedRefund = debounce(value => {
-  calculateRefund();
-}, 2000);
-
-const calculatedRefundForLineItems = ref(
-  Object.fromEntries(
-    props.order.line_items
-      .map(e => [
-        [`ful_${e.id}`, { refund: 0, tax: 0 }],
-        [`unful_${e.id}`, { refund: 0, tax: 0 }],
-      ])
-      .flatMap(e => e)
-  )
 );
 
 const calculateRefund = async () => {
@@ -443,7 +411,7 @@ const calculateRefund = async () => {
     ],
   };
 
-  for (const refundItem of payload.refundLineItems) {
+  payload.refundLineItems.forEach(refundItem => {
     const lid = Number(refundItem.line_item_id);
     const li = props.order.line_items.find(e => e.id === lid);
 
@@ -456,8 +424,11 @@ const calculateRefund = async () => {
       refund: Number(li.price_set.shop_money.amount) * refundItem.quantity,
       tax: Number((tax / Number(li.quantity)) * Number(refundItem.quantity)),
     };
-  }
+  });
 };
+const debouncedRefund = debounce(value => {
+  calculateRefund();
+}, 2000);
 
 const currentSubtotal = computed(() => {
   return Object.values(calculatedRefundForLineItems.value).reduce(
@@ -537,16 +508,25 @@ function onInput(e) {
 
 function onBlur() {
   // Format to 2 decimals if not empty
-  if (formState.refundAmount && !isNaN(formState.refundAmount)) {
+  if (formState.refundAmount && !Number.isNaN(formState.refundAmount)) {
     formState.refundAmount = parseFloat(formState.refundAmount).toFixed(2);
   }
 }
 
 const cancellationState = ref(null);
 
+function getRestockStatus(rli, allLocations) {
+  if (rli.restock_type === item_restock_options.cancel) {
+    return 'Cancelled';
+  }
+  if (rli.restock_type === item_restock_options.no_restock) {
+    return 'Pending';
+  }
+  const location = allLocations.find(loc => loc.id === rli.location_id);
+  return location ? location.name : 'Unknown Location';
+}
+
 const createRefundMessage = (refundLineItems, id, totalSet) => {
-  console.log('RLIS: ', refundLineItems);
-  console.log('LIS: ', props.order.line_items);
   const messagePayload = {
     order_id: props.order.id,
     event_id: id,
@@ -556,12 +536,7 @@ const createRefundMessage = (refundLineItems, id, totalSet) => {
       name: props.order.line_items.find(e => Number(rli.line_item_id) === e.id)
         .name,
       qty: rli.quantity,
-      restock:
-        rli.restock_type === item_restock_options.cancel
-          ? 'Cancelled'
-          : rli.restock_type === item_restock_options.no_restock
-            ? 'Pending'
-            : locations.find(e => e.id === rli.location_id).name,
+      restock: getRestockStatus(rli, locations.value),
     })),
     sender: sender.value,
     chat_id: currentChat.value.id,
@@ -621,17 +596,13 @@ const refundOrder = async $t => {
       notify: formState.sendNotification,
       currency:
         suggestedRefund.value.maximumRefundableSet.shopMoney.currencyCode,
-      shipping: {}, //currentRefund.value.shipping,
+      shipping: {}, // currentRefund.value.shipping,
       // refundLineItems: currentRefund.value.refund_line_items,
 
       refundLineItems: refundLineItems,
     };
 
-    console.log('Payload: ', payload);
-
     const response = await OrdersAPI.refundOrder(payload);
-
-    console.log('RES: ', response);
 
     createRefundMessage(
       refundLineItems,
@@ -646,7 +617,6 @@ const refundOrder = async $t => {
       useAlert($t('CONVERSATION_SIDEBAR.SHOPIFY.CANCEL.API_TIMEOUT'));
     }, 30 * 1000);
   } catch (e) {
-    console.log(e);
     cancellationState.value = null;
     let message = $t('CONVERSATION_SIDEBAR.SHOPIFY.CANCEL.API_FAILURE');
     if (isAxiosError(e)) {
@@ -788,7 +758,7 @@ const buttonText = () => {
                       :min="0"
                       :max="Number(item.unfulfilled_and_refundable)"
                       @input_val="debouncedRefund"
-                    ></QuantityField>
+                    />
                   </div>
                 </td>
                 <td>
@@ -816,7 +786,7 @@ const buttonText = () => {
               </tr>
             </tbody>
           </table>
-          <SimpleDivider></SimpleDivider>
+          <SimpleDivider />
         </div>
 
         <div
@@ -898,7 +868,7 @@ const buttonText = () => {
                       :min="0"
                       :max="item.fulfilled_and_refundable"
                       @input_val="debouncedRefund"
-                    ></QuantityField>
+                    />
                   </div>
                 </td>
                 <td>
@@ -930,6 +900,7 @@ const buttonText = () => {
                       >
                         <option
                           v-for="location in locations"
+                          :key="location.id"
                           :value="location.id"
                         >
                           {{ location.name }}
@@ -949,7 +920,7 @@ const buttonText = () => {
               </tr>
             </tbody>
           </table>
-          <SimpleDivider></SimpleDivider>
+          <SimpleDivider />
         </div>
 
         <div
@@ -1031,7 +1002,7 @@ const buttonText = () => {
                 class="w-full mt-1 border-0 selectInbox"
                 :class="{ 'border-red-500': v$.refundNote.$error }"
               > -->
-                <option v-for="reason in reasons" :value="reason">
+                <option v-for="reason in reasons" :value="reason" :key="reason">
                   {{ reason }}
                 </option>
                 <!-- </select> -->
@@ -1063,7 +1034,7 @@ const buttonText = () => {
           </div>
         </div>
 
-        <div class="flex-1 flex-row"></div>
+        <div class="flex-1 flex-row" />
 
         <div class="flex flex-col">
           <div class="flex flex-row justify-start items-center gap-10">
@@ -1125,9 +1096,12 @@ const buttonText = () => {
         <span class="text-base"
           >{{ availableRefund[1] }}
           {{
-            /* refundableAmount */ Number(availableRefund[0]).toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-            })
+            /* refundableAmount */ Number(availableRefund[0]).toLocaleString(
+              'en-US',
+              {
+                minimumFractionDigits: 2,
+              }
+            )
           }}</span
         >
       </div>

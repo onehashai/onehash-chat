@@ -42,7 +42,7 @@ const showDivider = index => {
 
 <template>
   <div class="flex items-center h-8 rounded-lg bg-n-alpha-1">
-    <template v-for="(tab, index) in tabs" :key="index" class="flex flex-row">
+    <template v-for="(tab, index) in tabs" :key="index">
       <button
         class="relative px-4 truncate py-1.5 text-sm border-0 outline-1 outline rounded-lg transition-colors duration-300 ease-in-out hover:text-n-brand"
         :class="[

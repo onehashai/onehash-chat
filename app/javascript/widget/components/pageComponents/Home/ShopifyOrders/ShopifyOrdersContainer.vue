@@ -26,7 +26,7 @@ const contact = computed(() => store.getters['contacts/getCurrentUser']);
     <CustomerIdentificationBlock
       :unverfied_shopify_email="contact.unverfied_shopify_email"
       v-if="!contact.verified_shopify_id"
-    ></CustomerIdentificationBlock>
-    <ShopifyOrdersBlock v-else :limit="limit" :compact="compact"></ShopifyOrdersBlock>
+    />
+    <ShopifyOrdersBlock v-else :limit="limit" :compact="compact" />
   </div>
 </template>

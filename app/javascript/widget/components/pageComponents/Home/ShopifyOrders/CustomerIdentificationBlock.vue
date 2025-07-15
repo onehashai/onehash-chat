@@ -30,6 +30,10 @@ const oform = reactive({
   otp: '',
 });
 
+const otpResult = ref({
+  canResend: true,
+});
+
 const orules = {
   otp: { required, minLength: minLength(6), maxLength: maxLength(6) },
 };
@@ -54,25 +58,6 @@ const formattedTime = computed(() => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 });
 
-const onSubmit = async () => {
-  console.log('contacts/verifyShopifyEmail');
-  try {
-    await store.dispatch('contacts/verifyShopifyEmail', {
-      email:
-        props.unverfied_shopify_email === null
-          ? form.email
-          : props.unverfied_shopify_email,
-    });
-
-    otpStage.value = true;
-    onOtpSent();
-  } catch (e) {}
-};
-
-const otpResult = ref({
-  canResend: true,
-});
-
 const onOtpSent = () => {
   otpResult.value = {
     canResend: false,
@@ -89,17 +74,28 @@ const onOtpSent = () => {
   }, 1000);
 };
 
+const onSubmit = async () => {
+  try {
+    await store.dispatch('contacts/verifyShopifyEmail', {
+      email:
+        props.unverfied_shopify_email === null
+          ? form.email
+          : props.unverfied_shopify_email,
+    });
+
+    otpStage.value = true;
+    onOtpSent();
+  } catch (e) {}
+};
+
 const verifyOtp = async () => {
   try {
-    const result = await store.dispatch('contacts/verifyShopifyOTP', {
+    await store.dispatch('contacts/verifyShopifyOTP', {
       otp: oform.otp,
     });
-    console.log('gotten final result', result);
   } catch (e) {
-    console.log('gotten error', e);
+    // Pass
   }
-
-  console.log(`OTP RESULT:`, otpResult.value);
 };
 </script>
 

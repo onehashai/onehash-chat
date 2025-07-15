@@ -50,17 +50,6 @@ const formattedTime = computed(() => {
     month: 'short',
   })} ${String(date.getFullYear()).slice(-2)} ${timePart}`;
 });
-
-const getDetails = attrs => {
-  switch (attrs.shopify_order_event_name) {
-    case 'cancel_order':
-      return `Cancelled order ${attrs.shopify_order_id} at ${formattedTime.value}`;
-  }
-};
-
-onMounted(() => {
-  console.log('PROPS: ', props);
-});
 </script>
 
 <template>
@@ -91,7 +80,8 @@ onMounted(() => {
     >
       <label> Items </label>
       <div
-        v-for="(item, index) in messageContentAttributes.shopify_event.items"
+        v-for="item in messageContentAttributes.shopify_event.items"
+        :key="item.id"
       >
         <div class="flex flex-col">
           <div class="flex flex-row text-xs">

@@ -198,8 +198,8 @@ class ActionCableConnector extends BaseActionCableConnector {
     this.app.$store.dispatch('closeCall', {});
   };
 
+  // eslint-disable-next-line class-methods-use-this
   orderUpdate = data => {
-    console.log("Order update occurred: ", data)
     emitter.emit(BUS_EVENTS.ORDER_UPDATE, data);
   };
 }

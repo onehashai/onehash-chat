@@ -21,7 +21,7 @@ export const actions = {
 
       const response = await ShopifyOrdersAPI.get();
 
-      if(response.data.populated && response.data.orders.length === 0) {
+      if (response.data.populated && response.data.orders.length === 0) {
         commit('toggleNoOrdersStatus', true);
       }
       commit('toggleIsFetchingStatus', false);
