@@ -67,6 +67,38 @@ const onClose = () => {
   emitter.emit(BUS_EVENTS.REFUND_ORDER, null);
 };
 
+/**
+ * @typedef {Object} Money
+ * @property {string} amount
+ * @property {string} currencyCode
+ */
+
+/**
+ * @typedef {Object} MaximumRefundableSet
+ * @property {Money} presentmentMoney
+ * @property {Money} shopMoney
+ */
+
+/**
+ * @typedef {Object} ParentTransaction
+ * @property {string} id
+ */
+
+/**
+ * @typedef {Object} SuggestedTransaction
+ * @property {string} gateway
+ * @property {ParentTransaction} parentTransaction
+ */
+
+/**
+ * @typedef {Object} SuggestedRefund
+ * @property {MaximumRefundableSet} maximumRefundableSet
+ * @property {SuggestedTransaction[]} suggestedTransactions
+ */
+
+/** @type {import('vue').Ref<SuggestedRefund|null>} */
+const suggestedRefund = ref(null);
+
 const stockParameters = ref(
   Object.fromEntries(
     props.order.line_items
@@ -165,7 +197,19 @@ const rules = computed(() => {
   const notZero = value => value !== 0;
 
   return {
-    refundAmount: { required, notZero },
+    refundAmount: {
+      required,
+      notZero,
+      maxValue: value => {
+        const max =
+          suggestedRefund.value === null
+            ? 0
+            : Number(
+                suggestedRefund.value.maximumRefundableSet.shopMoney.amount
+              );
+        return Number(value) <= max;
+      },
+    },
     refundNote: { required },
     unfulfilledQuantities: unfulfilledQuantitiesRules,
     fulfilledQuantities: fulfilledQuantitiesRules,
@@ -209,38 +253,6 @@ const getAvailableLocations = async () => {
     locations.value = result.data.locations;
   } catch (e) {}
 };
-
-/**
- * @typedef {Object} Money
- * @property {string} amount
- * @property {string} currencyCode
- */
-
-/**
- * @typedef {Object} MaximumRefundableSet
- * @property {Money} presentmentMoney
- * @property {Money} shopMoney
- */
-
-/**
- * @typedef {Object} ParentTransaction
- * @property {string} id
- */
-
-/**
- * @typedef {Object} SuggestedTransaction
- * @property {string} gateway
- * @property {ParentTransaction} parentTransaction
- */
-
-/**
- * @typedef {Object} SuggestedRefund
- * @property {MaximumRefundableSet} maximumRefundableSet
- * @property {SuggestedTransaction[]} suggestedTransactions
- */
-
-/** @type {import('vue').Ref<SuggestedRefund|null>} */
-const suggestedRefund = ref(null);
 
 /**
  * @typedef {Object} FulfillmentLineItem
@@ -354,14 +366,6 @@ watch(
   newVal => {
     Object.keys(lineItemsSegmentedByFulfillType.value).forEach(segmentKey => {
       const segment = lineItemsSegmentedByFulfillType.value[segmentKey];
-      if (segment.unfulfilled_and_refundable > 0) {
-        unfulfilledQuantityStates.value[segment.id] =
-          segment.unfulfilled_and_refundable;
-      }
-      if (segment.fulfilled_and_refundable > 0) {
-        fulfilledQuantityStates.value[segment.id] =
-          segment.fulfilled_and_refundable;
-      }
 
       if (
         segment.unfulfilled_and_refundable > 0 ||
@@ -562,6 +566,9 @@ const refundOrder = async $t => {
         .map(([e, qty]) => ({
           line_item_id: e,
           quantity: qty,
+          location_id: !stockParameters.value[`unful_${e}`].restock
+            ? null
+            : stockParameters.value[`unful_${e}`].location,
           restock_type: stockParameters.value[`unful_${e}`].restock
             ? item_restock_options.cancel
             : item_restock_options.no_restock,
@@ -775,6 +782,28 @@ const buttonText = () => {
                 </td>
                 <td>
                   <div class="flex flex-row w-full justify-end gap-4">
+                    <div
+                      v-if="
+                        formState.stockParameters[`unful_${item.id}`].restock
+                      "
+                      class="flex flex-col"
+                    >
+                      <select
+                        v-model="
+                          formState.stockParameters[`unful_${item.id}`].location
+                        "
+                        class="thin-select"
+                      >
+                        <option
+                          v-for="location in locations"
+                          :key="location.id"
+                          :value="location.id"
+                        >
+                          {{ location.name }}
+                        </option>
+                      </select>
+                    </div>
+
                     <input
                       type="checkbox"
                       v-model="
@@ -896,7 +925,6 @@ const buttonText = () => {
                           formState.stockParameters[`ful_${item.id}`].location
                         "
                         class="thin-select"
-                        :class="{ 'border-red-500': v$.refundNote.$error }"
                       >
                         <option
                           v-for="location in locations"

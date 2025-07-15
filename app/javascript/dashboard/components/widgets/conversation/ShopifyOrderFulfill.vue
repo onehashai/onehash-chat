@@ -620,8 +620,8 @@ const buttonText = () => {
         <SimpleDivider />
         <div
           class="flex flex-col"
-          v-for="(item, index) in formState.trackingNumber"
-          :key="item"
+          v-for="(_, index) in formState.trackingNumber"
+          :key="index"
         >
           <div class="flex flex-row gap-4">
             <NextButton
@@ -639,7 +639,6 @@ const buttonText = () => {
                   v$.trackingNumber[index].$error ? 'error' : 'message'
                 "
                 style="width: 200px; font-size: 1.1em"
-                autocomplete="off"
               />
             </div>
 
