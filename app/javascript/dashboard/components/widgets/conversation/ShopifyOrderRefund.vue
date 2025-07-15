@@ -365,7 +365,7 @@ watch(
         };
 
         stockParameters.value[`unful_${segment.id}`] = {
-          fulfilled: true,
+          fulfilled: false,
           restock: true,
           location: locations.value[0].id,
         };
@@ -662,7 +662,7 @@ const refundOrder = async $t => {
 const allUnfulfilledRestockState = computed({
   // Getter: returns true if all relevant items are enabled
   get() {
-    Object.values(stockParameters.value).every(e =>
+    return Object.values(stockParameters.value).every(e =>
       !e.fulfilled ? e.restock : true
     );
   },
@@ -679,7 +679,7 @@ const allUnfulfilledRestockState = computed({
 const allFulfilledRestockState = computed({
   // Getter: returns true if all relevant items are enabled
   get() {
-    Object.values(stockParameters.value).every(e =>
+    return Object.values(stockParameters.value).every(e =>
       e.fulfilled ? e.restock : true
     );
   },
