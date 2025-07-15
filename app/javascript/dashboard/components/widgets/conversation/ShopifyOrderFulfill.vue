@@ -487,61 +487,67 @@ const buttonText = () => {
       :header-content="$t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.DESC')"
     />
     <form>
-      <div
-        v-if="fulfillmentOrders.length > 0"
-        class="h-[24.4rem] overflow-auto justify-between"
-      >
-        <div v-for="fli in fulfillmentOrders" class="flex flex-col gap-2">
-          <table
-            class="woot-table items-table overflow-auto max-h-2 table-fixed"
-          >
-            <thead>
-              <tr>
-                <th class="overflow-auto max-w-xs">
-                  {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TABLE.PRODUCT') }}
-                </th>
-                <th>
-                  {{
-                    $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TABLE.ITEM_PRICE')
-                  }}
-                </th>
-                <th>
-                  {{
-                    $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TABLE.QUANTITY')
-                  }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in fli.lineItems.nodes" :key="item.id">
-                <td>
-                  <div class="overflow-auto max-w-xs">{{ item.name }}</div>
-                </td>
-                <td>
-                  <div>
+      <div class="h-[24.4rem]">
+        <div
+          v-if="fulfillmentOrders.length > 0"
+          class="overflow-auto justify-between"
+        >
+          <div v-for="fli in fulfillmentOrders" class="flex flex-col gap-2">
+            <table
+              class="woot-table items-table overflow-auto max-h-2 table-fixed"
+            >
+              <thead>
+                <tr>
+                  <th class="overflow-auto max-w-xs">
                     {{
-                      currency_codes[
-                        item.price_set.presentment_money.currency_code
-                      ]
+                      $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TABLE.PRODUCT')
                     }}
-                    {{ item.price_set.shop_money.amount }}
-                  </div>
-                </td>
-                <td class="text-center align-middle">
-                  <!-- <div>{{ item.quantity }}</div> -->
-                  <div class="inline-block">
-                    <QuantityField
-                      v-model="formState.unfulfilledQuantity[item.id]"
-                      :min="0"
-                      :max="unfulfilledQuantityLimits[item.id]"
-                    ></QuantityField>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </th>
+                  <th>
+                    {{
+                      $t(
+                        'CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TABLE.ITEM_PRICE'
+                      )
+                    }}
+                  </th>
+                  <th>
+                    {{
+                      $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TABLE.QUANTITY')
+                    }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in fli.lineItems.nodes" :key="item.id">
+                  <td>
+                    <div class="overflow-auto max-w-xs">{{ item.name }}</div>
+                  </td>
+                  <td>
+                    <div>
+                      {{
+                        currency_codes[
+                          item.price_set.presentment_money.currency_code
+                        ]
+                      }}
+                      {{ item.price_set.shop_money.amount }}
+                    </div>
+                  </td>
+                  <td class="text-center align-middle">
+                    <!-- <div>{{ item.quantity }}</div> -->
+                    <div class="inline-block">
+                      <QuantityField
+                        v-model="formState.unfulfilledQuantity[item.id]"
+                        :min="0"
+                        :max="unfulfilledQuantityLimits[item.id]"
+                      ></QuantityField>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <SimpleDivider></SimpleDivider>
         </div>
-        <SimpleDivider></SimpleDivider>
       </div>
       <div
         class="flex flex-row h-full w-full items-center justify-center"
