@@ -433,6 +433,20 @@ GRAPHQL
         ORDER_DETAILS_QUERY,
         id: orderGid,
       )
+
+      # NOTE: Below code is raw request, can used to get headers, keeping it here for now
+      # ses = ShopifyAPI::Auth::Session.new(
+      #   shop: @shopify_service.shop.shopify_domain,
+      #   access_token: @shopify_service.shop.shopify_token
+      # )
+
+      # client = ShopifyAPI::Clients::Graphql::Admin.new(session: ses)
+      # response = client.query(
+      #   query: ORDER_DETAILS_QUERY,
+      #   variables: {
+      #     id: orderGid
+      #   }
+      # )
       
       result =  {order: deep_symbolize(response.data.order)}
       
