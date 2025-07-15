@@ -327,6 +327,7 @@
       },
       "FULFILL": {
         "BUTTON_TEXT": "Fulfill",
+        "PROCESSING": "Processing",
         "TITLE": "Fulfill order",
         "DESC": "You can directly fulfill the shopify order of a customer from here",
         "NO_FULFILLMENTS": "No fulfillable items available",

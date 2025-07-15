@@ -51,7 +51,6 @@ const emitFulfillOrder = () => {
   emitter.emit(BUS_EVENTS.FULFILL_ORDER, props.order);
 };
 
-
 const emitRefundOrder = () => {
   emitter.emit(BUS_EVENTS.REFUND_ORDER, props.order);
 };
@@ -153,17 +152,26 @@ const getFulfillmentClass = status => {
     </div>
 
     <div class="selection-controls items-center">
-      <button @click="emitFulfillOrder">
+      <button
+        v-if="!isOrderInFinancialStatus(financial_statuses.refunded)"
+        @click="emitFulfillOrder"
+      >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.BUTTON_TEXT') }}
       </button>
       <button v-if="!order.cancelled_at" @click="emitCancelOrder">
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.CANCEL.BUTTON_TEXT') }}
       </button>
-      <button v-if="!isOrderInFinancialStatus(financial_statuses.refunded)" @click="emitRefundOrder">
+      <button
+        v-if="!isOrderInFinancialStatus(financial_statuses.refunded)"
+        @click="emitRefundOrder"
+      >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.REFUND.BUTTON_TEXT') }}
       </button>
 
-      <button v-if="!isOrderInFinancialStatus(financial_statuses.refunded)" @click="emitReturnOrder">
+      <button
+        v-if="!isOrderInFinancialStatus(financial_statuses.refunded)"
+        @click="emitReturnOrder"
+      >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.BUTTON_TEXT') }}
       </button>
     </div>
