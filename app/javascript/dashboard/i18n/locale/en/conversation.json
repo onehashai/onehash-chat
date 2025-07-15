@@ -352,7 +352,7 @@
         "ITEM_INSUFFICIENT": "Insufficient quantities selected for line items",
         "TRACKING_INSUFFICIENT": "Please add at least one tracking number",
         "API_FAILURE": "An internal error occured",
-        "API_SUCCESS": "Refund created for the order"
+        "API_SUCCESS": "Fulfillment created for the order"
       },
       "RETURN": {
         "TITLE": "Return order",
@@ -375,7 +375,7 @@
         "PROCESSING": "Processing",
         "REFUND_REASON": "Refund Reason",
         "API_FAILURE": "An internal error occured",
-        "API_SUCCESS": "Refund created for the order",
+        "API_SUCCESS": "Return created for the order",
         "API_TIMEOUT": "Api timeout, cancellation is taking a while",
         "RETURN_REASON": "Return reason",
         "Quantity": "Quantity",

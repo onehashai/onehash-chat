@@ -40,7 +40,15 @@ const financial_statuses = {
 };
 
 const isOrderInFinancialStatus = status => {
-  return props.order.financial_status.toUpperCase() === status;
+  return props.order.financial_status?.toUpperCase() === status;
+};
+
+const fulfillment_statuses = {
+  fulfilled: 'FULFILLED',
+};
+
+const isOrderInFulfillmentStatus = status => {
+  return props.order.fulfillment_status?.toUpperCase() === status;
 };
 
 const emitCancelOrder = () => {
@@ -158,7 +166,13 @@ const getFulfillmentClass = status => {
       >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.BUTTON_TEXT') }}
       </button>
-      <button v-if="!order.cancelled_at" @click="emitCancelOrder">
+      <button
+        v-if="
+          !isOrderInFulfillmentStatus(fulfillment_statuses.fulfilled) &&
+          !order.cancelled_at
+        "
+        @click="emitCancelOrder"
+      >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.CANCEL.BUTTON_TEXT') }}
       </button>
       <button

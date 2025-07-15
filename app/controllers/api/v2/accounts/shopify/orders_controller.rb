@@ -354,7 +354,7 @@ GRAPHQL
         refundLineItems: (refund_line_items&.map do |item|
           item.merge(restockType: (item[:restock_type] || "no_restock").upcase,
                      lineItemId:  "gid://shopify/LineItem/#{item[:line_item_id]}",
-                     locationId: item[:restock_type] === "RETURN" ? "gid://shopify/Location/#{item[:location_id]}" : nil
+                     locationId: item[:restock_type] != "NO_RESTOCK" ? "gid://shopify/Location/#{item[:location_id]}" : nil
           ).except(:line_item_id, :location_id, :restock_type)
         end || []),
         transactions: (transactions&.map do |item|

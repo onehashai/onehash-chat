@@ -26,7 +26,7 @@ const { replaceRoute } = useReplaceRoute();
 const orders = computed(() => {
   const allOrders = store.getters['orders/getOrders'];
   if (props.limit == null) {
-    return orders;
+    return allOrders;
   }
   return allOrders.slice(0, props.limit);
 });
@@ -49,9 +49,9 @@ const viewAll = () => {
 
   <ShopifyOrderTile
     v-for="order in orders"
+    :key="order.id"
     :order="order"
     :compact="compact"
-    :key="order.id"
   />
 
   <div v-if="ordersUiFlags.isFetching" class="flex flex-col gap-3">
