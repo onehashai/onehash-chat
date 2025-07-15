@@ -42,6 +42,7 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
   }
 
   if (
+    to?.query &&
     'shop' in to.query &&
     to.fullPath !==
       `/app/accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`

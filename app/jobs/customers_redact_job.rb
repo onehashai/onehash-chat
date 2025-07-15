@@ -17,7 +17,11 @@ class CustomersRedactJob < ActiveJob::Base
     end
 
     shop.with_shopify_session do |session|
-    ## webhook processing logic
+      customer_id = webhook['customer']['id']
+
+      contact = Contact.where("custom_attributes ->> 'shopify_customer_id' = ?", customer_id).first
+
+      contact.update(custom_attributes: contact.custom_attributes.except(:shopify_customer_id, :shopify_customer_email, :shopify_customer_phone, :shopify_verified_email))
     end
   end
 end

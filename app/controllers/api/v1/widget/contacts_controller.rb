@@ -93,9 +93,8 @@ class Api::V1::Widget::ContactsController < Api::V1::Widget::BaseController
 
   def identify_contact(contact)
     contact_identify_action = ContactIdentifyAction.new(
-      contact: @contact,
+      contact: contact,
       params: permitted_params.to_h.deep_symbolize_keys,
-      retain_original_contact_name: true,
       discard_invalid_attrs: true
     )
     @contact = contact_identify_action.perform
