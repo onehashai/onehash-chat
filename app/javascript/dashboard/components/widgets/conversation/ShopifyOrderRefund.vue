@@ -768,11 +768,16 @@ const buttonText = () => {
                 <td>
                   <div>
                     {{
-                      currency_codes[
-                        item.price_set.presentment_money.currency_code
-                      ]
+                      currency_codes[item.price_set.shop_money.currency_code]
                     }}
-                    {{ item.price_set.shop_money.amount }}
+                    {{
+                      Number(item.price_set.shop_money.amount).toLocaleString(
+                        'en-US',
+                        {
+                          minimumFractionDigits: 2,
+                        }
+                      )
+                    }}
                   </div>
                 </td>
                 <td class="text-center align-middle">
@@ -791,7 +796,11 @@ const buttonText = () => {
                     {{
                       currency_codes[item.price_set.shop_money.currency_code]
                     }}
-                    {{ item_total_price(item, 'unful') }}
+                    {{
+                      item_total_price(item, 'unful').toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                      })
+                    }}
                   </div>
                 </td>
                 <td>
@@ -869,11 +878,16 @@ const buttonText = () => {
                 <td>
                   <div>
                     {{
-                      currency_codes[
-                        item.price_set.presentment_money.currency_code
-                      ]
+                      currency_codes[item.price_set.shop_money.currency_code]
                     }}
-                    {{ item.price_set.shop_money.amount }}
+                    {{
+                      Number(item.price_set.shop_money.amount).toLocaleString(
+                        'en-US',
+                        {
+                          minimumFractionDigits: 2,
+                        }
+                      )
+                    }}
                   </div>
                 </td>
                 <td class="text-center align-middle">
@@ -892,7 +906,11 @@ const buttonText = () => {
                     {{
                       currency_codes[item.price_set.shop_money.currency_code]
                     }}
-                    {{ item_total_price(item, 'ful') }}
+                    {{
+                      item_total_price(item, 'ful').toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                      })
+                    }}
                   </div>
                 </td>
                 <td>
@@ -1054,7 +1072,14 @@ const buttonText = () => {
             </label>
             <span class="text-sm"
               >{{ currency_codes[order.currency] }}
-              {{ /* order.subtotal_price*/ currentSubtotal }}</span
+              {{
+                /* order.subtotal_price*/ currentSubtotal.toLocaleString(
+                  'en-US',
+                  {
+                    minimumFractionDigits: 2,
+                  }
+                )
+              }}</span
             >
           </div>
 
@@ -1064,7 +1089,11 @@ const buttonText = () => {
             </label>
             <span class="text-sm"
               >{{ currency_codes[order.currency] }}
-              {{ /* order.total_tax */ currentTax }}</span
+              {{
+                /* order.total_tax */ currentTax.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })
+              }}</span
             >
           </div>
 
@@ -1074,7 +1103,13 @@ const buttonText = () => {
             </label>
             <span class="text-sm"
               >{{ currency_codes[order.currency] }}
-              {{ /* order.total_tax */ currentSubtotal + currentTax }}</span
+              {{
+                /* order.total_tax */ (
+                  currentSubtotal + currentTax
+                ).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })
+              }}</span
             >
           </div>
         </div>
@@ -1089,7 +1124,11 @@ const buttonText = () => {
         </h4>
         <span class="text-base"
           >{{ availableRefund[1] }}
-          {{ /* refundableAmount */ availableRefund[0] }}</span
+          {{
+            /* refundableAmount */ Number(availableRefund[0]).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+            })
+          }}</span
         >
       </div>
       <div class="flex flex-row justify-end absolute bottom-4 right-4">
