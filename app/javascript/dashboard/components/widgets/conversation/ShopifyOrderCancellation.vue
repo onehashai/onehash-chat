@@ -14,6 +14,13 @@ import FormSelect from 'v3/components/Form/Select.vue';
 import { useStore } from 'vuex';
 import { useMapGetter } from 'dashboard/composables/store';
 
+const props = defineProps({
+  order: {
+    type: Object,
+    required: true,
+  },
+});
+
 const store = useStore();
 
 const currentChat = useMapGetter('getSelectedChat');
@@ -24,13 +31,6 @@ const sender = computed(() => {
     name: currentUser.value.name,
     thumbnail: currentUser.value.avatar_url,
   };
-});
-
-const props = defineProps({
-  order: {
-    type: Object,
-    required: true,
-  },
 });
 
 const reasons = {
@@ -80,7 +80,7 @@ const item_total_price = item => {
 };
 
 const onOrderUpdate = data => {
-  if (data.order.id != props.order.id) return;
+  if (data.order.id !== props.order.id) return;
 
   onClose();
   emitter.emit('newToastMessage', {
@@ -118,13 +118,11 @@ const cancelOrder = async $t => {
       notifyCustomer: formState.sendNotification,
     });
 
-    console.log('building payload');
     const messagePayload = {
       chat_id: currentChat.value.id,
       sender: sender.value,
       order_id: props.order.id,
     };
-    console.log('message payload: , ', messagePayload);
     store.dispatch('cancelOrder', messagePayload);
 
     cancellationTimeout = setTimeout(() => {
@@ -203,16 +201,14 @@ const buttonText = () => {
             </tr>
           </tbody>
         </table>
-        <SimpleDivider></SimpleDivider>
-        <div class="h-4"></div>
+        <SimpleDivider />
+        <div class="h-4" />
 
         <div class="flex flex-row items-start justify-between content-start">
           <div
             class="flex flex-col items-start justify-start content-start gap-2"
           >
-            <div
-              class="select-visible-checkbox gap-2"
-            >
+            <div class="select-visible-checkbox gap-2">
               <input
                 type="checkbox"
                 :checked="formState.restockItem"
@@ -222,9 +218,7 @@ const buttonText = () => {
                 {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.CANCEL.RESTOCK_ITEMS') }}
               </span>
             </div>
-            <div
-              class="select-visible-checkbox gap-2"
-            >
+            <div class="select-visible-checkbox gap-2">
               <input
                 type="checkbox"
                 :checked="formState.refundOrder"
@@ -236,9 +230,7 @@ const buttonText = () => {
               </span>
             </div>
 
-            <div
-              class="select-visible-checkbox gap-2"
-            >
+            <div class="select-visible-checkbox gap-2">
               <input
                 type="checkbox"
                 :checked="formState.sendNotification"

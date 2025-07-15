@@ -5,19 +5,17 @@ import { useI18n } from 'vue-i18n';
 import { computed, defineEmits, defineProps } from 'vue';
 import { useDarkMode } from 'widget/composables/useDarkMode';
 
-const { prefersDarkMode } = useDarkMode();
-const { t } = useI18n();
-
-const router = useRouter();
-
-const emit = defineEmits(['tabChange']);
-
 const props = defineProps({
   activeTabIndex: {
     type: Number,
     required: true,
   },
 });
+const emit = defineEmits(['tabChange']);
+const { prefersDarkMode } = useDarkMode();
+const { t } = useI18n();
+
+const router = useRouter();
 
 // REVIEW: Maybe all this logic can simply be shifted to ArticleViewer instead (Also check Article Container which has the same code)
 
@@ -89,8 +87,6 @@ const tabs = computed(() => {
 });
 
 const handleTabChange = info => {
-  console.log('Tab change:', info);
-
   router.replace({ name: info.value.route, query: info.value.params });
   // replaceRoute(info.value.route, info.value.params);
 };

@@ -15,6 +15,13 @@ import { useAlert } from 'dashboard/composables';
 import { useStore } from 'vuex';
 import { useMapGetter } from 'dashboard/composables/store';
 
+const props = defineProps({
+  order: {
+    type: Object,
+    required: true,
+  },
+});
+
 const store = useStore();
 
 const currentChat = useMapGetter('getSelectedChat');
@@ -25,13 +32,6 @@ const sender = computed(() => {
     name: currentUser.value.name,
     thumbnail: currentUser.value.avatar_url,
   };
-});
-
-const props = defineProps({
-  order: {
-    type: Object,
-    required: true,
-  },
 });
 
 const genericCountries = [
@@ -271,7 +271,7 @@ const rules = computed(() => {
   const trackingURLRules = [];
 
   if (formState.trackingCompany) {
-    for (var t_num of formState.trackingNumber) {
+    formState.trackingNumber.forEach(t_num => {
       trackingNumberRules.push({
         required,
       });
@@ -281,7 +281,7 @@ const rules = computed(() => {
           url,
         });
       }
-    }
+    });
   }
 
   return {
@@ -330,25 +330,25 @@ const getOrderInfo = async () => {
     e => e.lineItems.nodes
   );
 
-  for (const oli of flis) {
+  flis.forEach(oli => {
     unfulfilledQuantityLimits.value[oli.id] = oli.remainingQuantity;
     unfulfilledQuantityStates.value[oli.id] = 0;
-  }
+  });
 
   fulfillmentOrders.value = result.data.order.fulfillmentOrders.nodes;
 
-  for (const fo of fulfillmentOrders.value) {
-    for (const fli of fo.lineItems.nodes) {
+  fulfillmentOrders.value.forEach(fo => {
+    fo.lineItems.nodes.forEach(fli => {
       const li = props.order.line_items.find(
-        e => `gid://shopify/LineItem/${e.id}` == fli.lineItem.id
+        e => `gid://shopify/LineItem/${e.id}` === fli.lineItem.id
       );
 
-      if (!li) continue;
+      if (!li) return;
 
       const { id, quantity, ...rest } = li;
       Object.assign(fli, rest);
-    }
-  }
+    });
+  });
 };
 
 onMounted(() => {
@@ -394,8 +394,8 @@ const fulfillOrder = async $t => {
 
     let error = null;
     if (
-      !fulfillLineItems.some(e =>
-        e.fulfillmentOrderLineItems.some(e => e.quantity > 0)
+      !fulfillLineItems.some(fli =>
+        fli.fulfillmentOrderLineItems.some(e => e.quantity > 0)
       )
     ) {
       error = $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.ITEM_INSUFFICIENT');
@@ -492,7 +492,11 @@ const buttonText = () => {
           v-if="fulfillmentOrders.length > 0"
           class="overflow-auto justify-between"
         >
-          <div v-for="fli in fulfillmentOrders" class="flex flex-col gap-2">
+          <div
+            v-for="fli in fulfillmentOrders"
+            :key="fli.id"
+            class="flex flex-col gap-2"
+          >
             <table
               class="woot-table items-table overflow-auto max-h-2 table-fixed"
             >
@@ -539,14 +543,14 @@ const buttonText = () => {
                         v-model="formState.unfulfilledQuantity[item.id]"
                         :min="0"
                         :max="unfulfilledQuantityLimits[item.id]"
-                      ></QuantityField>
+                      />
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <SimpleDivider></SimpleDivider>
+          <SimpleDivider />
         </div>
       </div>
       <div
@@ -567,7 +571,11 @@ const buttonText = () => {
               v-model="trackingCompanyCategory"
               class="w-full mt-1 border-0 selectInbox"
             >
-              <option v-for="key in Object.keys(companyMaps)" :value="key">
+              <option
+                v-for="key in Object.keys(companyMaps)"
+                :value="key"
+                :key="key"
+              >
                 {{ key }}
               </option>
             </select>
@@ -585,6 +593,7 @@ const buttonText = () => {
             >
               <option
                 v-for="value in companyMaps[trackingCompanyCategory]"
+                :key="value"
                 :value="value"
               >
                 {{ value }}
@@ -608,10 +617,11 @@ const buttonText = () => {
             }}
           </NextButton>
         </div>
-        <SimpleDivider></SimpleDivider>
+        <SimpleDivider />
         <div
           class="flex flex-col"
           v-for="(item, index) in formState.trackingNumber"
+          :key="item"
         >
           <div class="flex flex-row gap-4">
             <NextButton
@@ -619,8 +629,7 @@ const buttonText = () => {
               type="button"
               variant="primary"
               @click="() => removeTrackingFields(index)"
-            >
-            </NextButton>
+            />
             <div class="flex flex-col mb-4">
               <Input
                 type="text"

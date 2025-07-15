@@ -240,22 +240,10 @@ export default {
         :jwt="activeCall.jwt"
         @close="closeCall"
       />
-      <ShopifyOrderCancellation
-        v-if="cancelOrder"
-        :order="cancelOrder"
-      ></ShopifyOrderCancellation>
-      <ShopifyOrderRefund
-        v-if="refundOrder"
-        :order="refundOrder"
-      ></ShopifyOrderRefund>
-      <ShopifyOrderReturn
-        v-if="returnOrder"
-        :order="returnOrder"
-      ></ShopifyOrderReturn>
-      <ShopifyOrderFulfill
-        v-if="fulfillOrder"
-        :order="fulfillOrder"
-      ></ShopifyOrderFulfill>
+      <ShopifyOrderCancellation v-if="cancelOrder" :order="cancelOrder" />
+      <ShopifyOrderRefund v-if="refundOrder" :order="refundOrder" />
+      <ShopifyOrderReturn v-if="returnOrder" :order="returnOrder" />
+      <ShopifyOrderFulfill v-if="fulfillOrder" :order="fulfillOrder" />
     </div>
     <DashboardAppFrame
       v-for="(dashboardApp, index) in dashboardApps"

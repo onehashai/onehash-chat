@@ -41,16 +41,14 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
     );
   }
 
-  console.log('TO: ', to);
-  console.log('Query: ', to.query);
   if (
     'shop' in to.query &&
-    to.fullPath !=
-      `/app/accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query['shop']}`
+    to.fullPath !==
+      `/app/accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
   ) {
     return next(
       frontendURL(
-        `accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query['shop']}`
+        `accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
       )
     );
   }

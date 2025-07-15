@@ -27,20 +27,19 @@ const dialogRef = ref(null);
 
 const removeDomain = async () => {
   try {
-    console.log(`initial custom domain ${props.initialCustomDomain} for slug ${props.id}`)
     const res = await store.dispatch('portals/removeDomain', {
       initialCustomDomain: props.customDomain,
       id: props.id,
     });
     emit('removeCustomDomain');
-    var alertMessage = t(
+    const alertMessage = t(
       `HELP_CENTER.PORTAL_SETTINGS.CONFIGURATION_FORM.CUSTOM_DOMAIN.REMOVE_CONFIRMATION`,
       { domain: props.customDomain }
     );
     useAlert(alertMessage);
     return res;
   } catch (error) {
-    var alertMessage =
+    const alertMessage =
       error?.message ||
       t('HELP_CENTER.PORTAL.ADD.API.ERROR_MESSAGE_FOR_DOMAIN');
     useAlert(alertMessage);
@@ -83,6 +82,5 @@ defineExpose({ dialogRef });
       )
     "
     @confirm="handleDialogConfirm"
-  >
-  </Dialog>
+  />
 </template>

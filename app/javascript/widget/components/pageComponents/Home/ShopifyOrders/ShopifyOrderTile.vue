@@ -27,13 +27,14 @@ const handleReportIssue = () => {
   emit('report-issue', props.order);
 };
 </script>
+
 <template>
   <div
     class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 w-full max-w-sm mb-4"
   >
     <!-- Order Header -->
     <div class="flex flex-row justify-between items-start mb-4">
-      <div class="flex flex-col justify-start items-start ">
+      <div class="flex flex-col justify-start items-start">
         <a
           :href="order.order_status_url"
           target="_blank"
@@ -46,7 +47,7 @@ const handleReportIssue = () => {
         <span
           class="rounded text-xs font-medium bg-gray-100 text-gray-700 uppercase"
         >
-          {{ order.fulfillment_status || "No fulfillment" }}
+          {{ order.fulfillment_status || 'No fulfillment' }}
         </span>
       </div>
       <div class="text-center flex flex-col">

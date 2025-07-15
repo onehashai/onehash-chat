@@ -1,14 +1,10 @@
 <script setup>
+import Spinner from 'shared/components/Spinner.vue';
 import { computed, onMounted } from 'vue';
 import ShopifyOrderTile from './ShopifyOrderTile.vue';
 import { useStore } from 'dashboard/composables/store';
 import Button from 'shared/components/Button.vue';
 import { useReplaceRoute } from '../../../../composables/useReplaceRoute';
-
-const store = useStore();
-
-const emit = defineEmits(['view', 'viewAll']);
-const { replaceRoute } = useReplaceRoute();
 
 const props = defineProps({
   limit: {
@@ -21,13 +17,18 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['view', 'viewAll']);
+
+const store = useStore();
+
+const { replaceRoute } = useReplaceRoute();
+
 const orders = computed(() => {
-  const orders = store.getters['orders/getOrders'];
+  const allOrders = store.getters['orders/getOrders'];
   if (props.limit == null) {
     return orders;
-  } else {
-    return orders.slice(0, props.limit);
   }
+  return allOrders.slice(0, props.limit);
 });
 const ordersUiFlags = computed(() => store.getters['orders/getUiFlags']);
 
@@ -46,7 +47,12 @@ const viewAll = () => {
     {{ $t('SHOPIFY_ORDERS.TITLE') }}
   </h3>
 
-  <ShopifyOrderTile v-for="order in orders" :order="order" :compact="compact"></ShopifyOrderTile>
+  <ShopifyOrderTile
+    v-for="order in orders"
+    :order="order"
+    :compact="compact"
+    :key="order.id"
+  />
 
   <div v-if="ordersUiFlags.isFetching" class="flex flex-col gap-3">
     <Button>

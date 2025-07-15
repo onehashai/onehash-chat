@@ -99,6 +99,7 @@ const actions = {
         'createPendingMessageAndSend',
         messagePayload
       );
+      return message;
     } catch (error) {
       return null;
     }
@@ -130,6 +131,7 @@ const actions = {
         'createPendingMessageAndSend',
         messagePayload
       );
+      return message;
     } catch (error) {
       return null;
     }
@@ -169,6 +171,7 @@ const actions = {
         'createPendingMessageAndSend',
         messagePayload
       );
+      return message;
     } catch (error) {
       return null;
     }
@@ -197,6 +200,7 @@ const actions = {
         'createPendingMessageAndSend',
         messagePayload
       );
+      return message;
     } catch (error) {
       return null;
     }

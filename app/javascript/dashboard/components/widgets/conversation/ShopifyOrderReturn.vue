@@ -24,8 +24,6 @@ import Input from 'dashboard/components-next/input/Input.vue';
 import { useStore } from 'vuex';
 import { useMapGetter } from 'dashboard/composables/store';
 
-const store = useStore();
-
 const props = defineProps({
   order: {
     type: Object,
@@ -33,8 +31,18 @@ const props = defineProps({
   },
 });
 
+const store = useStore();
+
 const currentChat = useMapGetter('getSelectedChat');
 const currentUser = useMapGetter('getCurrentUser');
+
+const returnQuantityStates = ref({});
+
+const returnReasonStates = ref({});
+
+const returnNoteStates = ref({});
+
+const returnStockingFeesStates = ref({});
 
 const sender = computed(() => {
   return {
@@ -150,14 +158,10 @@ const rules = computed(() => {
 
 const v$ = useVuelidate(rules, formState);
 
-const item_total_price = item => {
-  return calculatedRefundForLineItems.value[item.id].refund;
-};
-
 let cancellationTimeout = null;
 
 const onOrderUpdate = data => {
-  if (data.order.id != props.order.id) return;
+  if (data.order.id !== props.order.id) return;
 
   onClose();
   emitter.emit('newToastMessage', {
@@ -235,18 +239,18 @@ const getOrderInfo = async () => {
   );
 
   reverseFulfillmentLineItems.value = result.data.order.returns.nodes.flatMap(
-    e =>
-      e.reverseFulfillmentOrders.nodes.flatMap(e =>
-        e.lineItems.nodes.flatMap(e => e.fulfillmentLineItem)
+    r =>
+      r.reverseFulfillmentOrders.nodes.flatMap(rfo =>
+        rfo.lineItems.nodes.flatMap(e => e.fulfillmentLineItem)
       )
   );
 
-  for (const reverseFLI of reverseFulfillmentLineItems.value) {
-    for (const fulfillment of fulfillments.value) {
+  reverseFulfillmentLineItems.value.forEach(reverseFLI => {
+    fulfillments.value.forEach(fulfillment => {
       const index = fulfillment.fulfillmentLineItems.findIndex(
         e => e.id === reverseFLI.id
       );
-      if (index != -1) {
+      if (index !== -1) {
         fulfillment.fulfillmentLineItems[index].quantity -= reverseFLI.quantity;
         if (fulfillment.fulfillmentLineItems[index].quantity === 0) {
           fulfillment.fulfillmentLineItems = [
@@ -255,8 +259,8 @@ const getOrderInfo = async () => {
           ];
         }
       }
-    }
-  }
+    });
+  });
 
   fulfillments.value = fulfillments.value.filter(
     e => e.fulfillmentLineItems.length > 0
@@ -267,14 +271,14 @@ const getOrderInfo = async () => {
     fulfillmentLineItems: e.fulfillmentLineItems.map(fli => ({
       ...fli,
       lineItem: props.order.line_items.find(
-        e => `gid://shopify/LineItem/${e.id}` === fli.lineItem.id
+        li => `gid://shopify/LineItem/${li.id}` === fli.lineItem.id
       ),
     })),
   }));
 
   returnableLineItemsQuantity.value = Object.fromEntries(
-    fulfillments.value.flatMap(e =>
-      e.fulfillmentLineItems.map(e => [e.id, e.quantity])
+    fulfillments.value.flatMap(f =>
+      f.fulfillmentLineItems.map(e => [e.id, e.quantity])
     )
   );
 };
@@ -289,14 +293,6 @@ onUnmounted(() => {
   emitter.off(BUS_EVENTS.ORDER_UPDATE, onOrderUpdate);
   clearTimeout(cancellationTimeout);
 });
-
-const returnQuantityStates = ref({});
-
-const returnReasonStates = ref({});
-
-const returnNoteStates = ref({});
-
-const returnStockingFeesStates = ref({});
 
 watch(
   returnableLineItemsQuantity,
@@ -317,7 +313,7 @@ watch(
     if (newValue == null) {
       return;
     }
-    for (const id of Object.keys(newValue)) {
+    Object.keys(newValue).forEach(id => {
       if (newValue[id] > 0 && oldValue[id] === 0) {
         returnReasonStates.value[id] = '';
         returnNoteStates.value[id] = '';
@@ -333,14 +329,10 @@ watch(
           delete returnStockingFeesStates.value[id];
         }
       }
-    }
+    });
   },
   { immediate: true, deep: true }
 );
-
-const debouncedRefund = debounce(value => {
-  calculateReturn();
-}, 2000);
 
 const calculatedRefundForLineItems = ref(
   Object.fromEntries(
@@ -443,10 +435,10 @@ const createReturnMessage = returnLineItems => {
     line_items: returnLineItems.map(rli => ({
       id: rli.fulfillmentLineItemId,
       name: props.order.line_items.find(
-        e =>
+        li =>
           fulfillmentLineItems.value.find(
             e => e.id === rli.fulfillmentLineItemId
-          ).lineItem.id === `gid://shopify/LineItem/${e.id}`
+          ).lineItem.id === `gid://shopify/LineItem/${li.id}`
       ).name,
       qty: rli.quantity,
     })),
@@ -481,6 +473,10 @@ const calculateReturn = async () => {
   currentRefund.value = res.data.refundable;
 };
 
+const debouncedRefund = debounce(value => {
+  calculateReturn();
+}, 2000);
+
 const createReturn = async $t => {
   v$.value.$touch();
 
@@ -494,7 +490,7 @@ const createReturn = async $t => {
       .map(([e, qty]) => ({
         fulfillmentLineItemId: e,
         quantity: qty,
-        restockingFeePercentage: Number(formState.restockingFees[e] ?? 0), //REVIEW: This shouldn't be null anyways
+        restockingFeePercentage: Number(formState.restockingFees[e] ?? 0), // REVIEW: This shouldn't be null anyways
         returnReason: returnReasonStates.value[e],
         returnReasonNote: returnNoteStates.value[e],
       }));
@@ -573,7 +569,7 @@ function onInput(e) {
 
 function onBlur() {
   // Format to 2 decimals if not empty
-  if (formState.shippingFees && !isNaN(formState.shippingFees)) {
+  if (formState.shippingFees && !Number.isNaN(formState.shippingFees)) {
     formState.shippingFees = parseFloat(formState.shippingFees).toFixed(2);
   }
 }
@@ -587,7 +583,7 @@ function onBlur() {
     />
     <form>
       <div class="h-[27.4rem] overflow-scroll">
-        <div v-for="fulfillment in fulfillments">
+        <div v-for="fulfillment in fulfillments" :key="fulfillment.name">
           <h3 class="text-base font-semibold text-gray-900 p-2">
             {{ fulfillment.name }}
           </h3>
@@ -595,6 +591,7 @@ function onBlur() {
             v-for="fli in fulfillment.fulfillmentLineItems.filter(
               e => e.quantity > 0
             )"
+            :key="fli.id"
             class="flex flex-col border rounded-lg shadow-sm p-4 m-2"
           >
             <div class="flex flex-row justify-between">
@@ -627,7 +624,7 @@ function onBlur() {
                       : 0
                   "
                   @input_val="debouncedRefund"
-                ></QuantityField>
+                />
 
                 <span class="pl-10 text-xs w-[120px]">
                   {{
@@ -778,9 +775,9 @@ function onBlur() {
         </div>
       </div>
 
-      <SimpleDivider></SimpleDivider>
+      <SimpleDivider />
 
-      <div class="h-4"></div>
+      <div class="h-4" />
 
       <div
         class="flex flex-row pr-2 pt-2 items-start justify-start content-start"
@@ -802,6 +799,7 @@ function onBlur() {
                 ? $t('CONVERSATION_SIDEBAR.SHOPIFY.REFUND.INVALID_AMOUNT')
                 : ''
             "
+            @input="debouncedRefund"
             @blur="v$.shippingFees.$touch"
             inputmode="decimal"
             placeholder="0.00"
@@ -816,7 +814,7 @@ function onBlur() {
           </Input>
         </div>
 
-        <div class="flex-1 flex-row"></div>
+        <div class="flex-1 flex-row" />
 
         <div class="flex flex-col items-end justify-end">
           <div class="flex flex-row items-center gap-8">

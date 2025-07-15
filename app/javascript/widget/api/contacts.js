@@ -28,7 +28,7 @@ export default {
   verifyShopifyEmail(params) {
     return API.post(buildUrl('widget/contact/verify_shopify_email'), params);
   },
-  
+
   verifyShopifyOTP(params) {
     return API.post(buildUrl('widget/contact/verify_shopify_otp'), params);
   },
