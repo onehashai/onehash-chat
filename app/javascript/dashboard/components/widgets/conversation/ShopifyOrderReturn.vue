@@ -215,7 +215,7 @@ const reverseFulfillmentLineItems = ref([]);
  * @type {import('vue').Ref<FulfillmentLineItem[]>}
  */
 const fulfillmentLineItems = ref([]);
- 
+
 const orderInfo = ref(null);
 
 const getOrderInfo = async () => {
@@ -629,7 +629,7 @@ function onBlur() {
                   @input_val="debouncedRefund"
                 ></QuantityField>
 
-                <span class="pl-10 text-sm w-[100px]">
+                <span class="pl-10 text-xs w-[120px]">
                   {{
                     currency_codes[
                       currentRefund?.returnLineItems.find(
@@ -638,16 +638,20 @@ function onBlur() {
                     ]
                   }}
                   {{
-                    (currentRefund?.returnLineItems.find(
-                      e => e.fulfillmentLineItem.id === fli.id
-                    )?.quantity ?? 0) *
-                    Math.abs(
-                      Number(
-                        currentRefund?.returnLineItems.find(
-                          e => e.fulfillmentLineItem.id == fli.id
-                        )?.subtotalSet.shopMoney.amount ?? 0
+                    (
+                      (currentRefund?.returnLineItems.find(
+                        e => e.fulfillmentLineItem.id === fli.id
+                      )?.quantity ?? 0) *
+                      Math.abs(
+                        Number(
+                          currentRefund?.returnLineItems.find(
+                            e => e.fulfillmentLineItem.id == fli.id
+                          )?.subtotalSet.shopMoney.amount ?? 0
+                        )
                       )
-                    )
+                    ).toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                    })
                   }}
                 </span>
               </div>
@@ -717,7 +721,7 @@ function onBlur() {
                   </Input>
                 </div>
 
-                <span class="pl-10 pt-3 text-sm w-[100px]">
+                <span class="pl-10 pt-3 text-xs w-[120px]">
                   {{
                     currency_codes[
                       currentRefund?.returnLineItems.find(
@@ -733,7 +737,9 @@ function onBlur() {
                           e => e.fulfillmentLineItem.id === fli.id
                         )?.restockingFee?.amountSet.shopMoney.amount ?? 0
                       )
-                    )
+                    ).toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                    })
                   }}
                 </span>
               </div>
@@ -818,7 +824,12 @@ function onBlur() {
               {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.SUBTOTAL') }}
             </label>
             <span class="text-sm w-[100px] text-right"
-              >{{ currency_codes[order.currency] }} {{ currentSubtotal }}</span
+              >{{ currency_codes[order.currency] }}
+              {{
+                currentSubtotal.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })
+              }}</span
             >
           </div>
 
@@ -827,7 +838,12 @@ function onBlur() {
               {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.SHIPPING_FEES') }}
             </label>
             <span class="text-sm w-[100px] text-right"
-              >{{ currency_codes[order.currency] }} {{ currentShipping }}</span
+              >{{ currency_codes[order.currency] }}
+              {{
+                currentShipping.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })
+              }}</span
             >
           </div>
 
@@ -837,7 +853,11 @@ function onBlur() {
             </label>
             <span class="text-sm w-[100px] text-right"
               >{{ currency_codes[order.currency] }}
-              {{ currentRestockingFee }}</span
+              {{
+                currentRestockingFee.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })
+              }}</span
             >
           </div>
 
@@ -846,7 +866,12 @@ function onBlur() {
               {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.TAX') }}
             </label>
             <span class="text-sm w-[100px] text-right"
-              >{{ currency_codes[order.currency] }} {{ currentTax }}</span
+              >{{ currency_codes[order.currency] }}
+              {{
+                currentTax.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })
+              }}</span
             >
           </div>
 
@@ -856,7 +881,11 @@ function onBlur() {
             </label>
             <span class="text-sm w-[100px] text-right"
               >{{ currency_codes[order.currency] }}
-              {{ Math.abs(currentTotal) }}</span
+              {{
+                Math.abs(currentTotal).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })
+              }}</span
             >
           </div>
         </div>
