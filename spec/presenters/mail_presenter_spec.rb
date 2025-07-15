@@ -108,7 +108,7 @@ RSpec.describe MailPresenter do
 
       it 'returns true for auto-reply emails' do
         expect(decorated_auto_reply_mail.auto_reply?).to be true
-        expect(decorated_auto_reply_with_auto_submitted_mail.auto_reply?).to be true
+        expect(decorated_auto_reply_with_auto_submitted_mail.auto_reply?).to be false # NOTE: for now we have enabled auto_submitted emails
       end
     end
   end
