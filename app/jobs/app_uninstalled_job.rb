@@ -18,8 +18,8 @@ class AppUninstalledJob < ActiveJob::Base
 
     shop.with_shopify_session do |session|
       @hook = Integrations::Hook.find_by!(reference_id: shop_domain)
-      # @hook.destroy!
-      # shop.destroy!
+      @hook.destroy!
+      shop.destroy!
 
       @hook.account.contacts.each do |contact|
         if(contact.custom_attributes[:shopify_customer_id].present?) then
