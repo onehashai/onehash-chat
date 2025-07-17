@@ -16,8 +16,6 @@ class Api::V1::Widget::Shopify::OrdersController < Api::V1::Widget::BaseControll
       return render json: {error: "No contact found"}, status: :unprocessable_entity
     end
 
-    sleep 2
-
     if !contact.custom_attributes['shopify_customer_id'].present? then
       PopulateShopifyContactDataJob.perform_now(
         account_id: inbox.account.id,

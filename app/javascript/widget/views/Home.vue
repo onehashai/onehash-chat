@@ -38,7 +38,10 @@ export default {
 </script>
 
 <template>
-  <div class="z-50 flex flex-col justify-start flex-1 h-full w-full p-4 gap-4">
+  <div
+    class="z-50 flex flex-col justify-start flex-1 h-full w-full p-4 gap-4"
+    style="height: calc(100% + 32px)"
+  >
     <TeamAvailability
       :available-agents="availableAgents"
       :has-conversation="!!conversationSize"

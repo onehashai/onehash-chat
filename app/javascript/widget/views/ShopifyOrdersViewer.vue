@@ -5,7 +5,8 @@ import ShopifyOrdersContainer from '../components/pageComponents/Home/ShopifyOrd
 </script>
 
 <template>
-  <div class="m-4 h-full">
+  <div class="m-4  h-[29.4rem]">
+
     <ShopifyOrdersContainer />
   </div>
 </template>
