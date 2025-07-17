@@ -177,17 +177,16 @@ const onSubmit = async event => {
           :style="{ color: widgetColor }"
           :disabled="v$.$invalid"
           buttonType="submit"
+          class="flex flex-row items-center justify-center"
         >
-          <button class="flex flex-row items-center justify-center">
-            <span
-              class="text-white flex flex-row items-center justify-center"
-              v-if="!orderUiFlags.isFetching"
-            >
-              {{ $t('TRACK_ORDER') }}
-            </span>
+          <span
+            class="text-white flex flex-row items-center justify-center"
+            v-if="!orderUiFlags.isFetching"
+          >
+            {{ $t('TRACK_ORDER') }}
+          </span>
 
-            <Spinner v-else class="items-center justify-center" />
-          </button>
+          <Spinner v-else class="items-center justify-center" />
         </Button>
       </div>
     </form>

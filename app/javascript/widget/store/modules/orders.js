@@ -27,6 +27,7 @@ export const actions = {
 
       commit('toggleIsFetchingStatus', false);
       if (response.data.order) {
+        commit('toggleOrderNotFound', false);
         commit('updateOrders', response.data.order);
       } else {
         commit('toggleOrderNotFound', true);
@@ -34,6 +35,10 @@ export const actions = {
     } catch {
       commit('toggleOrderNotFound', true);
     }
+  },
+
+  resetOrder: ({ commit }) => {
+    commit('updateOrders', null);
   },
 };
 

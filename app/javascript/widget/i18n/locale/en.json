@@ -57,22 +57,17 @@
     "LABEL": "Chat with us"
   },
   "POWERED_BY": "Powered by OneHash Chat",
-
   "EMAIL": "Email",
   "EMAIL_PLACEHOLDER": "Please enter your email",
   "EMAIL_ERROR": "Please enter a valid email",
-
   "ORDER_ID": "Order Id",
   "ORDER_ID_PLACEHOLDER": "Please enter the order id",
   "ORDER_ID_ERROR": "Please enter a valid order id",
-
   "PHONE": "Phone number",
   "PHONE_PLACEHOLDER": "Please enter your phone",
   "PHONE_ERROR": "Please enter a valid phone number",
-
   "ORDER_NOT_FOUND": "Order not found",
-
-
+  "TRACK_ANOTHER_ORDER": "Track another order",
   "VERIFY_EMAIL": "Verify",
   "VERIFY_OTP": "Verify",
   "TRACK_ORDER": "Track order",
