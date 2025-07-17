@@ -23,13 +23,6 @@ const props = defineProps({
   },
 });
 
-const form = reactive({
-  email: '',
-  country_code: '',
-  phone: '',
-  orderId: 0,
-});
-
 const input_type = ref('Email');
 
 const input_types = [
@@ -42,21 +35,13 @@ const input_types = [
     value: 'Phone',
   },
 ];
-const handleTypeChange = info => {
-  input_type.value = info.value;
 
-  if (info.value == 'Email') {
-    form.phone = '';
-  }
-
-  if (info.value == 'Phone') {
-    form.email = '';
-  }
-
-  v$.value.$touch();
-};
-
-const countryCode = ref(countries.find(e => e.id === 'IN'));
+const form = reactive({
+  email: '',
+  country_code: '',
+  phone: '',
+  orderId: 0,
+});
 
 const rules = computed(() => ({
   email: { required: requiredIf(() => input_type.value === 'Email'), email },
@@ -65,6 +50,22 @@ const rules = computed(() => ({
 }));
 
 const v$ = useVuelidate(rules, form);
+
+const handleTypeChange = info => {
+  input_type.value = info.value;
+
+  if (info.value === 'Email') {
+    form.phone = '';
+  }
+
+  if (info.value === 'Phone') {
+    form.email = '';
+  }
+
+  v$.value.$touch();
+};
+
+const countryCode = ref(countries.find(e => e.id === 'IN'));
 
 const store = useStore();
 

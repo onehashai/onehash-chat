@@ -28,9 +28,6 @@ export default {
   },
   methods: {
     startConversation() {
-      console.log('Pre chat: ', this.preChatFormEnabled);
-      console.log('Con size: ', this.conversationSize);
-
       if (this.preChatFormEnabled && !this.conversationSize) {
         return this.replaceRoute('prechat-form');
       }

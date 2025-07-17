@@ -24,13 +24,7 @@ const popularArticles = useMapGetter('article/popularArticles');
 const articleUiFlags = useMapGetter('article/uiFlags');
 const getConversationSize = useMapGetter('conversation/getConversationSize');
 
-onMounted(() => {
-  console.log('Conversation size: ', getConversationSize);
-});
-
 const widgetColor = useMapGetter('appConfig/getWidgetColor');
-
-const router = useRouter();
 
 // REVIEW: Maybe all this logic can simply be shifted to ArticleViewer instead (Also check Article Container which has the same code)
 
@@ -74,10 +68,6 @@ const key = computed(() => [
 ]);
 
 const options = computed(() => {
-  console.log('Computing again with: ');
-  console.log('Pre chat: ', window.chatwootWebChannel.preChatFormEnabled);
-  console.log('Con size: ', getConversationSize.value);
-
   return [
     {
       id: 0,
