@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import bottomNavigationVue from "bottom-navigation-vue";
+import bottomNavigationVue from 'bottom-navigation-vue';
 import { createI18n } from 'vue-i18n';
 
 import VueDOMPurifyHTML from 'vue-dompurify-html';

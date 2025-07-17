@@ -34,7 +34,10 @@ const contact = computed(() => store.getters['contacts/getCurrentUser']);
     />
     <ShopifyOrdersBlock v-if="order" :order="order" />
 
-    <span v-if="orderUiFlags.noOrder" class="items-center justify-center text-base pl-2 text-n-ruby-9">
+    <span
+      v-if="orderUiFlags.noOrder"
+      class="items-center justify-center text-base pl-2 text-n-ruby-9"
+    >
       {{ $t('ORDER_NOT_FOUND') }}
     </span>
   </div>

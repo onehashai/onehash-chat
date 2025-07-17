@@ -35,7 +35,6 @@ import { directive as onClickaway } from 'vue3-click-away';
 import './sdk';
 import 'floating-vue/dist/style.css';
 
-
 const i18n = createI18n({
   legacy: false, // https://github.com/intlify/vue-i18n/issues/1902
   locale: 'en',
@@ -48,7 +47,6 @@ const app = createApp(App);
 app.use(i18n);
 app.use(store);
 app.use(router);
-
 
 // [VITE] Disabled this, need to renable later
 if (window.errorLoggingConfig) {

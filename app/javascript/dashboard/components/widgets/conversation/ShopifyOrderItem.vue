@@ -188,7 +188,7 @@ const getFulfillmentClass = status => {
         @click="emitReturnOrder"
       >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.BUTTON_TEXT') }}
-      </Button>
+      </button>
     </div>
 
     <div

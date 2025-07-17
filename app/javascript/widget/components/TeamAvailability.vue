@@ -1,5 +1,5 @@
 <script>
-import Button from 'shared/components/Button.vue';
+import SharedButton from 'shared/components/Button.vue';
 import { mapGetters } from 'vuex';
 import { getContrastingTextColor } from '@chatwoot/utils';
 import nextAvailabilityTime from 'widget/mixins/nextAvailabilityTime';
@@ -13,7 +13,7 @@ export default {
   name: 'TeamAvailability',
   components: {
     GroupedAvatars,
-    Button,
+    SharedButton,
   },
   mixins: [configMixin, nextAvailabilityTime, availabilityMixin],
   props: {
@@ -87,16 +87,11 @@ export default {
       <GroupedAvatars v-if="isOnline" :users="availableAgents" />
     </div>
 
-    <Button
+    <SharedButton
       :style="{ color: widgetColor }"
       class="flex h-[40px] w-[200px]"
       @click="startConversation"
     >
-      <!-- <button
-        class="flex flex-row h-full w-full bg-red-50"
-        :style="{ color: widgeColor }"
-        @click="startConversation"
-      > -->
       <span class="flex text-white">
         {{
           hasConversation
@@ -105,7 +100,6 @@ export default {
         }}
       </span>
       <!-- <i class="i-lucide-chevron-right size-6 mt-px text-white" /> -->
-      <!-- </button> -->
-    </Button>
+    </SharedButton>
   </div>
 </template>

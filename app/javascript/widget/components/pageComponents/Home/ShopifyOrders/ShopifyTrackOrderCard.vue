@@ -22,7 +22,7 @@ const onSubmit = () => {
         {{ $t('ORDER_TRACKING_DESC') }}
       </span>
     </div>
-    <div class="flex-1"></div>
+    <div class="flex-1" />
     <Button :style="{ color: widgetColor }" class="h-[35px]">
       <button
         :style="{ color: widgetColor }"

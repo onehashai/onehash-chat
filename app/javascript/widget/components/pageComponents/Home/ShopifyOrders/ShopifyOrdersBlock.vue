@@ -4,10 +4,9 @@ import ShopifyOrderTile from './ShopifyOrderTile.vue';
 const props = defineProps({
   order: {
     type: Object,
-    required: true
-  }
-})
-
+    required: true,
+  },
+});
 </script>
 
 <template>
