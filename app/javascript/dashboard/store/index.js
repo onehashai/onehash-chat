@@ -52,12 +52,15 @@ import captainDocuments from './captain/document';
 import captainResponses from './captain/response';
 import captainInboxes from './captain/inboxes';
 import captainBulkActions from './captain/bulkActions';
+import orders from './modules/orders';
+
 const plugins = [];
 
 // REVIEW:CV4.0.2 removed SLAReports.js and draftMessages.js import nd stores, are there any repercussions
 
 export default createStore({
   modules: {
+    orders,
     accounts,
     agentBots,
     agents,
@@ -86,7 +89,6 @@ export default createStore({
     csat,
     customRole,
     customViews,
-    customRole,
     dashboardApps,
     draftMessages,
     globalConfig,

@@ -25,4 +25,11 @@ export default {
       custom_attributes: [customAttribute],
     });
   },
+  verifyShopifyEmail(params) {
+    return API.post(buildUrl('widget/contact/verify_shopify_email'), params);
+  },
+
+  verifyShopifyOTP(params) {
+    return API.post(buildUrl('widget/contact/verify_shopify_otp'), params);
+  },
 };

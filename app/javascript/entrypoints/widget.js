@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import bottomNavigationVue from 'bottom-navigation-vue';
 import { createI18n } from 'vue-i18n';
 
 import VueDOMPurifyHTML from 'vue-dompurify-html';
@@ -27,6 +28,7 @@ app.use(i18n);
 app.use(store);
 app.use(router);
 app.use(VueDOMPurifyHTML, domPurifyConfig);
+app.use(bottomNavigationVue);
 app.directive('on-clickaway', onClickaway);
 
 app.use(

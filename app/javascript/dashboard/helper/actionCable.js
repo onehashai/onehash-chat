@@ -31,6 +31,7 @@ class ActionCableConnector extends BaseActionCableConnector {
       'conversation.updated': this.onConversationUpdated,
       'account.cache_invalidated': this.onCacheInvalidate,
       'call.rejected': this.onRejectCall,
+      'order.update': this.orderUpdate,
     };
   }
 
@@ -193,8 +194,13 @@ class ActionCableConnector extends BaseActionCableConnector {
     this.app.$store.dispatch('teams/revalidate', { newKey: keys.team });
   };
 
-  onRejectCall = data => {
+  onRejectCall = _ => {
     this.app.$store.dispatch('closeCall', {});
+  };
+
+  // eslint-disable-next-line class-methods-use-this
+  orderUpdate = data => {
+    emitter.emit(BUS_EVENTS.ORDER_UPDATE, data);
   };
 }
 

@@ -38,13 +38,6 @@ export default {
     const router = useRouter();
     const store = useStore();
     const { accountId } = useAccount();
-
-    return { router, store, currentAccountId: accountId };
-  },
-  setup() {
-    const router = useRouter();
-    const store = useStore();
-    const { accountId } = useAccount();
     // Use the font size composable (it automatically sets up the watcher)
     const { currentFontSize } = useFontSize();
 
@@ -101,12 +94,12 @@ export default {
     setTimeout(() => {
       checkKeycloakSession().then(response => {
         if (response === 'Keycloak Token missing from cookies') {
-          Auth.logout();
+          // Auth.logout();
         } else if (
           response.data.message === 'No session found for the provided token' ||
           response.data.message === 'Session expired. Please log in again'
         ) {
-          Auth.logout();
+          // Auth.logout();
         }
       });
     }, 2000);

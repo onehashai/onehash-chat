@@ -17,4 +17,9 @@ export const BUS_EVENTS = {
   INSERT_INTO_RICH_EDITOR: 'insertIntoRichEditor',
   INSERT_INTO_NORMAL_EDITOR: 'insertIntoNormalEditor',
   START_CALL: 'startCall',
+  ORDER_UPDATE: 'orderUpdate',
+  CANCEL_ORDER: 'cancelOrder',
+  FULFILL_ORDER: 'fulfillOrder',
+  REFUND_ORDER: 'refundOrder',
+  RETURN_ORDER: 'returnOrder',
 };

@@ -24,6 +24,7 @@
 #
 # Indexes
 #
+#  index_contacts_custom_attrs_dot_shopify_customer_id   (((custom_attributes -> 'shopify_customer_id'::text))) USING gin
 #  index_contacts_on_account_id                          (account_id)
 #  index_contacts_on_account_id_and_last_activity_at     (account_id,last_activity_at DESC NULLS LAST)
 #  index_contacts_on_blocked                             (blocked)
@@ -95,6 +96,7 @@ class Contact < ApplicationRecord
       )
     )
   }
+
   scope :order_on_city, lambda { |direction|
     order(
       Arel::Nodes::SqlLiteral.new(
@@ -105,6 +107,7 @@ class Contact < ApplicationRecord
       )
     )
   }
+
   scope :order_on_country_name, lambda { |direction|
     order(
       Arel::Nodes::SqlLiteral.new(
@@ -175,6 +178,29 @@ class Contact < ApplicationRecord
       thumbnail: avatar_url,
       blocked: blocked
     }
+  end
+
+  def unverfied_shopify_email
+    return nil if !email.present?
+    return email if custom_attributes['shopify_new_login'] 
+    verfied_email = email == custom_attributes['shopify_verified_email'] 
+
+    return email unless verfied_email
+
+    return nil
+  end
+
+  def has_verfied_shopify_account
+    Rails.logger.info("SHOPIFY NEW LOGIN: #{custom_attributes['shopify_new_login']}")
+    return false if custom_attributes['shopify_new_login'] == true 
+    return false if !email.present? || !custom_attributes['shopify_verified_email'].present?
+    verfied_email = email == custom_attributes['shopify_verified_email'] 
+    return verfied_email
+  end
+
+  def verified_shopify_id
+    return nil unless has_verfied_shopify_account
+    return  custom_attributes['shopify_customer_id']
   end
 
   def self.resolved_contacts

@@ -9,6 +9,8 @@ gem 'rails', '~> 7.0.8.4'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
 
+gem "net-pop", github: "ruby/net-pop"
+
 ##-- rails application helper gems --##
 gem 'acts-as-taggable-on'
 gem 'attr_extras'
@@ -87,7 +89,7 @@ gem 'wisper', '2.0.0'
 
 ##--- gems for channels ---##
 gem 'facebook-messenger'
-gem 'line-bot-api'
+gem 'line-bot-api', '1.28.0'
 gem 'twilio-ruby', '~> 5.66'
 # twitty will handle subscription of twitter account events
 # gem 'twitty', git: 'https://github.com/chatwoot/twitty'
@@ -251,3 +253,6 @@ group :development, :test do
   gem 'spring'
   gem 'spring-watcher-listen'
 end
+gem 'shopify_app'
+
+gem "shopify_graphql", "~> 2.3"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_06_050945) do
+ActiveRecord::Schema[7.0].define(version: 2025_06_30_070633) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -564,6 +564,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_06_050945) do
     t.string "location", default: ""
     t.string "country_code", default: ""
     t.boolean "blocked", default: false, null: false
+    t.index "((custom_attributes -> 'shopify_customer_id'::text))", name: "index_contacts_custom_attrs_dot_shopify_customer_id", using: :gin
     t.index "lower((email)::text), account_id", name: "index_contacts_on_lower_email_account_id"
     t.index ["account_id", "email", "phone_number", "identifier"], name: "index_contacts_on_nonempty_fields", where: "(((email)::text <> ''::text) OR ((phone_number)::text <> ''::text) OR ((identifier)::text <> ''::text))"
     t.index ["account_id", "last_activity_at"], name: "index_contacts_on_account_id_and_last_activity_at", order: { last_activity_at: "DESC NULLS LAST" }
@@ -999,6 +1000,34 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_06_050945) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.string "name"
+    t.bigint "customer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.jsonb "line_items", default: [], null: false
+    t.jsonb "shipping_address"
+    t.jsonb "billing_address"
+    t.jsonb "shipping_lines", default: [], null: false
+    t.decimal "subtotal_price", precision: 15, scale: 2
+    t.decimal "total_price", precision: 15, scale: 2
+    t.decimal "total_tax", precision: 15, scale: 2
+    t.string "currency"
+    t.string "financial_status"
+    t.string "fulfillment_status"
+    t.string "order_status_url"
+    t.string "tags"
+    t.text "note"
+    t.jsonb "refunds", default: [], null: false
+    t.string "cancel_reason"
+    t.datetime "cancelled_at"
+    t.bigint "account_id"
+    t.index ["account_id"], name: "index_orders_on_account_id"
+    t.index ["created_at"], name: "index_orders_on_created_at"
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["name"], name: "index_orders_on_name"
+  end
+
   create_table "platform_app_permissibles", force: :cascade do |t|
     t.bigint "platform_app_id", null: false
     t.string "permissible_type", null: false
@@ -1071,6 +1100,27 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_06_050945) do
     t.index ["inbox_id"], name: "index_reporting_events_on_inbox_id"
     t.index ["name"], name: "index_reporting_events_on_name"
     t.index ["user_id"], name: "index_reporting_events_on_user_id"
+  end
+
+  create_table "shopify_locations", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "ships_inventory", default: false, null: false
+    t.boolean "fulfills_online_orders", default: false, null: false
+    t.boolean "is_active", default: true, null: false
+    t.jsonb "address", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "account_id"
+    t.index ["account_id"], name: "index_shopify_locations_on_account_id"
+  end
+
+  create_table "shops", force: :cascade do |t|
+    t.string "shopify_domain", null: false
+    t.string "shopify_token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "access_scopes"
+    t.index ["shopify_domain"], name: "index_shops_on_shopify_domain", unique: true
   end
 
   create_table "sla_events", force: :cascade do |t|
@@ -1238,6 +1288,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_06_050945) do
   add_foreign_key "contact_bookings", "users"
   add_foreign_key "inboxes", "portals"
   add_foreign_key "integrations_hooks", "account_users"
+  add_foreign_key "orders", "accounts"
+  add_foreign_key "shopify_locations", "accounts"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("accounts").
       after(:insert).

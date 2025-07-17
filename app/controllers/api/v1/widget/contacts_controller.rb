@@ -31,7 +31,64 @@ class Api::V1::Widget::ContactsController < Api::V1::Widget::BaseController
     render json: @contact
   end
 
-  private
+  def verify_shopify_email
+    shopify_hook = @current_account.hooks.find_by(app_id: 'shopify')
+
+    if(!shopify_hook.present?) then
+      return render json: {error: "Shop not found"}, status: :not_found
+    end
+    Rails.logger.info("Verify shopify email")
+    # Currently skipping all otp logic
+    email = params[:email]
+    if @contact.email.present? && params[:email] == ''
+      email = @contact.email
+    else
+      contact = Contact.find_by(email: email)      
+      return render json: {error: "No contact found"}, status: :not_found unless contact
+      identify_contact(contact)
+
+      @contact.update(custom_attributes: @contact.custom_attributes.merge({shopify_new_login: true}))
+
+      send_verification_otp
+    end
+  end
+
+  def verify_shopify_otp
+    code = params.permit(:otp)[:otp]
+    original_code = @contact.custom_attributes['shopify_otp']
+    expiry = @contact.custom_attributes['shopify_otp_expiry']
+
+    return render json: {error: "Otp expired"}, status: :gone if expiry < Time.current
+
+    Rails.logger.info("Codes: #{code}, #{original_code}")
+    return render json: {error: "Otp invalid"}, status: :unauthorized if code != original_code
+
+    @contact.update(custom_attributes: @contact.custom_attributes.merge({shopify_verified_email: @contact.email, shopify_new_login: false}))
+    
+    if (!@contact.custom_attributes['shopify_customer_id'].present?)
+      PopulateShopifyContactDataJob.perform_now(
+        account_id: inbox.account.id,
+        id: @contact.id,
+        email: params[:email],
+        phone_number: @contact.phone_number,
+      );
+    end
+
+    render json: {
+      shopify_customer_id: @contact.custom_attributes['shopify_customer_id']
+    }, status: :ok
+  end
+
+  def send_verification_otp
+    code = Array.new(6) { rand(0..9) }.join
+
+    ContactMailer.otp_email(contact: @contact, subject: "Otp verification for your shopify account", otp: code, account: inbox.account).deliver_now
+
+    @contact.update(custom_attributes: @contact.custom_attributes.merge({
+      shopify_otp: code,
+      shopify_otp_expiry: 10.minutes.from_now
+    }))
+  end
 
   def identify_contact(contact)
     contact_identify_action = ContactIdentifyAction.new(

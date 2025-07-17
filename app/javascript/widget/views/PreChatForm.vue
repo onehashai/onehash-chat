@@ -12,13 +12,6 @@ export default {
   },
   mixins: [configMixin, routerMixin],
   mounted() {
-
-    // REVIEW:ON Used to be this pre cv4.0.2
-    // emitter.on(ON_CONVERSATION_CREATED, () => {
-    //   // Redirect to messages page after conversation is created
-    //   this.replaceRoute('messages');
-    // });
-
     // Register event listener for conversation creation
     emitter.on(ON_CONVERSATION_CREATED, this.handleConversationCreated);
   },
@@ -75,7 +68,7 @@ export default {
 </script>
 
 <template>
-  <div class="flex flex-1 overflow-auto">
+  <div class="flex flex-1 overflow-auto min-h-[29.6rem]">
     <PreChatForm :options="preChatFormOptions" @submit-pre-chat="onSubmit" />
   </div>
 </template>

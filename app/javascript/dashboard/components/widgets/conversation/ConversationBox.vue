@@ -1,5 +1,6 @@
 <script>
 import { mapGetters } from 'vuex';
+import ShopifyOrderCancellation from './ShopifyOrderCancellation.vue';
 import ConversationHeader from './ConversationHeader.vue';
 import DashboardAppFrame from '../DashboardApp/Frame.vue';
 import EmptyState from './EmptyState/EmptyState.vue';
@@ -8,10 +9,17 @@ import ConversationSidebar from './ConversationSidebar.vue';
 import { emitter } from 'shared/helpers/mitt';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import CallDialog from 'dashboard/routes/dashboard/conversation/contact/CallDialog.vue';
+import ShopifyOrderRefund from './ShopifyOrderRefund.vue';
+import ShopifyOrderReturn from './ShopifyOrderReturn.vue';
+import ShopifyOrderFulfill from './ShopifyOrderFulfill.vue';
 
 export default {
   components: {
     CallDialog,
+    ShopifyOrderCancellation,
+    ShopifyOrderRefund,
+    ShopifyOrderReturn,
+    ShopifyOrderFulfill,
     ConversationSidebar,
     ConversationHeader,
     DashboardAppFrame,
@@ -40,7 +48,14 @@ export default {
   },
   emits: ['contactPanelToggle'],
   data() {
-    return { activeIndex: 0, showCallModal: false };
+    return {
+      activeIndex: 0,
+      showCallModal: false,
+      refundOrder: null,
+      returnOrder: null,
+      fulfillOrder: null,
+      cancelOrder: null,
+    };
   },
   computed: {
     ...mapGetters({
@@ -98,9 +113,17 @@ export default {
   mounted() {
     this.fetchLabels();
     this.$store.dispatch('dashboardApps/get');
+    emitter.on(BUS_EVENTS.REFUND_ORDER, this.setRefundOrder);
+    emitter.on(BUS_EVENTS.RETURN_ORDER, this.setReturnOrder);
+    emitter.on(BUS_EVENTS.FULFILL_ORDER, this.setFulfillOrder);
+    emitter.on(BUS_EVENTS.CANCEL_ORDER, this.setCancelOrder);
     emitter.on(BUS_EVENTS.START_CALL, this.startCall);
   },
   unmounted() {
+    emitter.off(BUS_EVENTS.REFUND_ORDER, this.setRefundOrder);
+    emitter.off(BUS_EVENTS.RETURN_ORDER, this.setReturnOrder);
+    emitter.off(BUS_EVENTS.FULFILL_ORDER, this.setFulfillOrder);
+    emitter.off(BUS_EVENTS.CANCEL_ORDER, this.setCancelOrder);
     emitter.off(BUS_EVENTS.START_CALL, this.startCall);
   },
 
@@ -114,25 +137,37 @@ export default {
       }
       return roomId;
     },
-    closeCall() {
-      this.showCallModal = false;
-      this.$store.dispatch('endCall', {
-        chat_id: this.currentChat.id,
-        room_id: this.activeCall.room_id,
-      });
+    async setRefundOrder(order) {
+      this.refundOrder = order;
+    },
+    async setReturnOrder(order) {
+      this.returnOrder = order;
+    },
+    async setFulfillOrder(order) {
+      this.fulfillOrder = order;
+    },
+    async setCancelOrder(order) {
+      this.cancelOrder = order;
     },
     async startCall() {
       if (this.activeCall) return;
 
       const roomId = this.generateJitsiRoomId();
 
-      const call = await this.$store.dispatch('createCall', {
+      await this.$store.dispatch('createCall', {
         chat_id: this.currentChat.id,
         room_id: roomId,
         sender: this.sender,
       });
 
       this.showCallModal = true;
+    },
+    closeCall() {
+      this.showCallModal = false;
+      this.$store.dispatch('endCall', {
+        chat_id: this.currentChat.id,
+        room_id: this.activeCall.room_id,
+      });
     },
     fetchLabels() {
       if (!this.currentChat.id) {
@@ -205,6 +240,10 @@ export default {
         :jwt="activeCall.jwt"
         @close="closeCall"
       />
+      <ShopifyOrderCancellation v-if="cancelOrder" :order="cancelOrder" />
+      <ShopifyOrderRefund v-if="refundOrder" :order="refundOrder" />
+      <ShopifyOrderReturn v-if="returnOrder" :order="returnOrder" />
+      <ShopifyOrderFulfill v-if="fulfillOrder" :order="fulfillOrder" />
     </div>
     <DashboardAppFrame
       v-for="(dashboardApp, index) in dashboardApps"

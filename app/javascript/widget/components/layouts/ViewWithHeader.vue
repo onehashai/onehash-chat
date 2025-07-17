@@ -1,5 +1,6 @@
 <script>
 import Banner from '../Banner.vue';
+import WidgetTabs from '../../views/WidgetTabs.vue';
 import Branding from 'shared/components/Branding.vue';
 import ChatHeader from '../ChatHeader.vue';
 import ChatHeaderExpanded from '../ChatHeaderExpanded.vue';
@@ -13,6 +14,7 @@ export default {
     Branding,
     ChatHeader,
     ChatHeaderExpanded,
+    WidgetTabs,
   },
   mixins: [configMixin],
   data() {
@@ -43,12 +45,34 @@ export default {
       );
     },
     showBackButton() {
-      return ['article-viewer', 'messages', 'prechat-form'].includes(
-        this.$route.name
-      );
+      return [
+        // NOTE: Hiding the back button for now
+        // 'article-viewer',
+        // 'messages',
+        // 'prechat-form',
+        // 'shopify-orders-block',
+      ].includes(this.$route.name);
+    },
+    routeTab() {
+      const routes = [
+        'messages',
+        'article-viewer',
+        'prechat-form',
+        'shopify-orders-block',
+        'home',
+      ];
+      const idx = routes.findIndex(e => e === this.$route.name);
+      if (idx === -1) {
+        return null;
+      }
+      return idx;
     },
     isOnArticleViewer() {
       return ['article-viewer'].includes(this.$route.name);
+    },
+
+    isOnOrdersViewer() {
+      return ['shopify-orders-block'].includes(this.$route.name);
     },
     isOnHomeView() {
       return ['home'].includes(this.$route.name);
@@ -102,7 +126,6 @@ export default {
 <template>
   <div
     class="w-full h-full bg-n-slate-2 dark:bg-n-solid-1"
-    :class="{ 'overflow-auto': isOnHomeView }"
     @keydown.esc="closeWindow"
   >
     <div class="relative flex flex-col h-full">
@@ -132,9 +155,13 @@ export default {
         />
       </div>
       <Banner />
-      <router-view />
 
-      <Branding v-if="!isOnArticleViewer" :disable-branding="disableBranding" />
+      <router-view class="h-full" />
+      <div class="flex-1" />
+
+      <Branding :disable-branding="disableBranding" class="pb-[70px]" />
+
+      <WidgetTabs v-if="routeTab !== null" :active-tab-index="routeTab" />
     </div>
   </div>
 </template>

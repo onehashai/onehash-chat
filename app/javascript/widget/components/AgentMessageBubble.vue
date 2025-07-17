@@ -5,6 +5,7 @@ import ChatForm from 'shared/components/ChatForm.vue';
 import ChatOptions from 'shared/components/ChatOptions.vue';
 import ChatArticle from './template/Article.vue';
 import EmailInput from './template/EmailInput.vue';
+import ShopifyOrderEventCard from './template/ShopifyOrderEventCard.vue';
 import CustomerSatisfaction from 'shared/components/CustomerSatisfaction.vue';
 import IntegrationCard from './template/IntegrationCard.vue';
 import CalEventCard from './template/CalEventCard.vue';
@@ -19,11 +20,12 @@ export default {
     ChatForm,
     ChatOptions,
     EmailInput,
+    ShopifyOrderEventCard,
     CustomerSatisfaction,
     IntegrationCard,
     CalEventCard,
     CalEventConfirmationCard,
-    CallingEventCard
+    CallingEventCard,
   },
   props: {
     message: { type: String, default: null },
@@ -51,6 +53,9 @@ export default {
     },
     isTemplateEmail() {
       return this.contentType === 'input_email';
+    },
+    isTemplateShopifyOrderEvent() {
+      return this.contentType === 'shopify_order_event';
     },
     isCards() {
       return this.contentType === 'cards';
@@ -117,7 +122,7 @@ export default {
         v-dompurify-html="formatMessage(message, false)"
         class="message-content text-n-slate-12"
       />
-      
+
       <CallingEventCard
         v-if="isCallingEvent"
         :call-status="messageContentAttributes.call_status"
@@ -127,6 +132,12 @@ export default {
 
       <EmailInput
         v-if="isTemplateEmail"
+        :message-id="messageId"
+        :message-content-attributes="messageContentAttributes"
+      />
+
+      <ShopifyOrderEventCard
+        v-if="isTemplateShopifyOrderEvent"
         :message-id="messageId"
         :message-content-attributes="messageContentAttributes"
       />

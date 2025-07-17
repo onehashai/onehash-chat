@@ -12,6 +12,11 @@
       "ERROR_MESSAGE": "Couldn't send, try again"
     }
   },
+  "TAB_VIEW": {
+    "CONVERSATION": "Conversation",
+    "ARTICLES": "Articles",
+    "ORDER": "Orders"
+  },
   "TEAM_AVAILABILITY": {
     "ONLINE": "We are online",
     "OFFLINE": "We are away at the moment"
@@ -44,7 +49,7 @@
     "BOT": "Bot"
   },
   "CALL_VIEW": {
-    "INCOMING_CALL": "Incoming Call",
+    "INCOMING_CALL": "Incoming Call...",
     "ACCEPT_BUTTON": "Accept",
     "DECLINE_BUTTON": "Decline"
   },
@@ -52,7 +57,22 @@
     "LABEL": "Chat with us"
   },
   "POWERED_BY": "Powered by OneHash Chat",
+  "EMAIL": "Email",
   "EMAIL_PLACEHOLDER": "Please enter your email",
+  "EMAIL_ERROR": "Please enter a valid email",
+  "ORDER_ID": "Order Id",
+  "ORDER_ID_PLACEHOLDER": "Please enter the order id",
+  "ORDER_ID_ERROR": "Please enter a valid order id",
+  "PHONE": "Phone number",
+  "PHONE_PLACEHOLDER": "Please enter your phone",
+  "PHONE_ERROR": "Please enter a valid phone number",
+  "ORDER_NOT_FOUND": "Order not found",
+  "TRACK_ANOTHER_ORDER": "Track another order",
+  "VERIFY_EMAIL": "Verify",
+  "VERIFY_OTP": "Verify",
+  "TRACK_ORDER": "Track order",
+  "TRACKING_INFO": "Tracking info",
+  "SEND_OTP": "Send otp",
   "CHAT_PLACEHOLDER": "Type your message",
   "TODAY": "Today",
   "YESTERDAY": "Yesterday",
@@ -119,6 +139,19 @@
     "POPULAR_ARTICLES": "Popular Articles",
     "VIEW_ALL_ARTICLES": "View all articles",
     "IFRAME_LOAD_ERROR": "There was an error loading the article, please refresh the page and try again."
+  },
+  "ORDER_TRACKING": "Order tracking",
+  "ORDER_TRACKING_DESC": "Track order with your order id",
+  "SHOPIFY_ORDERS": {
+    "TITLE": "Shopify Orders",
+    "VIEW_ALL_ORDERS": "View all",
+    "ENTER_EMAIL": "Enter your email",
+    "ORDER": "Order",
+    "SHIPMENT": "Shipment",
+    "TRACK": "Track",
+    "VIEW": "View",
+    "FETCH_ORDERS": "Fetch Orders",
+    "NO_ORDERS": "No orders available"
   },
   "ATTACHMENTS": {
     "image": {

@@ -148,6 +148,24 @@ class ActionCableListener < BaseListener
     broadcast(account, tokens, CALL_REJECTED, call)
   end
 
+  # Order Events
+  def order_update(event)
+    Rails.logger.info("order update: #{event}")
+    status, order = event.data.values_at(:status, :order)
+
+    account = order.account
+    Rails.logger.info("order update account: #{account}")
+    tokens = [account_token(account)]
+    # token = [currentUser]
+
+    broadcast(account, tokens, ORDER_UPDATE, {
+      message: I18n.t('shopify.order.update_complete'),
+      status: status,
+      order: order
+    })
+    Rails.logger.info("order update broadcasted")
+  end
+
   def assignee_changed(event)
     conversation, account = extract_conversation_and_account(event)
     tokens = user_tokens(account, conversation.inbox.members)

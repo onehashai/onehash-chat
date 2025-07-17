@@ -20,8 +20,8 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
     return '';
   }
 
-  const getAccount = store.getters['accounts/getAccount'];
-  let currentAccount = getAccount(user.account_id); // Assuming user has an account_id property
+  let getAccount = store.getters['accounts/getAccount'];
+  let currentAccount = getAccount(user.account_id);
 
   if (
     !currentAccount ||
@@ -29,14 +29,27 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
     currentAccount.custom_attributes?.onboarding_step !== 'true'
   ) {
     await store.dispatch('accounts/getAccountById', user.account_id);
-    const getAccount = store.getters['accounts/getAccount'];
-    currentAccount = getAccount(user.account_id); // Assuming user has an account_id property
+    getAccount = store.getters['accounts/getAccount'];
+    currentAccount = getAccount(user.account_id);
   }
 
   if (to.fullPath === '/app?to=cal_integration') {
     return next(
       frontendURL(
         `accounts/${user.account_id}/settings/integrations/onehash_apps`
+      )
+    );
+  }
+
+  if (
+    to?.query &&
+    'shop' in to.query &&
+    to.fullPath !==
+      `/app/accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
+  ) {
+    return next(
+      frontendURL(
+        `accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
       )
     );
   }

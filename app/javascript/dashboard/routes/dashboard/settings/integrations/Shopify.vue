@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+
 import {
   useFunctionGetter,
   useMapGetter,
@@ -12,6 +13,7 @@ import integrationAPI from 'dashboard/api/integrations';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
+import { useRoute } from 'vue-router';
 
 defineProps({
   error: {
@@ -19,6 +21,8 @@ defineProps({
     default: '',
   },
 });
+
+const route = useRoute();
 
 const store = useStore();
 const dialogRef = ref(null);
@@ -84,6 +88,19 @@ const initializeShopifyIntegration = async () => {
 
 onMounted(() => {
   initializeShopifyIntegration();
+  const queryParams = route.query;
+  if ('shop' in queryParams) {
+    integrationAPI
+      .connectShopify({
+        shopDomain: queryParams.shop,
+      })
+      .then(res => {
+        const { data } = res;
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url;
+        }
+      });
+  }
 });
 </script>
 

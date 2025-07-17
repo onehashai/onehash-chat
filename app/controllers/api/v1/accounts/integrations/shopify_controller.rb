@@ -1,11 +1,14 @@
 class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::BaseController
   include Shopify::IntegrationHelper
-  before_action :setup_shopify_context, only: [:orders]
+  include ShopifyApp::LoginProtection
+  include ShopifyApp::RedirectForEmbedded
+
   before_action :fetch_hook, except: [:auth]
+  before_action :setup_shopify_context, only: [:orders]
   before_action :validate_contact, only: [:orders]
 
   def auth
-    shop_domain = params[:shop_domain]
+    shop_domain = params[:shop]
     return render json: { error: 'Shop domain is required' }, status: :unprocessable_entity if shop_domain.blank?
 
     state = generate_shopify_token(Current.account.id)
@@ -18,20 +21,40 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
       state: state
     )
 
+    cookie = ShopifyAPI::Auth::Oauth::SessionCookie.new(value: state, expires: Time.now + 60)
+
+    cookies.encrypted[cookie.name] = {
+      expires: cookie.expires,
+      secure: true,
+      http_only: true,
+      value: cookie.value,
+    }
+
+    Rails.logger.info("Redirecting to #{auth_url}")
     render json: { redirect_url: auth_url }
   end
 
   def orders
-    customers = fetch_customers
-    return render json: { orders: [] } if customers.empty?
+    if !contact.custom_attributes['shopify_customer_id'].present?
+      PopulateShopifyContactDataJob.perform_now(account_id: Current.account.id, id: contact.id, email: contact.email, phone_number: contact.phone_number)
+    end
 
-    orders = fetch_orders(customers.first['id'])
-    render json: { orders: orders }
+    if !contact.custom_attributes['shopify_customer_id'].present?
+      render json: {orders: []} 
+      return
+    end
+
+    # orders = fetch_orders(contact.custom_attributes['shopify_customer_id'])
+    orders = Order.where(customer_id: contact.custom_attributes['shopify_customer_id'])
+
+    render json: { orders: orders, shop: @hook.reference_id}
   rescue ShopifyAPI::Errors::HttpResponseError => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
   def destroy
+    shop = Shop.find_by(shopify_domain: @hook.reference_id)
+    shop.destroy!
     @hook.destroy!
     head :ok
   rescue StandardError => e
@@ -41,7 +64,7 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
   private
 
   def redirect_uri
-    "#{ENV.fetch('FRONTEND_URL', '')}/shopify/callback"
+    "#{ENV.fetch('FRONTEND_URL', '')}/auth/shopify/callback"
   end
 
   def contact
@@ -50,20 +73,6 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
 
   def fetch_hook
     @hook = Integrations::Hook.find_by!(account: Current.account, app_id: 'shopify')
-  end
-
-  def fetch_customers
-    query = []
-    query << "email:#{contact.email}" if contact.email.present?
-    query << "phone:#{contact.phone_number}" if contact.phone_number.present?
-
-    shopify_client.get(
-      path: 'customers/search.json',
-      query: {
-        query: query.join(' OR '),
-        fields: 'id,email,phone'
-      }
-    ).body['customers'] || []
   end
 
   def fetch_orders(customer_id)
@@ -81,25 +90,17 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
     end
   end
 
-  def setup_shopify_context
-    return if client_id.blank? || client_secret.blank?
 
-    ShopifyAPI::Context.setup(
-      api_key: client_id,
-      api_secret_key: client_secret,
-      api_version: '2025-01'.freeze,
-      scope: REQUIRED_SCOPES.join(','),
-      is_embedded: true,
-      is_private: false
-    )
+  def setup_shopify_context
+    @shopify_service =  Shopify::ClientService.new(Current.account)
   end
 
   def shopify_session
-    ShopifyAPI::Auth::Session.new(shop: @hook.reference_id, access_token: @hook.access_token)
+    @shopify_service.shopify_sesion
   end
 
   def shopify_client
-    @shopify_client ||= ShopifyAPI::Clients::Rest::Admin.new(session: shopify_session)
+    @shopify_service.shopify_client
   end
 
   def validate_contact

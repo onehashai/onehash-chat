@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount ShopifyApp::Engine, at: '/'
   # AUTH STARTS
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
     confirmations: 'devise_overrides/confirmations',
@@ -324,6 +325,9 @@ Rails.application.routes.draw do
       resource :notification_subscriptions, only: [:create, :destroy]
 
       namespace :widget do
+        namespace :shopify do
+          resources :orders, only: [:index]
+        end
         resource :direct_uploads, only: [:create]
         resource :config, only: [:create]
         resources :campaigns, only: [:index]
@@ -343,6 +347,8 @@ Rails.application.routes.draw do
         resource :contact, only: [:show, :update] do
           collection do
             post  :destroy_custom_attributes
+            post  :verify_shopify_email
+            post  :verify_shopify_otp
             patch :set_user
           end
         end
@@ -361,6 +367,20 @@ Rails.application.routes.draw do
     namespace :v2 do
       resources :accounts, only: [:create] do
         scope module: :accounts do
+          namespace :shopify do
+            resources :orders, only: [:show] do
+              post :cancel_order, on: :member
+              post :calculate_refund, on: :member
+              post :refund_order, on: :member
+              post :return_calculate, on: :member
+              post :return_create, on: :member
+              post :fulfillment_create, on: :member
+              get  :order_details, on: :member
+              get  :fulfillment_orders, on: :member
+            end
+            resources :locations, only: [:index]
+          end
+
           resources :summary_reports, only: [] do
             collection do
               get :agent
@@ -382,6 +402,7 @@ Rails.application.routes.draw do
               get :bot_metrics
             end
           end
+
           resources :live_reports, only: [] do
             collection do
               get :conversation_metrics
