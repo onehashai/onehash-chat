@@ -5,10 +5,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  compact: {
-    type: Boolean,
-    required: true,
-  },
 });
 
 // Emits
@@ -64,7 +60,7 @@ const handleReportIssue = () => {
     </div>
 
     <!-- Action Buttons - Stacked for narrow width -->
-    <div v-if="!compact" class="grid grid-cols-3 gap-2 mb-2">
+    <div class="grid grid-cols-3 gap-2 mb-2">
       <a
         :href="order.order_status_url"
         target="_blank"
@@ -80,7 +76,7 @@ const handleReportIssue = () => {
     </div>
 
     <!-- Order Items -->
-    <div v-if="!compact" class="border-t pt-2">
+    <div class="border-t pt-2">
       <div
         v-for="item in order.line_items"
         :key="item.id"

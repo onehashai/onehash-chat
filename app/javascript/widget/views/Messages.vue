@@ -20,7 +20,7 @@ export default {
 <template>
   <div>
     <div
-      class="flex flex-col flex-1 overflow-hidden rounded-b-lg bg-n-slate-2 dark:bg-n-solid-1 h-full"
+      class="flex flex-col flex-1 overflow-hidden rounded-b-lg bg-n-slate-2 dark:bg-n-solid-1 h-[29.6rem]"
     >
       <div class="flex flex-1 overflow-auto">
         <ConversationWrap :grouped-messages="groupedMessages" />

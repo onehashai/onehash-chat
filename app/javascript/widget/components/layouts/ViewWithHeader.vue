@@ -46,14 +46,21 @@ export default {
     },
     showBackButton() {
       return [
-        'article-viewer',
-        'messages',
-        'prechat-form',
-        'shopify-orders-block',
+        // NOTE: Hiding the back button for now
+        // 'article-viewer',
+        // 'messages',
+        // 'prechat-form',
+        // 'shopify-orders-block',
       ].includes(this.$route.name);
     },
     routeTab() {
-      const routes = ['messages', 'article-viewer', 'shopify-orders-block'];
+      const routes = [
+        'messages',
+        'article-viewer',
+        'prechat-form',
+        'shopify-orders-block',
+        'home',
+      ];
       const idx = routes.findIndex(e => e === this.$route.name);
       if (idx === -1) {
         return null;
@@ -149,15 +156,15 @@ export default {
       </div>
       <Banner />
 
-      <WidgetTabs v-if="routeTab !== null" :active-tab-index="routeTab" />
-
       <router-view class="h-full" />
       <div class="flex-1" />
 
       <Branding
-        v-if="!isOnArticleViewer && !isOnOrdersViewer"
         :disable-branding="disableBranding"
+        class="pb-[70px]"
       />
+
+      <WidgetTabs v-if="routeTab !== null" :active-tab-index="routeTab" />
     </div>
   </div>
 </template>

@@ -1,4 +1,5 @@
 <script setup>
+import Button from 'shared/components/Button.vue';
 import { computed } from 'vue';
 import { format } from 'date-fns';
 import { useI18n } from 'vue-i18n';
@@ -187,12 +188,12 @@ const getFulfillmentClass = status => {
         @click="emitReturnOrder"
       >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.RETURN.BUTTON_TEXT') }}
-      </button>
+      </Button>
     </div>
 
     <div
       v-if="order.cancelled_at"
-      class="bg-blue-500 text-white rounded text-sm"
+      class="bg-blue-500 rounded text-sm"
       :title="getCancelReasonString(order.cancel_reason)"
     >
       Cancelled: {{ getCancelReasonString(order.cancel_reason) }}
@@ -206,10 +207,10 @@ const getFulfillmentClass = status => {
 
   button {
     @apply px-3 py-1 text-sm border rounded
-                 bg-white dark:bg-slate-700
-                 border-slate-300 dark:border-slate-600
-                 text-slate-700 dark:text-white
-                 hover:bg-slate-50 hover:dark:bg-slate-600;
+                 bg-slate-700 dark:bg-slate-700
+                 border-slate-600 dark:border-slate-600
+                 text-white dark:text-white
+                 hover:bg-slate-600 hover:dark:bg-slate-600;
   }
 }
 </style>

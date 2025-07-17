@@ -4,46 +4,50 @@ const state = {
   uiFlags: {
     isUpdating: false,
     isFetching: false,
-    noOrders: false,
+    noOrder: false,
   },
-  orders: [],
+  order: null,
 };
 
 export const getters = {
   getUiFlags: $state => $state.uiFlags,
-  getOrders: $state => $state.orders,
+  getOrder: $state => $state.order,
 };
 
 export const actions = {
-  get: async ({ commit }) => {
+  get: async ({ commit }, { orderId, customerEmail, customerPhone }) => {
     try {
       commit('toggleIsFetchingStatus', true);
 
-      const response = await ShopifyOrdersAPI.get();
+      const response = await ShopifyOrdersAPI.get({
+        orderId,
+        customerEmail,
+        customerPhone,
+      });
 
-      if (response.data.populated && response.data.orders.length === 0) {
-        commit('toggleNoOrdersStatus', true);
-      }
       commit('toggleIsFetchingStatus', false);
-
-      commit('updateOrders', response.data.orders);
+      if (response.data.order) {
+        commit('updateOrders', response.data.order);
+      } else {
+        commit('toggleOrderNotFound', true);
+      }
     } catch {
-      // do nothing
+      commit('toggleOrderNotFound', true);
     }
   },
 };
 
 export const mutations = {
-  toggleNoOrdersStatus($state, status) {
-    $state.uiFlags.noOrders = status;
+  toggleOrderNotFound($state, status) {
+    $state.uiFlags.noOrder = status;
   },
 
   toggleIsFetchingStatus($state, status) {
     $state.uiFlags.isFetching = status;
   },
 
-  updateOrders($state, orders) {
-    $state.orders = orders;
+  updateOrders($state, order) {
+    $state.order = order;
   },
 };
 

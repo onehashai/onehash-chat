@@ -4,13 +4,14 @@ import { mapGetters } from 'vuex';
 import routerMixin from 'widget/mixins/routerMixin';
 import configMixin from 'widget/mixins/configMixin';
 import ArticleContainer from '../components/pageComponents/Home/Article/ArticleContainer.vue';
-import ShopifyOrdersContainer from '../components/pageComponents/Home/ShopifyOrders/ShopifyOrdersContainer.vue';
+import ShopifyTrackOrderCard from '../components/pageComponents/Home/ShopifyOrders/ShopifyTrackOrderCard.vue';
+
 export default {
   name: 'Home',
   components: {
     ArticleContainer,
     TeamAvailability,
-    ShopifyOrdersContainer,
+    ShopifyTrackOrderCard,
   },
   mixins: [configMixin, routerMixin],
   data() {
@@ -27,6 +28,9 @@ export default {
   },
   methods: {
     startConversation() {
+      console.log('Pre chat: ', this.preChatFormEnabled);
+      console.log('Con size: ', this.conversationSize);
+
       if (this.preChatFormEnabled && !this.conversationSize) {
         return this.replaceRoute('prechat-form');
       }
@@ -45,7 +49,7 @@ export default {
       @start-conversation="startConversation"
     />
 
-    <ShopifyOrdersContainer v-if="hasShop" :limit="3" :compact="true" />
+    <ShopifyTrackOrderCard v-if="hasShop" />
     <ArticleContainer />
   </div>
 </template>
