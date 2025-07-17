@@ -1,13 +1,20 @@
 <script setup>
+import FormInput from 'v3/components/Form/Input.vue';
+import countries from 'shared/constants/countries.js';
+
+// "name": "Afghanistan",
+// "dial_code": "+93",
+// "emoji": "🇦🇫",
+// "id": "AF"
+import TabBar from 'dashboard/components-next/tabbar/TabBar.vue';
 import Spinner from 'shared/components/Spinner.vue';
-import { defineProps, defineEmits, computed, reactive } from 'vue';
+import { defineProps, computed, reactive, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { useStore } from 'dashboard/composables/store';
-import { required, email, minLength, maxLength } from '@vuelidate/validators';
+import { required, requiredIf, email, numeric } from '@vuelidate/validators';
 import { useMapGetter } from 'dashboard/composables/store';
 import { ref } from 'vue';
 import Button from 'shared/components/Button.vue';
-import { isAxiosError } from 'axios';
 
 const props = defineProps({
   unverfied_shopify_email: {
@@ -18,195 +25,184 @@ const props = defineProps({
 
 const form = reactive({
   email: '',
+  country_code: '',
+  phone: '',
+  orderId: 0,
 });
 
-const rules = {
-  email: { required, email },
+const input_type = ref('Email');
+
+const input_types = [
+  {
+    label: 'Email',
+    value: 'Email',
+  },
+  {
+    label: 'Phone',
+    value: 'Phone',
+  },
+];
+const handleTypeChange = info => {
+  input_type.value = info.value;
+
+  if (info.value == 'Email') {
+    form.phone = '';
+  }
+
+  if (info.value == 'Phone') {
+    form.email = '';
+  }
+
+  v$.value.$touch();
 };
+
+const countryCode = ref(countries.find(e => e.id === 'IN'));
+
+const rules = computed(() => ({
+  email: { required: requiredIf(() => input_type.value === 'Email'), email },
+  phone: { required: requiredIf(() => input_type.value === 'Phone') },
+  orderId: { required, numeric },
+}));
 
 const v$ = useVuelidate(rules, form);
-
-const oform = reactive({
-  otp: '',
-});
-
-const otpResult = ref({
-  canResend: true,
-});
-
-const orules = {
-  otp: { required, minLength: minLength(6), maxLength: maxLength(6) },
-};
-
-const o$ = useVuelidate(orules, oform);
 
 const store = useStore();
 
 const widgetColor = useMapGetter('appConfig/getWidgetColor');
 
-const contactUiFlags = computed(() => store.getters['contacts/getUiFlags']);
+const orderUiFlags = computed(() => store.getters['orders/getUiFlags']);
 
-const otpStage = ref(false);
-
-const startTime = ref(Date.now());
-const elapsed = ref(0);
-let timer = null;
-
-const formattedTime = computed(() => {
-  const seconds = Math.floor(elapsed.value / 1000) % 60;
-  const minutes = Math.floor(elapsed.value / 60000);
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-});
-
-const onOtpSent = () => {
-  otpResult.value = {
-    canResend: false,
-  };
-  timer = setInterval(() => {
-    elapsed.value = Date.now() - startTime.value;
-
-    if (elapsed.value >= 60000) {
-      clearInterval(timer);
-      otpResult.value = {
-        canResend: true,
-      };
+const onSubmit = async event => {
+  try {
+    event.stopPropagation();
+    event.preventDefault();
+    v$.value.$touch();
+    if (v$.value.$error) {
+      return;
     }
-  }, 1000);
-};
 
-const onSubmit = async () => {
-  try {
-    await store.dispatch('contacts/verifyShopifyEmail', {
-      email:
-        props.unverfied_shopify_email === null
-          ? form.email
-          : props.unverfied_shopify_email,
+    store.dispatch('orders/get', {
+      orderId: form.orderId,
+      customerEmail: input_type.value === 'Email' ? form.email : null,
+      customerPhone:
+        input_type.value === 'Phone'
+          ? countryCode.value.dial_code + form.phone.toString()
+          : null,
     });
-
-    otpStage.value = true;
-    onOtpSent();
   } catch (e) {}
-};
-
-const verifyOtp = async () => {
-  try {
-    await store.dispatch('contacts/verifyShopifyOTP', {
-      otp: oform.otp,
-    });
-  } catch (e) {
-    // Pass
-  }
 };
 </script>
 
 <template>
   <div class="flex flex-col gap-3">
     <h3 class="font-medium text-n-slate-12">
-      {{ $t('SHOPIFY_LOGIN') }}
+      {{ $t('TRACKING_INFO') }}
     </h3>
     <form
       v-if="props.unverfied_shopify_email === null"
-      class="email-input-group h-10 flex my-2 mx-0 min-w-[200px] gap-4"
-      @submit.prevent="onSubmit"
+      class="email-input-group h-30 my-2 mx-0 min-w-[200px] gap-4"
+      @submit="onSubmit"
     >
-      <input
-        v-model="form.email"
-        type="email"
-        :placeholder="$t('EMAIL_PLACEHOLDER')"
-        :class="{ error: v$.email.$error }"
-        @input="v$.email.$touch"
-        @keydown.enter="onSubmit"
-        @blur="v$.email.$touch()"
-      />
-
-      <Button
-        :style="{ color: widgetColor }"
-        :disabled="v$.email.$invalid"
-        buttonType="submit"
-      >
-        <button
-          class="flex flex-row items-center justify-center h-[20px] w-[40px]"
-        >
-          <span
-            class="text-white flex flex-row items-center justify-center h-[20px] w-full"
-            v-if="!contactUiFlags.isUpdating"
-          >
-            {{ $t('VERIFY_EMAIL') }}
-          </span>
-
-          <Spinner v-else class="h-full flex items-center justify-center" />
-        </button>
-      </Button>
-    </form>
-
-    <form
-      v-else-if="otpStage"
-      class="email-input-group h-10 flex my-2 mx-0 min-w-[200px] gap-4"
-      @submit.prevent="verifyOtp"
-    >
-      <div class="flex flex-col items-start">
-        <input
-          v-model="oform.otp"
-          type="text"
-          :placeholder="$t('OTP_PLACEHOLDER')"
-          :class="{ error: o$.otp.$error }"
-          @input="o$.otp.$touch"
-          @keydown.enter="verifyOtp"
-          @blur="o$.otp.$touch()"
+      <div class="flex flex-col gap-4">
+        <TabBar
+          :tabs="input_types"
+          :initial-active-tab="
+            input_types.findIndex(e => e.label === input_type)
+          "
+          :fixed-size="true"
+          @tab-changed="handleTypeChange"
+          class="w-full"
         />
 
-        <span
-          v-if="contactUiFlags.otpError"
-          class="text-xs text-red-500 pt-1"
-          >{{ contactUiFlags.otpError }}</span
-        >
-      </div>
+        <FormInput
+          v-if="input_type === 'Email'"
+          v-model="form.email"
+          name="email"
+          spacing="compact"
+          type="text"
+          :has-error="v$.email.$error"
+          :label="$t('EMAIL')"
+          :placeholder="$t('EMAIL_PLACEHOLDER')"
+          :error-message="$t('EMAIL_ERROR')"
+        />
 
-      <div class="flex flex-col gap-2">
+        <div v-if="input_type === 'Phone'" class="flex flex-row px-0">
+          <FormInput
+            v-model="form.phone"
+            name="phone"
+            spacing="compact"
+            type="number"
+            class="w-full"
+            :has-error="v$.phone.$error"
+            :label="$t('PHONE')"
+            :placeholder="$t('PHONE_PLACEHOLDER')"
+            :error-message="$t('PHONE_ERROR')"
+          >
+            <template #leftOfInput>
+              <select
+                v-model="countryCode"
+                name="countryCode"
+                :options="countries"
+                class="max-w-28"
+              >
+                <option
+                  v-for="country in countries"
+                  :value="country"
+                  :key="country.id"
+                >
+                  <label class="text-lg">
+                    {{ country.emoji }}
+                  </label>
+                  <label class="text-xxs">
+                    {{ ' ' + country.dial_code }}
+                  </label>
+                </option>
+              </select>
+            </template>
+          </FormInput>
+        </div>
+        <FormInput
+          v-model="form.orderId"
+          name="order_id"
+          spacing="compact"
+          type="number"
+          :has-error="v$.orderId.$error"
+          :label="$t('ORDER_ID')"
+          :placeholder="$t('ORDER_ID_PLACEHOLDER')"
+          :error-message="$t('ORDER_ID_ERROR')"
+        />
+
         <Button
           :style="{ color: widgetColor }"
-          :disabled="o$.otp.$invalid"
+          :disabled="v$.$invalid"
           buttonType="submit"
         >
-          <button
-            class="flex flex-row items-center justify-center h-[20px] w-[40px]"
-          >
+          <button class="flex flex-row items-center justify-center">
             <span
-              class="text-white flex flex-row items-center justify-center h-[20px] w-full"
-              v-if="!contactUiFlags.isUpdating"
+              class="text-white flex flex-row items-center justify-center"
+              v-if="!orderUiFlags.isFetching"
             >
-              {{ $t('VERIFY_OTP') }}
+              {{ $t('TRACK_ORDER') }}
             </span>
 
-            <Spinner v-else class="h-full flex items-center justify-center" />
+            <Spinner v-else class="items-center justify-center" />
           </button>
         </Button>
       </div>
     </form>
-    <div
-      class="flex flex-col"
-      v-if="
-        props.unverfied_shopify_email !== null &&
-        !otpStage &&
-        otpResult.canResend
-      "
-    >
-      <div>Please verify your email via OTP: {{ unverfied_shopify_email }}</div>
-      <Button class="h-[40px]">
-        <button
-          :style="{ color: widgetColor }"
-          @click.stop="onSubmit"
-          class="flex flex-row items-center justify-center h-full w-full"
-        >
-          <label
-            class="text-white h-full flex items-center justify-center"
-            v-if="!contactUiFlags.isUpdating"
-          >
-            {{ $t('SEND_OTP') }}
-          </label>
-          <Spinner v-else class="h-full flex items-center justify-center" />
-        </button>
-      </Button>
-    </div>
   </div>
 </template>
+
+<style>
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+</style>

@@ -639,6 +639,9 @@ const buttonText = () => {
                   v$.trackingNumber[index].$error ? 'error' : 'message'
                 "
                 style="width: 200px; font-size: 1.1em"
+                :placeholder="
+                  $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TRACKING.NUMBER')
+                "
               />
             </div>
 
@@ -649,6 +652,9 @@ const buttonText = () => {
                 :message="v$.trackingUrl[index].$errors[0]?.$message || ''"
                 :message-type="
                   v$.trackingUrl[index].$error ? 'error' : 'message'
+                "
+                :placeholder="
+                  $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.TRACKING.URL')
                 "
                 v-model="formState.trackingUrl[index]"
                 style="width: 200px; font-size: 1.1em"

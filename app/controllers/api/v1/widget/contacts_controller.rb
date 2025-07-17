@@ -66,7 +66,6 @@ class Api::V1::Widget::ContactsController < Api::V1::Widget::BaseController
     @contact.update(custom_attributes: @contact.custom_attributes.merge({shopify_verified_email: @contact.email, shopify_new_login: false}))
     
     if (!@contact.custom_attributes['shopify_customer_id'].present?)
-      Rails.logger.info("Populating")
       PopulateShopifyContactDataJob.perform_now(
         account_id: inbox.account.id,
         id: @contact.id,

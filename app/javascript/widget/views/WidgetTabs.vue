@@ -1,9 +1,14 @@
 <script setup>
+import FluentIcon from 'shared/components/FluentIcon/Index.vue';
+import { onMounted, ref } from 'vue';
+import { RingBottomNavigation } from 'bottom-navigation-vue';
+
 import TabBar from 'dashboard/components-next/tabbar/TabBar.vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { computed, defineEmits, defineProps } from 'vue';
 import { useDarkMode } from 'widget/composables/useDarkMode';
+import { useMapGetter } from 'dashboard/composables/store';
 
 const props = defineProps({
   activeTabIndex: {
@@ -14,6 +19,16 @@ const props = defineProps({
 const emit = defineEmits(['tabChange']);
 const { prefersDarkMode } = useDarkMode();
 const { t } = useI18n();
+
+const popularArticles = useMapGetter('article/popularArticles');
+const articleUiFlags = useMapGetter('article/uiFlags');
+const getConversationSize = useMapGetter('conversation/getConversationSize');
+
+onMounted(() => {
+  console.log('Conversation size: ', getConversationSize);
+});
+
+const widgetColor = useMapGetter('appConfig/getWidgetColor');
 
 const router = useRouter();
 
@@ -42,9 +57,7 @@ const buildArticleViewerParams = link => {
     theme: prefersDarkMode.value ? 'dark' : 'light',
   });
 
-  // Combine link with query parameters
   const linkToOpen = `${link}?${params.toString()}`;
-  // router.push({ name: 'article-viewer', query: { link: linkToOpen } });
   return { link: linkToOpen };
 };
 
@@ -55,51 +68,100 @@ const getArticleViewerParams = () => {
   return buildArticleViewerParams(`/hc/${slug}/${locale.value}`);
 };
 
-const tabList = {
-  CONVERSATION: {
-    route: 'messages',
-    params: {},
-  },
+const key = computed(() => [
+  window.chatwootWebChannel.preChatFormEnabled && !getConversationSize.value,
+  articleUiFlags.value.isFetching || !!popularArticles.value.length,
+]);
 
-  ...(window.chatwootWebChannel.portal !== null
-    ? {
-        ARTICLES: {
-          route: 'article-viewer',
-          params: getArticleViewerParams(),
-        },
-      }
-    : {}),
-  ...(window.chatwootWebChannel.hasShop
-    ? {
-        ORDER: {
-          route: 'shopify-orders-block',
-          params: {},
-        },
-      }
-    : {}),
-};
+const options = computed(() => {
+  console.log('Computing again with: ');
+  console.log('Pre chat: ', window.chatwootWebChannel.preChatFormEnabled);
+  console.log('Con size: ', getConversationSize.value);
 
-const tabs = computed(() => {
-  return Object.entries(tabList).map(([key, info]) => ({
-    label: t(`TAB_VIEW.${key}`),
-    value: info,
-  }));
+  return [
+    {
+      id: 0,
+      icon: 'home',
+      title: 'Home',
+      path: {
+        name: 'home',
+        query: {},
+      },
+    },
+    {
+      id:
+        window.chatwootWebChannel.preChatFormEnabled &&
+        !getConversationSize.value
+          ? 1
+          : 4,
+      icon: 'chat',
+      title: 'Chat',
+      path:
+        window.chatwootWebChannel.preChatFormEnabled &&
+        !getConversationSize.value
+          ? { name: 'prechat-form', query: {} }
+          : { name: 'messages', query: {} },
+    },
+
+    ...(window.chatwootWebChannel.hasShop
+      ? [
+          {
+            id: 2,
+            icon: 'truck',
+            title: 'Track',
+            path: {
+              name: 'shopify-orders-block',
+              query: {},
+            },
+          },
+        ]
+      : []),
+    ...(window.chatwootWebChannel.portal &&
+    (articleUiFlags.value.isFetching || !!popularArticles.value.length)
+      ? [
+          {
+            id: 3,
+            icon: 'help',
+            title: 'Help',
+            path: {
+              name: 'article-viewer',
+              query: getArticleViewerParams(),
+            },
+          },
+        ]
+      : []),
+  ];
 });
 
-const handleTabChange = info => {
-  router.replace({ name: info.value.route, query: info.value.params });
-  // replaceRoute(info.value.route, info.value.params);
-};
+const selected = ref(props.activeTabIndex);
 </script>
 
 <template>
-  <div v-if="tabs.length > 1" class="p-2">
-    <TabBar
+  <div v-if="options.length > 1">
+    <!-- <TabBar
       :tabs="tabs"
       :initial-active-tab="activeTabIndex"
       :fixed-size="true"
       @tab-changed="handleTabChange"
       class="w-full"
-    />
+    /> -->
+
+    <RingBottomNavigation
+      :options="options"
+      :key="key"
+      v-model="selected"
+      :titleColor="widgetColor"
+      :badgeColor="widgetColor"
+      :borderColor="widgetColor"
+      :iconColor="widgetColor"
+    >
+      <template #icon="{ props }">
+        <FluentIcon :icon="props.icon" size="14" />
+      </template>
+
+      <template #title="{ props }">
+        <b>{{ props.title }}</b>
+      </template>
+    </RingBottomNavigation>
   </div>
 </template>
