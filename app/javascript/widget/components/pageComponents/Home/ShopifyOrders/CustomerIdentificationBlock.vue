@@ -100,7 +100,6 @@ const onSubmit = async event => {
       {{ $t('TRACKING_INFO') }}
     </h3>
     <form
-      v-if="props.unverfied_shopify_email === null"
       class="email-input-group h-30 my-2 mx-0 min-w-[200px] gap-4"
       @submit="onSubmit"
     >
