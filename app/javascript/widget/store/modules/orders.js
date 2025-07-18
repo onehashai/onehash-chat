@@ -33,6 +33,7 @@ export const actions = {
         commit('toggleOrderNotFound', true);
       }
     } catch {
+      commit('toggleIsFetchingStatus', false);
       commit('toggleOrderNotFound', true);
     }
   },

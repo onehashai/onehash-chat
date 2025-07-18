@@ -1,6 +1,4 @@
 <script setup>
-import ShopifyOrdersBlock from '../components/pageComponents/Home/ShopifyOrders/ShopifyOrdersBlock.vue';
-
 import ShopifyOrdersContainer from '../components/pageComponents/Home/ShopifyOrders/ShopifyOrdersContainer.vue';
 </script>
 

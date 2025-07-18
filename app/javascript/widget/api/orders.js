@@ -23,8 +23,8 @@ export default {
         Object.fromEntries(
           Object.entries({
             order_id: orderId,
-            customer_email: customerEmail,
-            customer_phone: customerPhone,
+            email: customerEmail,
+            phone: customerPhone,
           }).filter(([_, v]) => v != null)
         )
       )
