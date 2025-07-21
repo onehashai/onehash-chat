@@ -1,6 +1,8 @@
 ShopifyApp.configure do |config|
   config.application_name = "OneHash Chat"
   config.old_secret = ""
+  config.root_url = '/shopify'
+  config.login_callback_url = '/shopify/auth/shopify/callback'
   
   # FIXME: These scopes aren't even used, beware
   config.scope = "read_customers,read_orders,write_orders,read_fulfillments" # Consult this page for more scope options: https://shopify.dev/docs/api/usage/access-scopes
@@ -15,12 +17,12 @@ ShopifyApp.configure do |config|
   config.reauth_on_access_scope_changes = true
 
   config.webhooks = [
-    { topic: "orders/updated", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/webhooks/orders_updated" },
-    { topic: "orders/create", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/webhooks/orders_create" },
-    { topic: "shop/redact", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/webhooks/shop_redact" },
-    { topic: "customers/redact", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/webhooks/customers_redact" },
-    { topic: "customers/data_request", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/webhooks/customers_data_request" },
-    { topic: "app/uninstalled", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/webhooks/app_uninstalled" }
+    { topic: "orders/updated", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/orders_updated" },
+    { topic: "orders/create", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/orders_create" },
+    { topic: "shop/redact", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/shop_redact" },
+    { topic: "customers/redact", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/customers_redact" },
+    { topic: "customers/data_request", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/customers_data_request" },
+    { topic: "app/uninstalled", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/app_uninstalled" }
   ]
 
   config.api_key = ENV.fetch('SHOPIFY_API_KEY', '').presence
