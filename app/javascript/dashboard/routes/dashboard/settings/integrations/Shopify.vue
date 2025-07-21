@@ -67,8 +67,10 @@ const handleStoreUrlSubmit = async () => {
     }
 
     isSubmitting.value = true;
+
+    // REVIEW: this connection method may no longer work, some changes in auth were made
     const { data } = await integrationAPI.connectShopify({
-      shopDomain: storeUrl.value,
+      shop: storeUrl.value,
     });
 
     if (data.redirect_url) {
@@ -88,19 +90,6 @@ const initializeShopifyIntegration = async () => {
 
 onMounted(() => {
   initializeShopifyIntegration();
-  const queryParams = route.query;
-  if ('shop' in queryParams) {
-    integrationAPI
-      .connectShopify({
-        shopDomain: queryParams.shop,
-      })
-      .then(res => {
-        const { data } = res;
-        if (data.redirect_url) {
-          window.location.href = data.redirect_url;
-        }
-      });
-  }
 });
 </script>
 
