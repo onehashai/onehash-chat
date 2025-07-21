@@ -311,6 +311,12 @@ Rails.application.routes.draw do
 
       namespace :integrations do
         resources :webhooks, only: [:create]
+
+        resource :shopify, controller: 'shopify' do
+          collection do
+            post :auth
+          end
+        end
       end
 
       resource :profile, only: [:show, :update] do

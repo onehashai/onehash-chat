@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 module ShopifyApp
+
+  SHOP_QUERY = <<~GRAPHQL
+    query {
+      shop {
+        email
+        name
+      }
+    }
+  GRAPHQL
+
   # Performs login after OAuth completes
   class CallbackController < ActionController::Base
     include ShopifyApp::LoginProtection
@@ -27,7 +37,13 @@ module ShopifyApp
 
       Rails.logger.info("Params #{params} #{api_session}")
 
+
       account_id = verify_shopify_token(params[:state])
+
+      if account_id == nil
+        account_id = get_account_for_shop(api_session.shop, api_session.access_token)
+      end
+
       account ||= Account.find(account_id)
 
       account.hooks.create!(
@@ -43,27 +59,6 @@ module ShopifyApp
       webhooks = ShopifyAPI::Webhook.all(session: api_session)
 
       webhooks.each { |w| Rails.logger.info "Webhook configured: #{w.topic} - #{w.address}" }
-
-      # Below is testing code, you can run in rails console to verify registration of a webhook
-      # missing_webhooks = [
-      #   "orders/updated",
-        # "shop/redact", 
-        # "customers/redact",
-        # "customers/data_request"
-      # ]
-
-      # missing_webhooks.each do |topic|
-      #   begin
-      #     webhook = ShopifyAPI::Webhook.new(session: api_session)
-      #     webhook.topic = topic
-      #     webhook.address = "#{ENV['SHOPIFY_WEBHOOK_HOST']}/webhooks/#{topic.gsub('/', '_')}"
-      #     webhook.format = "json"
-      #     result = webhook.save!
-      #     Rails.logger.info("✅ Registered: #{topic}")
-      #   rescue => e
-      #     Rails.logger.info( "❌ Failed to register #{topic}: #{e.message}")
-      #   end
-      # end
 
       if ShopifyApp::VERSION < "23.0"
         # deprecated in 23.0
@@ -84,6 +79,132 @@ module ShopifyApp
     end
 
     private
+
+    def get_account_for_shop(shop, access_token)
+      admin_token_info = HTTParty.post(admin_token_endpoint, {
+                                        headers: {
+                                          'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: {
+                                          "grant_type":"client_credentials",
+                                          'client_id':"#{keycloak_client_id}",
+                                          'client_secret':"#{keycloak_client_secret}",
+                                        }
+                                      })
+
+      @admin_token = admin_token_info.parsed_response["access_token"]
+
+      Rails.logger.info("Admin token info: #{@admin_token}");
+
+      response = HTTParty.post(
+        "https://#{shop}/admin/api/2025-07/graphql.json",
+        headers: {
+          'Content-Type' => 'application/json',
+          'X-Shopify-Access-Token' => access_token
+        },
+        body: {
+          query: SHOP_QUERY
+        }.to_json
+      )
+
+      # Print parsed response
+
+      Rails.logger.info("Shop data: #{response.parsed_response}");
+
+      shop = OpenStruct.new(response.parsed_response["data"]["shop"])
+
+      get_user_info(shop.name)
+
+      Rails.logger.info("User data: #{@user_info}");
+      if @user_info.present? then
+        user = User.find_by(email: @user_info['email'])
+        return user.account.id
+      else
+        response = HTTParty.post(users_endpoint, {
+                                        headers: {
+                                          'Content-Type': 'application/json',
+                                          'Authorization': "Bearer #{@admin_token}",
+                                        },
+                                        body: {
+                                          "email":shop.email,
+                                          "enabled":"true",
+                                          "username":shop.name
+                                        }.to_json
+                                      })
+
+        Rails.logger.info("Creation result: #{response.parsed_response}")
+
+        if response.code == 201
+          get_user_info(shop.name)
+          create_account_for_user
+          return @account.id
+        else
+          Rails.logger.error("No account available for the shop")
+          return nil
+        end
+      end
+
+      return admin_token_info
+    end
+
+    def get_user_info(username)
+      result = HTTParty.get(users_endpoint, {
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': "Bearer #{@admin_token}",
+                                      },
+                                      query: {
+                                        "username": username
+                                      }
+                                    })
+      
+      if(response.code == 200) then
+        @user_info = result.parsed_response.first
+      else
+        @user_info = nil
+      end
+    end
+
+
+    def create_account_for_user
+      @resource, @account = AccountBuilder.new(
+        account_name: extract_domain_without_tld(@user_info['email']),
+        user_full_name: @user_info['email'],
+        email: @user_info['email'],
+        locale: I18n.locale,
+        confirmed: @user_info['email_verified']
+      ).perform
+    end
+
+
+    def admin_token_endpoint
+      URI.join(keycloak_url, "/realms/#{keycloak_realm}/protocol/openid-connect/token")
+    end
+    
+    def users_endpoint
+      URI.join(keycloak_url, "/realms/#{keycloak_realm}/users")
+    end
+
+    def keycloak_url
+      ENV.fetch('KEYCLOAK_URL', nil)
+    end
+
+    def keycloak_realm
+      ENV.fetch('KEYCLOAK_REALM', nil)
+    end
+
+    def keycloak_client_id
+      ENV.fetch('KEYCLOAK_CLIENT_ID', nil)
+    end
+
+    def keycloak_client_secret
+      ENV.fetch('KEYCLOAK_CLIENT_SECRET', nil)
+    end
+
+
+
+
+
 
     def shopify_integration_url(account_id)
       "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{account_id}/settings/integrations/shopify"

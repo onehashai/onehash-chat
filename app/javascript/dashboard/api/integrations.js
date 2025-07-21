@@ -4,7 +4,9 @@ import ApiClient from './ApiClient';
 
 class IntegrationsAPI extends ApiClient {
   constructor() {
-    super('integrations/apps', { accountScoped: true });
+    super('integrations/apps', {
+      accountScoped: true,
+    });
   }
 
   connectSlack(code) {
@@ -44,10 +46,14 @@ class IntegrationsAPI extends ApiClient {
     );
   }
 
-  connectShopify({ shopDomain }) {
-    return axios.post(`${this.baseUrl()}/integrations/shopify/auth`, {
-      shop: shopDomain,
-    });
+  async connectShopify(query) {
+    if (typeof axios === 'undefined') {
+      const axiosModule = await import('axios');
+      const axios = axiosModule.default;
+      return axios.post(`${this.baseUrl()}/integrations/shopify/auth`, query);
+    } else {
+      return axios.post(`${this.baseUrl()}/integrations/shopify/auth`, query);
+    }
   }
 }
 
