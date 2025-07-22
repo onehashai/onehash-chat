@@ -16,6 +16,7 @@ module ShopifyApp
     include ShopifyApp::LoginProtection
     include ShopifyApp::EnsureBilling
     include Shopify::IntegrationHelper
+    include EmailHelper
 
     def callback
       Rails.logger.info("Got Shopify callback");
@@ -40,8 +41,30 @@ module ShopifyApp
 
       account_id = verify_shopify_token(params[:state])
 
+      new_login = false
       if account_id == nil
+        new_login = true
         account_id = get_account_for_shop(api_session.shop, api_session.access_token)
+
+        token_data = @resource.create_new_auth_token
+
+        # Build EXACT header-format map of auth token values (matching what's returned in response.headers)
+        cookie_headers = {
+          DeviseTokenAuth.headers_names[:'access-token'] => token_data['access-token'],
+          DeviseTokenAuth.headers_names[:'token-type']   => 'Bearer',
+          DeviseTokenAuth.headers_names[:client]         => token_data['client'],
+          DeviseTokenAuth.headers_names[:expiry]         => token_data['expiry'],
+          DeviseTokenAuth.headers_names[:uid]            => token_data['uid']
+        }
+
+        # Set cookie with exact value the JS frontend expects to read from
+        cookies[:cw_d_session_info] = {
+          value: cookie_headers.to_json,
+          expires: Time.at(token_data['expiry'].to_i),
+          secure: Rails.env.production?,
+          http_only: false,        # Frontend needs to read it with JS
+          same_site: :lax          # Change to :none if needed for cross-site embedded
+        }
       end
 
       account ||= Account.find(account_id)
@@ -75,7 +98,7 @@ module ShopifyApp
 
       # redirect_to_app if check_billing(api_session) we maybe this for now
 
-      redirect_to(shopify_integration_url(account_id))
+      redirect_to(app_redirect_url(account_id, new_login))
     end
 
     private
@@ -113,7 +136,7 @@ module ShopifyApp
 
       shop = OpenStruct.new(response.parsed_response["data"]["shop"])
 
-      get_user_info(shop.name)
+      get_user_info(shop.email)
 
       Rails.logger.info("User data: #{@user_info}");
       if @user_info.present? then
@@ -127,15 +150,22 @@ module ShopifyApp
                                         },
                                         body: {
                                           "email":shop.email,
-                                          "enabled":"true",
-                                          "username":shop.name
+                                          "enabled":true,
+                                          "username":shop.name,
+                                          "credentials": [
+                                            {
+                                              "type": "password",
+                                              "value": "Default@123",
+                                              "temporary": true
+                                            }
+                                          ]
                                         }.to_json
                                       })
 
         Rails.logger.info("Creation result: #{response.parsed_response}")
 
         if response.code == 201
-          get_user_info(shop.name)
+          get_user_info(shop.email)
           create_account_for_user
           return @account.id
         else
@@ -147,18 +177,18 @@ module ShopifyApp
       return admin_token_info
     end
 
-    def get_user_info(username)
+    def get_user_info(email)
       result = HTTParty.get(users_endpoint, {
                                       headers: {
                                         'Content-Type': 'application/json',
                                         'Authorization': "Bearer #{@admin_token}",
                                       },
                                       query: {
-                                        "username": username
+                                        "email": email
                                       }
                                     })
       
-      if(response.code == 200) then
+      if(result.code == 200) then
         @user_info = result.parsed_response.first
       else
         @user_info = nil
@@ -171,18 +201,18 @@ module ShopifyApp
         account_name: extract_domain_without_tld(@user_info['email']),
         user_full_name: @user_info['email'],
         email: @user_info['email'],
+        user_password: 'Default@123',
         locale: I18n.locale,
         confirmed: @user_info['email_verified']
       ).perform
     end
-
 
     def admin_token_endpoint
       URI.join(keycloak_url, "/realms/#{keycloak_realm}/protocol/openid-connect/token")
     end
     
     def users_endpoint
-      URI.join(keycloak_url, "/realms/#{keycloak_realm}/users")
+      URI.join(keycloak_url, "/admin/realms/#{keycloak_realm}/users")
     end
 
     def keycloak_url
@@ -201,13 +231,12 @@ module ShopifyApp
       ENV.fetch('KEYCLOAK_CLIENT_SECRET', nil)
     end
 
+    def app_redirect_url(account_id, new_login)
+      if new_login then
+        return "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{account_id}/start/setup-profile"
+      end
 
-
-
-
-
-    def shopify_integration_url(account_id)
-      "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{account_id}/settings/integrations/shopify"
+      return "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{account_id}/settings/integrations/shopify"
     end
 
 

@@ -19,6 +19,10 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
     window.location.assign('/app/login');
   }
 
+  if ((to?.query && 'shop' in to.query) || to.path.includes('shopify')) {
+    return next();
+  }
+
   let getAccount = store.getters['accounts/getAccount'];
   let currentAccount = getAccount(user.account_id);
 
@@ -39,19 +43,6 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
       )
     );
   }
-
-  // if (
-  //   to?.query &&
-  //   'shop' in to.query &&
-  //   to.fullPath !==
-  //     `/app/accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
-  // ) {
-  //   return next(
-  //     frontendURL(
-  //       `accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
-  //     )
-  //   );
-  // }
 
   if (!to.name) {
     return next(frontendURL(`accounts/${user.account_id}/dashboard`));
