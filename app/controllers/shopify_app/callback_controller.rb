@@ -143,6 +143,8 @@ module ShopifyApp
         user = User.find_by(email: @user_info['email'])
         return user.account.id
       else
+        password = generate_secure_password
+
         response = HTTParty.post(users_endpoint, {
                                         headers: {
                                           'Content-Type': 'application/json',
@@ -155,18 +157,19 @@ module ShopifyApp
                                           "credentials": [
                                             {
                                               "type": "password",
-                                              "value": "Default@123",
+                                              "value": password,
                                               "temporary": true
                                             }
                                           ]
                                         }.to_json
                                       })
 
+
         Rails.logger.info("Creation result: #{response.parsed_response}")
 
         if response.code == 201
           get_user_info(shop.email)
-          create_account_for_user
+          create_account_for_user(password)
           return @account.id
         else
           Rails.logger.error("No account available for the shop")
@@ -195,16 +198,40 @@ module ShopifyApp
       end
     end
 
+    def generate_secure_password(length = 9)
+      raise ArgumentError, "Password length must be at least 4" if length < 4
 
-    def create_account_for_user
+      uppercase = ('A'..'Z').to_a.sample
+      lowercase = ('a'..'z').to_a.sample
+      digit     = ('0'..'9').to_a.sample
+      symbol    = ['!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '='].sample
+
+      # Combine all character sets for the rest of the characters
+      all_chars = [('A'..'Z'), ('a'..'z'), ('0'..'9'), ['!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=']].flat_map(&:to_a)
+
+      # Fill remaining characters
+      remaining_chars = Array.new(length - 4) { all_chars.sample }
+
+      # Combine and shuffle to ensure random order
+      password = ([uppercase, lowercase, digit, symbol] + remaining_chars).shuffle.join
+
+      password
+    end
+
+
+
+
+    def create_account_for_user(password)
       @resource, @account = AccountBuilder.new(
         account_name: extract_domain_without_tld(@user_info['email']),
         user_full_name: @user_info['email'],
         email: @user_info['email'],
-        user_password: 'Default@123',
+        user_password: password,
         locale: I18n.locale,
         confirmed: @user_info['email_verified']
       ).perform
+
+      AdministratorNotifications::AccountNotificationMailer.with(account: @account).account_password(@account, password).deliver_now if @account
     end
 
     def admin_token_endpoint
