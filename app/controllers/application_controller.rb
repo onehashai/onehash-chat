@@ -59,6 +59,12 @@ class ApplicationController < ActionController::Base
     permitted = params.permit(:shop, :hmac, :code, :state, :timestamp)
 
     shop = permitted[:shop]
+    hmac = permitted[:shop]
+
+    if(hmac.present?)
+      return false
+    end
+
     if(!shop.present?)
       return false
     end
