@@ -3,7 +3,7 @@ class Api::V1::Integrations::ShopifyController < ApplicationController
 
 
   def redirect_uri
-    "#{ENV.fetch('FRONTEND_URL', '')}/auth/shopify/callback"
+    "#{ENV.fetch('FRONTEND_URL', '')}/shopify/auth/shopify/callback"
   end
 
   def auth

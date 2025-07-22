@@ -1,4 +1,5 @@
 /* global axios */
+import { setAuthCredentials } from 'dashboard/store/utils/api';
 
 import ApiClient from './ApiClient';
 
@@ -50,9 +51,72 @@ class IntegrationsAPI extends ApiClient {
     if (typeof axios === 'undefined') {
       const axiosModule = await import('axios');
       const axios = axiosModule.default;
-      return axios.post(`${this.baseUrl()}/integrations/shopify/auth`, query);
+      try {
+        const { id, token } = await this.fetchChatwootIdFromCookie(axios);
+        if (id) {
+          return axios.post(
+            `${this.apiVersion}/accounts/${id}/integrations/shopify/auth`,
+            query,
+            {
+              headers: {
+                api_access_token: token,
+              },
+            }
+          );
+        }
+      } catch (e) {
+        return await axios.post(`${this.apiVersion}/integrations/shopify/auth`, query);
+      }
     } else {
       return axios.post(`${this.baseUrl()}/integrations/shopify/auth`, query);
+    }
+  }
+
+  async fetchChatwootIdFromCookie(axios) {
+    const getCookie = name => {
+      const match = document.cookie.match(
+        new RegExp('(^| )' + name + '=([^;]+)')
+      );
+      return match ? decodeURIComponent(match[2]) : null;
+    };
+
+    const cwSession = getCookie('cw_d_session_info');
+    if (!cwSession) {
+      console.error('cw_d_session_info cookie not found');
+      return;
+    }
+
+    let sessionData;
+    try {
+      sessionData = JSON.parse(cwSession);
+    } catch (e) {
+      console.error('Failed to decode cw_d_session_info:', e.message);
+      return;
+    }
+
+    const { 'access-token': accessToken, client, uid } = sessionData;
+
+    if (!accessToken || !client || !uid) {
+      console.error('Missing required auth values in session data');
+      return;
+    }
+
+    try {
+      const res = await axios.get(
+        'https://366d-2401-4900-8820-640a-c97c-9f3c-6a69-917a.ngrok-free.app/api/v1/profile',
+        {
+          headers: {
+            'access-token': accessToken,
+            client: client,
+            uid: uid,
+            'token-type': 'Bearer',
+          },
+        }
+      );
+
+      return { id: res.data.account_id, token: res.data.access_token };
+    } catch (err) {
+      console.error('API request failed:', err.response?.data || err.message);
     }
   }
 }

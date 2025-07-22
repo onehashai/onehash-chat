@@ -130,7 +130,7 @@ const getFulfillmentClass = status => {
           rel="noopener noreferrer"
           class="hover:underline text-n-slate-12 cursor-pointer truncate"
         >
-          {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.ORDER_ID', { id: order.id }) }}
+          {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.ORDER_ID', { id: order.name }) }}
           <i class="i-lucide-external-link pl-5" />
         </a>
       </div>

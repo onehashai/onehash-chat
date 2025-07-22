@@ -28,7 +28,8 @@ export const validateRouteAccess = (to, next, chatwootConfig = {}) => {
 
   // Redirect to dashboard if a cookie is present, the cookie
   // cleanup and token validation happens in the application pack.
-  if (hasAuthCookie()) {
+  // For shopify initiated routing to login, we need to redirect only after the oauth so no redirect happens here.
+  if (hasAuthCookie() && !('shop' in to.query)) {
     replaceRouteWithReload(DEFAULT_REDIRECT_URL);
     return;
   }
