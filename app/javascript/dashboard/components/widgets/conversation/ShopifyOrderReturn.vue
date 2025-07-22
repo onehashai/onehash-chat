@@ -432,6 +432,7 @@ const buttonState = ref(null);
 const createReturnMessage = returnLineItems => {
   const messagePayload = {
     order_id: props.order.id,
+    order_name: props.order.name,
     line_items: returnLineItems.map(rli => ({
       id: rli.fulfillmentLineItemId,
       name: props.order.line_items.find(

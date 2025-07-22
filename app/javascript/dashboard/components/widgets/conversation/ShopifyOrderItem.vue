@@ -162,7 +162,7 @@ const getFulfillmentClass = status => {
 
     <div class="selection-controls items-center">
       <button
-        v-if="!isOrderInFinancialStatus(financial_statuses.refunded)"
+        v-if="!isOrderInFulfillmentStatus(fulfillment_statuses.fulfilled) && !isOrderInFinancialStatus(financial_statuses.refunded)"
         @click="emitFulfillOrder"
       >
         {{ $t('CONVERSATION_SIDEBAR.SHOPIFY.FULFILL.BUTTON_TEXT') }}

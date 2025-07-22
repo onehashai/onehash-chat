@@ -533,6 +533,7 @@ function getRestockStatus(rli, allLocations) {
 const createRefundMessage = (refundLineItems, id, totalSet) => {
   const messagePayload = {
     order_id: props.order.id,
+    order_name: props.order.name,
     event_id: id,
     total_refund: `${currency_codes[totalSet.presentmentMoney.currencyCode]} ${totalSet.presentmentMoney.amount}`,
     line_items: refundLineItems.map(rli => ({
