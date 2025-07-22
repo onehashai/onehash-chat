@@ -76,11 +76,12 @@ const actions = {
   returnOrder: async ({ dispatch }, body) => {
     try {
       const now = new Date();
-      const { order_id, line_items, sender, chat_id, status_url } = body;
+      const { order_id, order_name, line_items, sender, chat_id, status_url } =
+        body;
 
       let messagePayload = {
         conversationId: chat_id,
-        message: `Return created for order ${order_id} on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
+        message: `Return created for Order ${order_name} on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
         private: false,
         sender: sender,
         content_type: 15,
@@ -108,11 +109,12 @@ const actions = {
   fulfillOrder: async ({ dispatch }, body) => {
     try {
       const now = new Date();
-      const { order_id, line_items, sender, chat_id, status_url } = body;
+      const { order_id, order_name, line_items, sender, chat_id, status_url } =
+        body;
 
       let messagePayload = {
         conversationId: chat_id,
-        message: `Fulfillment created for order ${order_id} on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
+        message: `Fulfillment created for Order ${order_name} on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
         private: false,
         sender: sender,
         content_type: 15,
@@ -142,6 +144,7 @@ const actions = {
       const now = new Date();
       const {
         order_id,
+        order_name,
         line_items,
         sender,
         chat_id,
@@ -151,7 +154,7 @@ const actions = {
 
       let messagePayload = {
         conversationId: chat_id,
-        message: `Refund created for order ${order_id} on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
+        message: `Refund created for Order ${order_name} on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
         private: false,
         sender: sender,
         content_type: 15,
@@ -182,7 +185,7 @@ const actions = {
       const now = new Date();
       let messagePayload = {
         conversationId: body.chat_id,
-        message: `Your shopify order ${body.order_id} was cancelled on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
+        message: `Your shopify Order ${body.order_name} was cancelled on ${format(now, "yy-MM-dd 'at' HH:mm a")}`,
         private: false,
         sender: body.sender,
         content_type: 15,

@@ -122,6 +122,7 @@ const cancelOrder = async $t => {
       chat_id: currentChat.value.id,
       sender: sender.value,
       order_id: props.order.id,
+      order_name: props.order.name,
       status_url: props.order.order_status_url,
     };
     store.dispatch('cancelOrder', messagePayload);
