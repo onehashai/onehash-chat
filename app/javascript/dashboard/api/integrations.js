@@ -103,7 +103,7 @@ class IntegrationsAPI extends ApiClient {
 
     try {
       const res = await axios.get(
-        'https://366d-2401-4900-8820-640a-c97c-9f3c-6a69-917a.ngrok-free.app/api/v1/profile',
+        `https://${this.apiVersion}/profile`,
         {
           headers: {
             'access-token': accessToken,
