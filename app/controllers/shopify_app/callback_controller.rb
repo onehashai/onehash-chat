@@ -1,11 +1,22 @@
 # frozen_string_literal: true
 
 module ShopifyApp
+
+  SHOP_QUERY = <<~GRAPHQL
+    query {
+      shop {
+        email
+        name
+      }
+    }
+  GRAPHQL
+
   # Performs login after OAuth completes
   class CallbackController < ActionController::Base
     include ShopifyApp::LoginProtection
     include ShopifyApp::EnsureBilling
     include Shopify::IntegrationHelper
+    include EmailHelper
 
     def callback
       Rails.logger.info("Got Shopify callback");
@@ -27,7 +38,35 @@ module ShopifyApp
 
       Rails.logger.info("Params #{params} #{api_session}")
 
+
       account_id = verify_shopify_token(params[:state])
+
+      new_login = false
+      if account_id == nil
+        new_login = true
+        account_id = get_account_for_shop(api_session.shop, api_session.access_token)
+
+        token_data = @resource.create_new_auth_token
+
+        # Build EXACT header-format map of auth token values (matching what's returned in response.headers)
+        cookie_headers = {
+          DeviseTokenAuth.headers_names[:'access-token'] => token_data['access-token'],
+          DeviseTokenAuth.headers_names[:'token-type']   => 'Bearer',
+          DeviseTokenAuth.headers_names[:client]         => token_data['client'],
+          DeviseTokenAuth.headers_names[:expiry]         => token_data['expiry'],
+          DeviseTokenAuth.headers_names[:uid]            => token_data['uid']
+        }
+
+        # Set cookie with exact value the JS frontend expects to read from
+        cookies[:cw_d_session_info] = {
+          value: cookie_headers.to_json,
+          expires: Time.at(token_data['expiry'].to_i),
+          secure: Rails.env.production?,
+          http_only: false,        # Frontend needs to read it with JS
+          same_site: :lax          # Change to :none if needed for cross-site embedded
+        }
+      end
+
       account ||= Account.find(account_id)
 
       account.hooks.create!(
@@ -44,27 +83,6 @@ module ShopifyApp
 
       webhooks.each { |w| Rails.logger.info "Webhook configured: #{w.topic} - #{w.address}" }
 
-      # Below is testing code, you can run in rails console to verify registration of a webhook
-      # missing_webhooks = [
-      #   "orders/updated",
-        # "shop/redact", 
-        # "customers/redact",
-        # "customers/data_request"
-      # ]
-
-      # missing_webhooks.each do |topic|
-      #   begin
-      #     webhook = ShopifyAPI::Webhook.new(session: api_session)
-      #     webhook.topic = topic
-      #     webhook.address = "#{ENV['SHOPIFY_WEBHOOK_HOST']}/webhooks/#{topic.gsub('/', '_')}"
-      #     webhook.format = "json"
-      #     result = webhook.save!
-      #     Rails.logger.info("✅ Registered: #{topic}")
-      #   rescue => e
-      #     Rails.logger.info( "❌ Failed to register #{topic}: #{e.message}")
-      #   end
-      # end
-
       if ShopifyApp::VERSION < "23.0"
         # deprecated in 23.0
         if ShopifyApp.configuration.custom_post_authenticate_tasks.present?
@@ -80,13 +98,186 @@ module ShopifyApp
 
       # redirect_to_app if check_billing(api_session) we maybe this for now
 
-      redirect_to(shopify_integration_url(account_id))
+      redirect_to(app_redirect_url(account_id, new_login))
     end
 
     private
 
-    def shopify_integration_url(account_id)
-      "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{account_id}/settings/integrations/shopify"
+    def get_account_for_shop(shop_domain, access_token)
+      admin_token_info = HTTParty.post(admin_token_endpoint, {
+                                        headers: {
+                                          'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: {
+                                          "grant_type":"client_credentials",
+                                          'client_id':"#{keycloak_client_id}",
+                                          'client_secret':"#{keycloak_client_secret}",
+                                        }
+                                      })
+
+      @admin_token = admin_token_info.parsed_response["access_token"]
+
+      Rails.logger.info("Admin token info: #{@admin_token}");
+
+      response = HTTParty.post(
+        "https://#{shop_domain}/admin/api/2025-07/graphql.json",
+        headers: {
+          'Content-Type' => 'application/json',
+          'X-Shopify-Access-Token' => access_token
+        },
+        body: {
+          query: SHOP_QUERY
+        }.to_json
+      )
+
+      # Print parsed response
+
+      Rails.logger.info("Shop data: #{response.parsed_response}");
+
+      shop = OpenStruct.new(response.parsed_response["data"]["shop"])
+
+      get_user_info(shop.email)
+
+      Rails.logger.info("User data: #{@user_info}");
+      if @user_info.present? then
+        user = User.find_by(email: @user_info['email'])
+        @resource = user
+        acc_user = AccountUser.find_by(user_id: user.id)
+        return acc_user.account_id
+      else
+        password = generate_secure_password
+
+        response = HTTParty.post(users_endpoint, {
+                                        headers: {
+                                          'Content-Type': 'application/json',
+                                          'Authorization': "Bearer #{@admin_token}",
+                                        },
+                                        body: {
+                                          "email":shop.email,
+                                          "enabled":true,
+                                          "username":shop.name,
+                                          "credentials": [
+                                            {
+                                              "type": "password",
+                                              "value": password,
+                                              "temporary": true
+                                            }
+                                          ]
+                                        }.to_json
+                                      })
+
+
+        Rails.logger.info("Creation result: #{response.parsed_response}")
+
+        if response.code == 201
+          get_user_info(shop.email)
+          create_account_for_user(shop_domain, password)
+          return @account.id
+        else
+          Rails.logger.error("No account available for the shop")
+          return nil
+        end
+      end
+
+      return admin_token_info
+    end
+
+    def get_user_info(email)
+      result = HTTParty.get(users_endpoint, {
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': "Bearer #{@admin_token}",
+                                      },
+                                      query: {
+                                        "email": email
+                                      }
+                                    })
+      
+      if(result.code == 200) then
+        @user_info = result.parsed_response.first
+      else
+        @user_info = nil
+      end
+    end
+
+    def generate_secure_password(length = 9)
+      raise ArgumentError, "Password length must be at least 4" if length < 4
+
+      uppercase = ('A'..'Z').to_a.sample
+      lowercase = ('a'..'z').to_a.sample
+      digit     = ('0'..'9').to_a.sample
+      symbol    = ['!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '='].sample
+
+      # Combine all character sets for the rest of the characters
+      all_chars = [('A'..'Z'), ('a'..'z'), ('0'..'9'), ['!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=']].flat_map(&:to_a)
+
+      # Fill remaining characters
+      remaining_chars = Array.new(length - 4) { all_chars.sample }
+
+      # Combine and shuffle to ensure random order
+      password = ([uppercase, lowercase, digit, symbol] + remaining_chars).shuffle.join
+
+      password
+    end
+
+    def create_account_for_user(shop_name, password)
+      @resource, @account = AccountBuilder.new(
+        account_name: extract_domain_without_tld(@user_info['email']),
+        user_full_name: @user_info['email'],
+        email: @user_info['email'],
+        user_password: password,
+        locale: I18n.locale,
+        confirmed: @user_info['email_verified']
+      ).perform
+
+      @account.update(custom_attributes: @account.custom_attributes.merge({ account_origin_shopify_store: shop_name }))
+      @account.save
+
+      AdministratorNotifications::AccountNotificationMailer.with(account: @account).account_password(@account, password, change_password_url).deliver_now if @account
+    end
+
+    def change_password_url
+      URI.join(keycloak_url, "/realms/#{keycloak_realm}/protocol/openid-connect/auth?response_type=code&client_id=#{keycloak_client_id}&redirect_uri=#{frontend_url}&kc_action=UPDATE_PASSWORD").to_s
+    end
+
+    def admin_token_endpoint
+      URI.join(keycloak_url, "/realms/#{keycloak_realm}/protocol/openid-connect/token")
+    end
+    
+    def users_endpoint
+      URI.join(keycloak_url, "/admin/realms/#{keycloak_realm}/users")
+    end
+
+    def keycloak_url
+      ENV.fetch('KEYCLOAK_URL', nil)
+    end
+
+    def keycloak_realm
+      ENV.fetch('KEYCLOAK_REALM', nil)
+    end
+
+    def keycloak_client_id
+      ENV.fetch('KEYCLOAK_CLIENT_ID', nil)
+    end
+
+    def keycloak_client_secret
+      ENV.fetch('KEYCLOAK_CLIENT_SECRET', nil)
+    end
+
+    def keycloak_callback_url
+      ENV.fetch('KEYCLOAK_CALLBACK_URL', nil)
+    end
+
+    def app_redirect_url(account_id, new_login)
+      if new_login then
+        return "#{frontend_url}/app/accounts/#{account_id}/start/setup-profile"
+      end
+
+      return "#{frontend_url}/app/accounts/#{account_id}/settings/integrations/shopify"
+    end
+
+    def frontend_url
+      ENV.fetch('FRONTEND_URL', nil)
     end
 
 

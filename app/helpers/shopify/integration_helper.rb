@@ -42,11 +42,11 @@ module Shopify::IntegrationHelper
   private
 
   def client_id
-    @client_id ||= GlobalConfigService.load('SHOPIFY_CLIENT_ID', nil)
+    @client_id ||= ENV.fetch('SHOPIFY_API_KEY', nil)
   end
 
   def client_secret
-    @client_secret ||= GlobalConfigService.load('SHOPIFY_CLIENT_SECRET', nil)
+    @client_secret ||= ENV.fetch('SHOPIFY_API_SECRET', nil)
   end
 
   def decode_token(token, secret)

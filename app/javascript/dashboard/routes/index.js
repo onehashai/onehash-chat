@@ -15,9 +15,12 @@ export const routesWithPermissions = buildPermissionsFromRouter(routes);
 export const validateAuthenticateRoutePermission = async (to, next) => {
   const { isLoggedIn, getCurrentUser: user } = store.getters;
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn && to.path !== '/app/login') {
     window.location.assign('/app/login');
-    return '';
+  }
+
+  if ((to?.query && 'shop' in to.query) || to.path.includes('shopify')) {
+    return next();
   }
 
   let getAccount = store.getters['accounts/getAccount'];
@@ -37,19 +40,6 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
     return next(
       frontendURL(
         `accounts/${user.account_id}/settings/integrations/onehash_apps`
-      )
-    );
-  }
-
-  if (
-    to?.query &&
-    'shop' in to.query &&
-    to.fullPath !==
-      `/app/accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
-  ) {
-    return next(
-      frontendURL(
-        `accounts/${user.account_id}/settings/integrations/shopify?shop=${to.query.shop}`
       )
     );
   }

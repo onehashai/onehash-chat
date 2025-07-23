@@ -8,10 +8,11 @@ RSpec.describe Shopify::IntegrationHelper do
     let(:client_secret) { 'test_secret' }
     let(:current_time) { Time.current }
 
-    before do
-      allow(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_SECRET', nil).and_return(client_secret)
-      allow(Time).to receive(:current).and_return(current_time)
-    end
+    # NOTE: Shopify installation configs are removed, might need rewrite
+    # before do
+    #   allow(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_SECRET', nil).and_return(client_secret)
+    #   allow(Time).to receive(:current).and_return(current_time)
+    # end
 
     it 'generates a valid JWT token with correct payload' do
       token = generate_shopify_token(account_id)
@@ -48,9 +49,10 @@ RSpec.describe Shopify::IntegrationHelper do
       JWT.encode({ sub: account_id, iat: Time.current.to_i }, client_secret, 'HS256')
     end
 
-    before do
-      allow(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_SECRET', nil).and_return(client_secret)
-    end
+    # NOTE: Shopify installation configs are removed, might need rewrite
+    # before do
+    #   allow(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_SECRET', nil).and_return(client_secret)
+    # end
 
     it 'successfully verifies and returns account_id from valid token' do
       expect(verify_shopify_token(valid_token)).to eq(account_id)
@@ -79,17 +81,18 @@ RSpec.describe Shopify::IntegrationHelper do
     end
   end
 
-  describe '#client_id' do
-    it 'loads client_id from GlobalConfigService' do
-      expect(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_ID', nil)
-      client_id
-    end
-  end
+  # NOTE: These are removed from installation configs
+  # describe '#client_id' do
+  #   it 'loads client_id from GlobalConfigService' do
+  #     expect(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_ID', nil)
+  #     client_id
+  #   end
+  # end
 
-  describe '#client_secret' do
-    it 'loads client_secret from GlobalConfigService' do
-      expect(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_SECRET', nil)
-      client_secret
-    end
-  end
+  # describe '#client_secret' do
+  #   it 'loads client_secret from GlobalConfigService' do
+  #     expect(GlobalConfigService).to receive(:load).with('SHOPIFY_CLIENT_SECRET', nil)
+  #     client_secret
+  #   end
+  # end
 end

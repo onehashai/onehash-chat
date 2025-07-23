@@ -306,7 +306,7 @@
       "SHOPIFY_ORDERS": "Shopify Orders"
     },
     "SHOPIFY": {
-      "ORDER_ID": "Order #{id}",
+      "ORDER_ID": "Order {id}",
       "ERROR": "Error loading orders",
       "NO_SHOPIFY_ORDERS": "No orders found",
       "FINANCIAL_STATUS": {

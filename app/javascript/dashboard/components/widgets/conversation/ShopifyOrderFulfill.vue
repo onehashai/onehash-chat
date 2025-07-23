@@ -360,6 +360,7 @@ const cancellationState = ref(null);
 const createFulfillMessage = fulfillLineItems => {
   const messagePayload = {
     order_id: props.order.id,
+    order_name: props.order.name,
     line_items: fulfillLineItems.map(rli => ({
       id: rli.id,
       name: rli.name,

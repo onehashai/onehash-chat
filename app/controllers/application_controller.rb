@@ -6,11 +6,15 @@ class ApplicationController < ActionController::Base
 
   skip_before_action :verify_authenticity_token
 
-  before_action :set_current_user, unless: :devise_controller?
+  before_action :set_current_user, unless: :skip_set_current_user?
   around_action :switch_locale
   around_action :handle_with_exception, unless: :devise_controller?
 
   private
+
+  def skip_set_current_user?
+    devise_controller? || (controller_name.in?(%w[shopify]) && verify_shopify_request)
+  end
 
   def set_current_user
     @user ||= current_user
@@ -50,5 +54,33 @@ class ApplicationController < ActionController::Base
       render_payment_required('Payment Required for the Plan') and return
     end
   end
+
+  def verify_shopify_request
+    permitted = params.permit(:shop, :hmac, :code, :state, :timestamp)
+
+    shop = permitted[:shop]
+    hmac = permitted[:shop]
+
+    if(hmac.present?)
+      return false
+    end
+
+    if(!shop.present?)
+      return false
+    end
+    key = ENV.fetch('SHOPIFY_API_SECRET', '')
+    data = permitted.except(:hmac).to_query
+
+    computed_hmac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), key, data)
+    received_hmac = params[:hmac]
+
+    if !ActiveSupport::SecurityUtils.secure_compare(computed_hmac, received_hmac)
+      return false
+      #  render json: { error: 'Unauthorized'}, status: :unauthorized if shop_domain.blank?
+    end
+
+    return true
+  end
+
 end
 ApplicationController.include_mod_with('Concerns::ApplicationControllerConcern')

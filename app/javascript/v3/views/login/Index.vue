@@ -6,13 +6,14 @@ import { required, email } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { login, keycloakRedirectUrl } from '../../api/auth';
 
+import integrationAPI from 'dashboard/api/integrations';
 // mixins
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
 
 // components
 // import FormInput from '../../components/Form/Input.vue';
 // import GoogleOAuthButton from '../../components/GoogleOauth/Button.vue';
-// import Spinner from 'shared/components/Spinner.vue';
+import Spinner from 'shared/components/Spinner.vue';
 // import SubmitButton from '../../components/Button/SubmitButton.vue';
 
 const ERROR_MESSAGES = {
@@ -25,7 +26,7 @@ export default {
     // FormInput,
     // GoogleOAuthButton,
     // RedirectLoader,
-    // Spinner,
+    Spinner,
     // SubmitButton,
   },
   mixins: [globalConfigMixin],
@@ -93,7 +94,20 @@ export default {
     }
   },
   mounted() {
-    this.redirectToKeycloak();
+    const query = this.$route.query;
+    // const queryParams = route.query;
+    console.log('Query: ', query);
+
+    if ('shop' in query) {
+      integrationAPI.connectShopify(query).then(res => {
+        const { data } = res;
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url;
+        }
+      });
+    } else {
+      this.redirectToKeycloak();
+    }
   },
   methods: {
     // TODO: Remove this when Safari gets wider support
@@ -249,9 +263,9 @@ export default {
           />
         </form>
       </div>
-      <div v-else class="flex items-center justify-center">
-        <Spinner color-scheme="primary" size="" />
-      </div>
     </section> -->
+    <div class="flex items-center justify-center">
+      <Spinner class="bg-white-100" size="100px" />
+    </div>
   </main>
 </template>
