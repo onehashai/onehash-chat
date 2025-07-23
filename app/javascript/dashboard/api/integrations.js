@@ -103,7 +103,7 @@ class IntegrationsAPI extends ApiClient {
 
     try {
       const res = await axios.get(
-        `https://${this.apiVersion}/profile`,
+        `${this.apiVersion}/profile`,
         {
           headers: {
             'access-token': accessToken,
