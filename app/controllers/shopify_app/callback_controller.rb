@@ -141,7 +141,9 @@ module ShopifyApp
       Rails.logger.info("User data: #{@user_info}");
       if @user_info.present? then
         user = User.find_by(email: @user_info['email'])
-        return user.account.id
+        @resource = user
+        acc_user = AccountUser.find_by(user_id: user.id)
+        return acc_user.account_id
       else
         password = generate_secure_password
 
@@ -217,9 +219,6 @@ module ShopifyApp
 
       password
     end
-
-
-
 
     def create_account_for_user(shop_name, password)
       @resource, @account = AccountBuilder.new(
