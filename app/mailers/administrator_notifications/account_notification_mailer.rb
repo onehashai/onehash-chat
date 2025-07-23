@@ -28,12 +28,13 @@ class AdministratorNotifications::AccountNotificationMailer < AdministratorNotif
     send_notification(subject, action_url: action_url, meta: meta)
   end
   
-  def account_password(account, password)
+  def account_password(account, password, password_url)
     subject = 'Account password notification'
 
     meta = {
       'account_name' => account.name,
-      'password' => password
+      'password' => password,
+      'change_password_url' => password_url
     }
 
     send_notification(subject, meta: meta)

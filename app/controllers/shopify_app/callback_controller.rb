@@ -103,7 +103,7 @@ module ShopifyApp
 
     private
 
-    def get_account_for_shop(shop, access_token)
+    def get_account_for_shop(shop_domain, access_token)
       admin_token_info = HTTParty.post(admin_token_endpoint, {
                                         headers: {
                                           'Content-Type': 'application/x-www-form-urlencoded',
@@ -120,7 +120,7 @@ module ShopifyApp
       Rails.logger.info("Admin token info: #{@admin_token}");
 
       response = HTTParty.post(
-        "https://#{shop}/admin/api/2025-07/graphql.json",
+        "https://#{shop_domain}/admin/api/2025-07/graphql.json",
         headers: {
           'Content-Type' => 'application/json',
           'X-Shopify-Access-Token' => access_token
@@ -169,7 +169,7 @@ module ShopifyApp
 
         if response.code == 201
           get_user_info(shop.email)
-          create_account_for_user(password)
+          create_account_for_user(shop_domain, password)
           return @account.id
         else
           Rails.logger.error("No account available for the shop")
@@ -221,7 +221,7 @@ module ShopifyApp
 
 
 
-    def create_account_for_user(password)
+    def create_account_for_user(shop_name, password)
       @resource, @account = AccountBuilder.new(
         account_name: extract_domain_without_tld(@user_info['email']),
         user_full_name: @user_info['email'],
@@ -231,7 +231,14 @@ module ShopifyApp
         confirmed: @user_info['email_verified']
       ).perform
 
-      AdministratorNotifications::AccountNotificationMailer.with(account: @account).account_password(@account, password).deliver_now if @account
+      @account.update(custom_attributes: @account.custom_attributes.merge({ account_origin_shopify_store: shop_name }))
+      @account.save
+
+      AdministratorNotifications::AccountNotificationMailer.with(account: @account).account_password(@account, password, change_password_url).deliver_now if @account
+    end
+
+    def change_password_url
+      URI.join(keycloak_url, "/realms/#{keycloak_realm}/protocol/openid-connect/auth?response_type=code&client_id=#{keycloak_client_id}&redirect_uri=#{frontend_url}&kc_action=UPDATE_PASSWORD").to_s
     end
 
     def admin_token_endpoint
@@ -258,12 +265,20 @@ module ShopifyApp
       ENV.fetch('KEYCLOAK_CLIENT_SECRET', nil)
     end
 
+    def keycloak_callback_url
+      ENV.fetch('KEYCLOAK_CALLBACK_URL', nil)
+    end
+
     def app_redirect_url(account_id, new_login)
       if new_login then
-        return "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{account_id}/start/setup-profile"
+        return "#{frontend_url}/app/accounts/#{account_id}/start/setup-profile"
       end
 
-      return "#{ENV.fetch('FRONTEND_URL', nil)}/app/accounts/#{account_id}/settings/integrations/shopify"
+      return "#{frontend_url}/app/accounts/#{account_id}/settings/integrations/shopify"
+    end
+
+    def frontend_url
+      ENV.fetch('FRONTEND_URL', nil)
     end
 
 
