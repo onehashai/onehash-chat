@@ -16,6 +16,7 @@ export const getSelectedChatConversation = ({
 
 const getters = {
   getShopifyProducts: ({ shopifyProducts }) => shopifyProducts,
+  getShopifyDiscounts: ({ shopifyDiscounts }) => shopifyDiscounts,
 
   getAllConversations: ({ allConversations, chatSortFilter: sortKey }) => {
     return allConversations.sort((a, b) => sortComparator(a, b, sortKey));

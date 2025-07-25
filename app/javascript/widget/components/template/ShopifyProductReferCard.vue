@@ -42,7 +42,7 @@ const products = computed(() => {
           </div>
 
           <div class="flex flex-row gap-2 text-xs">
-            <span class="line-through">
+            <span v-if="item.compareAtPrice" class="line-through">
               {{ currency_codes[item.currency] }}
               {{ item.compareAtPrice }}
             </span>
