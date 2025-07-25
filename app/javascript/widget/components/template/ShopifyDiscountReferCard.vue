@@ -37,7 +37,9 @@ const discounts = computed(() => {
       <div class="flex flex-row text-sm">
         {{ item.discount.title }}
       </div>
-      <div class="flex flex-row">Casts a fireball</div>
+      <div class="flex flex-row">
+        {{ item.discount.summary }}
+      </div>
 
       <Button
         class="px-4 py-2 bg-woot-500 text-white rounded hover:bg-woot-700 focus:outline-none focus:ring-2 focus:bg-woot-500"
