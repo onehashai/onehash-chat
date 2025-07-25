@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_07_22_090002) do
+ActiveRecord::Schema[7.0].define(version: 2025_07_24_072546) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1114,6 +1114,21 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_22_090002) do
     t.index ["account_id"], name: "index_shopify_locations_on_account_id"
   end
 
+  create_table "shopify_products", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description", null: false
+    t.text "online_store_preview_url", null: false
+    t.text "media_image_url"
+    t.string "status", null: false
+    t.jsonb "variants", default: []
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "account_id"
+    t.index ["account_id"], name: "index_shopify_products_on_account_id"
+    t.index ["id"], name: "index_shopify_products_on_id", unique: true
+    t.index ["variants"], name: "index_shopify_products_on_variants", using: :gin
+  end
+
   create_table "shops", force: :cascade do |t|
     t.string "shopify_domain", null: false
     t.string "shopify_token", null: false
@@ -1290,6 +1305,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_22_090002) do
   add_foreign_key "integrations_hooks", "account_users"
   add_foreign_key "orders", "accounts"
   add_foreign_key "shopify_locations", "accounts"
+  add_foreign_key "shopify_products", "accounts"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("accounts").
       after(:insert).

@@ -1,4 +1,4 @@
-class AppUninstalledJob < ActiveJob::Base
+class ProductsUpdateJob < ActiveJob::Base
   extend ShopifyAPI::Webhooks::Handler
 
   class << self
@@ -16,17 +16,8 @@ class AppUninstalledJob < ActiveJob::Base
       raise ActiveRecord::RecordNotFound, "Shop Not Found"
     end
 
-    return if Rails.env.development?
     shop.with_shopify_session do |session|
-      @hook = Integrations::Hook.find_by!(reference_id: shop_domain)
-      @hook.destroy!
-      shop.destroy!
-
-      @hook.account.contacts.each do |contact|
-        if(contact.custom_attributes[:shopify_customer_id].present?) then
-          contact.update(custom_attributes: contact.custom_attributes.except(:shopify_customer_id, :shopify_customer_email, :shopify_customer_phone, :shopify_verified_email))
-        end
-      end
+    ## webhook processing logic
     end
   end
 end

@@ -1,3 +1,4 @@
+# REVIEW: Unused job
 class Shopify::OrderPollingJob < ApplicationJob
   include Events::Types
   
