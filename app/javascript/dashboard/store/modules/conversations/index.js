@@ -9,6 +9,7 @@ import { emitter } from 'shared/helpers/mitt';
 
 const state = {
   allConversations: [],
+  shopifyProducts: [],
   attachments: {},
   listLoadingStatus: true,
   chatStatusFilter: wootConstants.STATUS_TYPE.OPEN,
@@ -27,6 +28,9 @@ const state = {
 
 // mutations
 export const mutations = {
+  [types.SET_SHOPIFY_PRODUCTS](_state, products) {
+    _state.shopifyProducts = products;
+  },
   [types.SET_ALL_CONVERSATION](_state, conversationList) {
     const newAllConversations = [..._state.allConversations];
     conversationList.forEach(conversation => {
