@@ -64,7 +64,7 @@ const sendDiscounts = () => {
               <div>{{ item.discount.title }}</div>
             </td>
             <td>
-              <div>Casts a fireball</div>
+              <div>{{ item.discount.summary }}</div>
             </td>
             <td
               class="flex flex-row w-full h-full items-end content-end justify-end"

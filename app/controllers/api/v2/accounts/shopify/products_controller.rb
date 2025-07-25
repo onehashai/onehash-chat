@@ -18,6 +18,7 @@ class Api::V2::Accounts::Shopify::ProductsController < Api::V1::Accounts::BaseCo
             ... on DiscountCodeBxgy {
               title
               status
+              summary
               combinesWith {
                 productDiscounts
               }
@@ -25,6 +26,7 @@ class Api::V2::Accounts::Shopify::ProductsController < Api::V1::Accounts::BaseCo
             ... on DiscountCodeBasic {
               title
               status
+              summary
               combinesWith {
                 productDiscounts
               }
@@ -32,6 +34,7 @@ class Api::V2::Accounts::Shopify::ProductsController < Api::V1::Accounts::BaseCo
             ... on DiscountCodeFreeShipping {
               title
               status
+              summary
               combinesWith {
                 productDiscounts
               }
