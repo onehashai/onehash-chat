@@ -390,7 +390,6 @@
         "TITLE": "Refund order",
         "DESC": "You can directly refund the shopify order of a customer from here",
         "BUTTON_TEXT": "Refund",
-
         "NO_REFUNDS": "No refundable items available",
         "TABLE": {
           "PRODUCT": "Product",
@@ -513,6 +512,23 @@
       "TITLE": "Calendar Events",
       "DESC": "Select a calendar event from the list below.",
       "SEND_EVENT": "Send Event"
+    }
+  },
+  "SHOPIFY_PRODUCTS": {
+    "MODAL": {
+      "TABLE": {
+        "NAME": "Name",
+        "STOCK": "Stock",
+        "QUANTITY": "Quantity",
+        "PRICE": "Price",
+        "VARIANTS": "Variants"
+      },
+      "TITLE": "Select product",
+      "DESC": "Select a product to refer to user",
+      "ADD": "ADD",
+      "VARIANTS": "{selected}/{count} variants",
+      "ADD_VARIANTS": "SEND",
+      "OTHER_PRODUCTS": "Other products"
     }
   },
   "TYPING": {

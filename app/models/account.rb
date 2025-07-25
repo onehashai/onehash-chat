@@ -102,6 +102,7 @@ class Account < ApplicationRecord
   has_many :coupon_codes, dependent: :destroy_async
   has_many :orders, dependent: :destroy_async
   has_many :shopify_locations, dependent: :destroy_async
+  has_many :shopify_products, dependent: :destroy_async
 
   has_one_attached :contacts_export
 

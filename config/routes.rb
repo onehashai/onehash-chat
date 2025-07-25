@@ -385,6 +385,7 @@ Rails.application.routes.draw do
               get  :fulfillment_orders, on: :member
             end
             resources :locations, only: [:index]
+            resources :products, only: [:index]
           end
 
           resources :summary_reports, only: [] do
