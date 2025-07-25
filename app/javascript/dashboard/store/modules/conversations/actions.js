@@ -48,16 +48,48 @@ const actions = {
     }
   },
 
+  fetchDiscounts: async ({ commit }) => {
+    try {
+      const response = await ShopifyProductsApi.getDiscounts();
+      commit(types.SET_SHOPIFY_DISCOUNTS, response.data.discounts);
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
   sendProducts: async ({ commit, dispatch }, body) => {
     try {
       let messagePayload = {
         conversationId: body.chat_id,
-        message: 'Please check out product(s)',
+        message: 'Referred products',
         private: false,
         sender: body.sender,
         content_type: 16,
         contentAttributes: {
           products: body.products
+        },
+      };
+
+      await dispatch(
+        'createPendingMessageAndSend',
+        messagePayload
+      );
+
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
+  sendDiscounts: async ({ commit, dispatch }, body) => {
+    try {
+      let messagePayload = {
+        conversationId: body.chat_id,
+        message: 'Referred discounts',
+        private: false,
+        sender: body.sender,
+        content_type: 17,
+        contentAttributes: {
+          discounts: body.discounts
         },
       };
 

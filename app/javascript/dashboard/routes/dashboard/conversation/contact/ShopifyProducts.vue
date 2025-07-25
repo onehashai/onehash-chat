@@ -50,7 +50,7 @@ onMounted(() => {
 });
 
 const addVariants = () => {
-  emits('onSelect', { products: variants.value });
+  emits('onSelect', { products: includedVariants.value });
 };
 
 const variantMode = ref(false);
@@ -92,11 +92,11 @@ const resetVariants = () => {
             <th>
               {{ $t('SHOPIFY_PRODUCTS.MODAL.TABLE.PRICE') }}
             </th>
-            <th>
-              {{ $t('SHOPIFY_PRODUCTS.MODAL.TABLE.STOCK') }}
-            </th>
             <th v-if="!variantMode">
               {{ $t('SHOPIFY_PRODUCTS.MODAL.TABLE.VARIANTS') }}
+            </th>
+            <th>
+              {{ $t('SHOPIFY_PRODUCTS.MODAL.TABLE.STOCK') }}
             </th>
           </tr>
         </thead>
@@ -110,7 +110,7 @@ const resetVariants = () => {
             </td>
             <td>
               <div class="flex flex-col">
-                <div v-if="item.compareAtPrice" class="w-[100px]  line-through">
+                <div v-if="item.compareAtPrice" class="w-[100px] line-through">
                   {{ currency_codes[item.currency] }}
                   {{ item.compareAtPrice }}
                 </div>
@@ -119,17 +119,6 @@ const resetVariants = () => {
                   {{ item.price }}
                 </span>
               </div>
-            </td>
-            <td
-              class="flex flex-row w-full h-full items-end content-end justify-end"
-            >
-              <input
-                class="pt-4"
-                type="checkbox"
-                :checked="includedVariants.some(e => e.id == item.id)"
-                @change="() => includeItem(item)"
-                style="transform: translateY(8px); padding-right: 24px"
-              />
             </td>
 
             <td v-if="!variantMode">
@@ -151,6 +140,17 @@ const resetVariants = () => {
                   }}
                 </div>
               </Button>
+            </td>
+            <td
+              class="flex flex-row w-full h-full items-end content-end justify-end"
+            >
+              <input
+                class="pt-4"
+                type="checkbox"
+                :checked="includedVariants.some(e => e.id == item.id)"
+                @change="() => includeItem(item)"
+                style="transform: translateY(8px); padding-right: 24px"
+              />
             </td>
           </tr>
         </tbody>

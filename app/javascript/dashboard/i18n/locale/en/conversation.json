@@ -159,7 +159,9 @@
       "MESSAGE_SIGNATURE_NOT_CONFIGURED": "Message signature is not configured, please configure it in profile settings.",
       "CLICK_HERE": "Click here to update",
       "WHATSAPP_TEMPLATES": "Whatsapp Templates",
-      "SEND_CALENDAR": "Send Calendar"
+      "SEND_CALENDAR": "Send Calendar",
+      "SEND_PRODUCT": "Share a product",
+      "SEND_DISCOUNT": "Share a discount"
     },
     "REPLYBOX": {
       "REPLY": "Reply",
@@ -518,7 +520,7 @@
     "MODAL": {
       "TABLE": {
         "NAME": "Name",
-        "STOCK": "Stock",
+        "STOCK": "",
         "QUANTITY": "Quantity",
         "PRICE": "Price",
         "VARIANTS": "Variants"
@@ -529,6 +531,19 @@
       "VARIANTS": "{selected}/{count} variants",
       "ADD_VARIANTS": "SEND",
       "OTHER_PRODUCTS": "Other products"
+    }
+  },
+  "SHOPIFY_DISCOUNTS": {
+    "MODAL": {
+      "TABLE": {
+        "CODE": "Code",
+        "EFFECT": "Effect",
+        "STOCK": ""
+      },
+      "TITLE": "Select discount code",
+      "DESC": "Select a discount code to refer to user",
+      "ADD": "ADD",
+      "ADD_VARIANTS": "SEND"
     }
   },
   "TYPING": {

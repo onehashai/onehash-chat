@@ -121,7 +121,12 @@ export default {
 
     shopifyProducts: {
       type: Array,
-      required: true
+      required: true,
+    },
+
+    shopifyDiscounts: {
+      type: Array,
+      required: true,
     },
 
     conversationType: {
@@ -134,7 +139,8 @@ export default {
     'toggleInsertArticle',
     'toggleEditor',
     'selectWhatsappTemplate',
-    'showProducts'
+    'showProducts',
+    'showDiscounts',
   ],
   setup() {
     const { setSignatureFlagForInbox, fetchSignatureFlagFromUISettings } =
@@ -301,6 +307,16 @@ export default {
         faded
         sm
         @click="$emit('showProducts')"
+      />
+
+      <NextButton
+        v-if="shopifyDiscounts"
+        v-tooltip.top-end="$t('CONVERSATION.FOOTER.SEND_DISCOUNT')"
+        icon="i-ph-seal-percent"
+        slate
+        faded
+        sm
+        @click="$emit('showDiscounts')"
       />
 
       <FileUpload
