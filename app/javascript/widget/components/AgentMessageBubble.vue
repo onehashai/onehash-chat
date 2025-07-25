@@ -12,6 +12,7 @@ import CalEventCard from './template/CalEventCard.vue';
 import CalEventConfirmationCard from './template/CalEventConfirmationCard.vue';
 import CallingEventCard from './template/CallingEventCard.vue';
 import ShopifyProductReferCard from './template/ShopifyProductReferCard.vue';
+import ShopifyDiscountReferCard from './template/ShopifyDiscountReferCard.vue';
 
 export default {
   name: 'AgentMessageBubble',
@@ -23,6 +24,7 @@ export default {
     EmailInput,
     ShopifyOrderEventCard,
     ShopifyProductReferCard,
+    ShopifyDiscountReferCard,
     CustomerSatisfaction,
     IntegrationCard,
     CalEventCard,
@@ -152,6 +154,12 @@ export default {
 
       <ShopifyProductReferCard
         v-if="isTemplateShopifyProductRefer"
+        :message-id="messageId"
+        :message-content-attributes="messageContentAttributes"
+      />
+
+      <ShopifyDiscountReferCard
+        v-if="isTemplateShopifyDiscountRefer"
         :message-id="messageId"
         :message-content-attributes="messageContentAttributes"
       />

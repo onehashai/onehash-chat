@@ -142,6 +142,8 @@
   },
   "ORDER_TRACKING": "Order tracking",
   "ORDER_TRACKING_DESC": "Track order with your order id",
+
+  "ADD_TOKEN": "Add token",
   "SHOPIFY_ORDERS": {
     "TITLE": "Shopify Orders",
     "VIEW_ALL_ORDERS": "View all",
