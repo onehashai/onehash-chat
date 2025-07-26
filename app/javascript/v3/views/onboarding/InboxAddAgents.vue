@@ -4,6 +4,7 @@ import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import InboxMembersAPI from '../../../dashboard/api/inboxMembers';
 import router from '../../../dashboard/routes/index';
+import NextButton from 'dashboard/components-next/button/Button.vue';
 
 import OnboardingBaseModal from './BaseModal.vue';
 import { useVuelidate } from '@vuelidate/core';
@@ -11,6 +12,7 @@ import { useVuelidate } from '@vuelidate/core';
 export default {
   components: {
     OnboardingBaseModal,
+    NextButton,
   },
   validations: {
     selectedAgents: {
@@ -83,11 +85,13 @@ export default {
           />
         </label>
       </div>
-      <woot-submit-button
-        button-class="flex justify-center w-full text-sm text-center"
-        :button-text="$t('INBOX_MGMT.AGENTS.BUTTON_TEXT')"
-        :disabled="!selectedAgents.length"
-      />
+      <NextButton
+            type="submit"
+            :is-loading="isCreating"
+            solid
+            blue
+            :label="$t('INBOX_MGMT.AGENTS.BUTTON_TEXT')"
+          />
     </form>
   </OnboardingBaseModal>
 </template>
