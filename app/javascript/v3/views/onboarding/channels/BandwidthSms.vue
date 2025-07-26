@@ -5,9 +5,13 @@ import { useAlert } from 'dashboard/composables';
 import { required } from '@vuelidate/validators';
 import router from '../../../../dashboard/routes/index';
 
+import NextButton from 'dashboard/components-next/button/Button.vue';
 const shouldStartWithPlusSign = (value = '') => value.startsWith('+');
 
 export default {
+  components: {
+    NextButton,
+  },
   setup() {
     return { v$: useVuelidate() };
   },
@@ -173,9 +177,12 @@ export default {
     </div>
 
     <div class="w-full">
-      <woot-submit-button
-        :loading="uiFlags.isCreating"
-        :button-text="$t('INBOX_MGMT.ADD.SMS.BANDWIDTH.SUBMIT_BUTTON')"
+      <NextButton
+        :is-loading="uiFlags.isCreating"
+        type="submit"
+        solid
+        blue
+        :label="$t('INBOX_MGMT.ADD.SMS.BANDWIDTH.SUBMIT_BUTTON')"
       />
     </div>
   </form>

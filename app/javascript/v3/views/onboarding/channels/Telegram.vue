@@ -3,9 +3,12 @@ import { mapGetters } from 'vuex';
 import { useVuelidate } from '@vuelidate/core';
 import { useAlert } from 'dashboard/composables';
 import { required } from '@vuelidate/validators';
-
 import router from '../../../../dashboard/routes/index';
+import NextButton from 'dashboard/components-next/button/Button.vue';
 export default {
+  components: {
+    NextButton,
+  },
   setup() {
     return { v$: useVuelidate() };
   },
@@ -80,9 +83,12 @@ export default {
       </div>
 
       <div class="w-full mt-4">
-        <woot-submit-button
-          :loading="uiFlags.isCreating"
-          :button-text="$t('INBOX_MGMT.ADD.TELEGRAM_CHANNEL.SUBMIT_BUTTON')"
+        <NextButton
+          :is-loading="uiFlags.isCreating"
+          type="submit"
+          solid
+          blue
+          :label="$t('INBOX_MGMT.ADD.TELEGRAM_CHANNEL.SUBMIT_BUTTON')"
         />
       </div>
     </form>
