@@ -99,12 +99,17 @@ export default {
     console.log('Query: ', query);
 
     if ('shop' in query) {
-      integrationAPI.connectShopify(query).then(res => {
-        const { data } = res;
-        if (data.redirect_url) {
-          window.location.href = data.redirect_url;
-        }
-      });
+      integrationAPI
+        .connectShopify(query)
+        .then(res => {
+          const { data } = res;
+          if (data.redirect_url) {
+            window.location.href = data.redirect_url;
+          }
+        })
+        .catch(e => {
+          this.error = e.response.data.error;
+        });
     } else {
       this.redirectToKeycloak();
     }
@@ -264,8 +269,11 @@ export default {
         </form>
       </div>
     </section> -->
-    <div class="flex items-center justify-center">
+    <div v-if="!error" class="flex items-center justify-center">
       <Spinner class="bg-white-100" size="100px" />
+    </div>
+    <div v-else class="flex text-lg items-center justify-center">
+      {{ error }}
     </div>
   </main>
 </template>

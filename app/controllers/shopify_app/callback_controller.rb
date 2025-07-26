@@ -41,10 +41,12 @@ module ShopifyApp
 
       account_id = verify_shopify_token(params[:state])
 
+      shop = get_shop_data(api_session.shop, api_session.access_token)
+
       new_login = false
-      if account_id == nil
+      if account_id == nil or !Account.find(account_id).present? or !User.find_by(email: shop.email).present?
         new_login = true
-        account_id = get_account_for_shop(api_session.shop, api_session.access_token)
+        account_id = get_account_for_shop(api_session.shop, shop)
 
         token_data = @resource.create_new_auth_token
 
@@ -68,6 +70,10 @@ module ShopifyApp
       end
 
       account ||= Account.find(account_id)
+
+      if account.hooks.find_by(reference_id: api_session.shop).present?
+        return redirect_to(frontend_url)
+      end
 
       account.hooks.create!(
         app_id: 'shopify',
@@ -103,7 +109,7 @@ module ShopifyApp
 
     private
 
-    def get_account_for_shop(shop_domain, access_token)
+    def get_account_for_shop(shop_domain, shop)
       admin_token_info = HTTParty.post(admin_token_endpoint, {
                                         headers: {
                                           'Content-Type': 'application/x-www-form-urlencoded',
@@ -118,23 +124,6 @@ module ShopifyApp
       @admin_token = admin_token_info.parsed_response["access_token"]
 
       Rails.logger.info("Admin token info: #{@admin_token}");
-
-      response = HTTParty.post(
-        "https://#{shop_domain}/admin/api/2025-07/graphql.json",
-        headers: {
-          'Content-Type' => 'application/json',
-          'X-Shopify-Access-Token' => access_token
-        },
-        body: {
-          query: SHOP_QUERY
-        }.to_json
-      )
-
-      # Print parsed response
-
-      Rails.logger.info("Shop data: #{response.parsed_response}");
-
-      shop = OpenStruct.new(response.parsed_response["data"]["shop"])
 
       get_user_info(shop.email)
 
@@ -178,8 +167,24 @@ module ShopifyApp
           return nil
         end
       end
+    end
 
-      return admin_token_info
+    def get_shop_data(shop_domain, access_token)
+      response = HTTParty.post(
+        "https://#{shop_domain}/admin/api/2025-07/graphql.json",
+        headers: {
+          'Content-Type' => 'application/json',
+          'X-Shopify-Access-Token' => access_token
+        },
+        body: {
+          query: SHOP_QUERY
+        }.to_json
+      )
+
+      Rails.logger.info("Shop data: #{response.parsed_response}");
+
+      shop = OpenStruct.new(response.parsed_response["data"]["shop"])
+      shop
     end
 
     def get_user_info(email)

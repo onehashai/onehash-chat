@@ -6,7 +6,7 @@ ShopifyApp.configure do |config|
   
   # FIXME: These scopes aren't even used, beware
   config.scope = "read_customers,read_orders,write_orders,read_fulfillments" # Consult this page for more scope options: https://shopify.dev/docs/api/usage/access-scopes
-  config.embedded_app = true
+  config.embedded_app = false
   # REVIEW: this is for the new auth which is separate from the oauth flow we are currently using
   config.new_embedded_auth_strategy = false
 

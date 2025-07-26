@@ -10,22 +10,11 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
   def auth
     shop_domain = params[:shop]
 
-    return render json: { error: 'Shop domain is required' }, status: :unprocessable_entity if shop_domain.blank?
+    return render json: {error: I18n.t('shopify.shop_domain_is_required')}, status: :unprocessable_entity if shop_domain.blank?
 
-    # state = nil
-    # if (Current.account&.id == nil) then
-    #   hook = Integrations::Hook.find_by(reference_id: shop_domain)
-    #   if(hook.present?) then
-    #     state = generate_shopify_token(hook.account.id)
-    #   else
-    #     create_new_account
-    #     # state = generate_shopify_token(account.id)
-    #   end
-    # else
+    return render json: {error: I18n.t('shopify.multi_store_not_supported')}, status: :unprocessable_entity  if Current.account.hooks.find_by(app_id: 'shopify').present?
+
     state = generate_shopify_token(Current.account.id)
-    # end
-
-    # raise "OAuth state object can't be null" if state == nil
 
     auth_url = "https://#{shop_domain}/admin/oauth/authorize?"
     auth_url += URI.encode_www_form(
