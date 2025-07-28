@@ -2,12 +2,13 @@
 import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import router from '../../../../dashboard/routes/index';
-
+import NextButton from 'dashboard/components-next/button/Button.vue';
 import GreetingsEditor from 'shared/components/GreetingsEditor.vue';
 
 export default {
   components: {
     GreetingsEditor,
+    NextButton,
   },
   data() {
     return {
@@ -186,10 +187,13 @@ export default {
       />
       <div class="flex flex-row justify-end w-full gap-2 px-0 py-2">
         <div class="w-full">
-          <woot-submit-button
-            :loading="uiFlags.isCreating"
+          <NextButton
+            type="submit"
+            :is-loading="uiFlags.isCreating"
             :disabled="!channelWebsiteUrl || !inboxName"
-            :button-text="$t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.SUBMIT_BUTTON')"
+            solid
+            blue
+            :label="$t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.SUBMIT_BUTTON')"
           />
         </div>
       </div>

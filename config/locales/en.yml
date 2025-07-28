@@ -351,3 +351,5 @@ en:
     order_refund_process: 'Order refund in process'
     order:
       update_complete: 'Order updated'
+    multi_store_not_supported: Your OneHash Chat account already contains an app, please remove the existing app before integrating new one, or log out of the current account.
+    shop_domain_required: 'Shop domain is required'

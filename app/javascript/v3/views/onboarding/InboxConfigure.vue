@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import OnboardingBaseModal from './BaseModal.vue';
 import Facebook from './channels/Facebook.vue';
 import Website from './channels/Website.vue';
+import Instagram from './channels/Instagram.vue';
 import Twitter from './channels/Twitter.vue';
 import Api from './channels/Api.vue';
 import Email from './channels/Email.vue';
@@ -32,6 +33,7 @@ const channelViewList = {
   whatsapp: Whatsapp,
   line: Line,
   telegram: Telegram,
+  instagram: Instagram,
 };
 
 const ChannelComponent = computed(() => channelViewList[props.channel] || null);

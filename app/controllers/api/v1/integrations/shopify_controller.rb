@@ -1,7 +1,6 @@
 class Api::V1::Integrations::ShopifyController < ApplicationController
   include Shopify::IntegrationHelper
 
-
   def redirect_uri
     "#{ENV.fetch('FRONTEND_URL', '')}/shopify/auth/shopify/callback"
   end

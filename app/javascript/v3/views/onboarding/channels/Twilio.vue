@@ -5,10 +5,14 @@ import { useVuelidate } from '@vuelidate/core';
 import { useAlert } from 'dashboard/composables';
 import { required } from '@vuelidate/validators';
 import router from '../../../../dashboard/routes/index';
+import NextButton from 'dashboard/components-next/button/Button.vue';
 import { isPhoneE164OrEmpty } from 'shared/helpers/Validators';
 import { parseAPIErrorResponse } from 'dashboard/store/utils/api';
 
 export default {
+  components: {
+    NextButton,
+  },
   props: {
     type: {
       type: String,
@@ -239,9 +243,12 @@ export default {
     </div>
 
     <div class="w-full">
-      <woot-submit-button
-        :loading="uiFlags.isCreating"
-        :button-text="$t('INBOX_MGMT.ADD.TWILIO.SUBMIT_BUTTON')"
+      <NextButton
+        :is-loading="uiFlags.isCreating"
+        type="submit"
+        solid
+        blue
+        :label="$t('INBOX_MGMT.ADD.TWILIO.SUBMIT_BUTTON')"
       />
     </div>
   </form>
