@@ -155,6 +155,12 @@
     "FETCH_ORDERS": "Fetch Orders",
     "NO_ORDERS": "No orders available"
   },
+
+  "TRACKING_NUMBER_LABEL": "Tracking number",
+  "TRACKING_NUMBER_PLACEHOLDER": "Please enter tracking number",
+  "TRACKING_NUMBER_ERROR": "Invalid tracking number",
+  "TRACK_SHIPMENT" :"Track shipment",
+
   "ATTACHMENTS": {
     "image": {
       "CONTENT": "Picture message"
