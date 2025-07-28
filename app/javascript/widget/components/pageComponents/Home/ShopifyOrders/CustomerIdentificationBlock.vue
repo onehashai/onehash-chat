@@ -2,13 +2,9 @@
 import FormInput from 'v3/components/Form/Input.vue';
 import countries from 'shared/constants/countries.js';
 
-// "name": "Afghanistan",
-// "dial_code": "+93",
-// "emoji": "🇦🇫",
-// "id": "AF"
 import TabBar from 'dashboard/components-next/tabbar/TabBar.vue';
 import Spinner from 'shared/components/Spinner.vue';
-import { defineProps, computed, reactive, watch } from 'vue';
+import { defineProps, computed, reactive } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { useStore } from 'dashboard/composables/store';
 import { required, requiredIf, email, numeric } from '@vuelidate/validators';
@@ -104,16 +100,17 @@ const onSubmit = async event => {
       @submit="onSubmit"
     >
       <div class="flex flex-col gap-4">
-        <TabBar
-          :tabs="input_types"
-          :initial-active-tab="
-            input_types.findIndex(e => e.label === input_type)
-          "
-          :fixed-size="true"
-          @tab-changed="handleTypeChange"
-          class="w-full"
-        />
-
+        <div class="px-4">
+          <TabBar
+            :tabs="input_types"
+            :initial-active-tab="
+              input_types.findIndex(e => e.label === input_type)
+            "
+            :fixed-size="true"
+            @tab-changed="handleTypeChange"
+            class="w-full"
+          />
+        </div>
         <FormInput
           v-if="input_type === 'Email'"
           v-model="form.email"

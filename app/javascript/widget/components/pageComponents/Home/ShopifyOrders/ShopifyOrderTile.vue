@@ -9,19 +9,6 @@ const props = defineProps({
 
 // Emits
 const emit = defineEmits(['track', 'cancel', 'report-issue']);
-
-// Methods
-const handleTrack = () => {
-  emit('track', props.order);
-};
-
-const handleCancel = () => {
-  emit('cancel', props.order);
-};
-
-const handleReportIssue = () => {
-  emit('report-issue', props.order);
-};
 </script>
 
 <template>
