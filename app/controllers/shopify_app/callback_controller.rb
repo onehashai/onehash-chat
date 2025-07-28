@@ -38,52 +38,53 @@ module ShopifyApp
 
       Rails.logger.info("Params #{params} #{api_session}")
 
-
       account_id = verify_shopify_token(params[:state])
 
       shop = get_shop_data(api_session.shop, api_session.access_token)
 
+      hook = Integrations::Hook.find_by(reference_id: api_session.shop, app_id: 'shopify')
+
       new_login = false
-      if account_id == nil or !Account.find(account_id).present? or !User.find_by(email: shop.email).present?
+
+      # Account id is not given and there's also no hook for this shop, create new account for the shop
+      if (account_id == nil or !Account.find(account_id).present?) && !hook.present?
         new_login = true
         account_id = get_account_for_shop(api_session.shop, shop)
 
-        token_data = @resource.create_new_auth_token
+        set_cookies(@resource.create_new_auth_token)
+      end
 
-        # Build EXACT header-format map of auth token values (matching what's returned in response.headers)
-        cookie_headers = {
-          DeviseTokenAuth.headers_names[:'access-token'] => token_data['access-token'],
-          DeviseTokenAuth.headers_names[:'token-type']   => 'Bearer',
-          DeviseTokenAuth.headers_names[:client]         => token_data['client'],
-          DeviseTokenAuth.headers_names[:expiry]         => token_data['expiry'],
-          DeviseTokenAuth.headers_names[:uid]            => token_data['uid']
-        }
+      # We are authenticated in another account, auth one with the opened app.
+      if hook.present? and account_id != hook.account.id
+        account = Account.find(hook.account.id)
+        user = account.users.find_by(email: shop.email)
+        if !user&.present?
+          found_user = account.users.find { |user| User.find(AccountUser.find_by(user_id: user.id, role: 1).user_id) }
+        end
 
-        # Set cookie with exact value the JS frontend expects to read from
-        cookies[:cw_d_session_info] = {
-          value: cookie_headers.to_json,
-          expires: Time.at(token_data['expiry'].to_i),
-          secure: Rails.env.production?,
-          http_only: false,        # Frontend needs to read it with JS
-          same_site: :lax          # Change to :none if needed for cross-site embedded
-        }
+        set_cookies(found_user.create_new_auth_token)
+        return redirect_to(frontend_url)
+      end
+
+      if account_id == nil
+        return redirect_to(frontend_url)
       end
 
       account ||= Account.find(account_id)
 
-      if account.hooks.find_by(reference_id: api_session.shop).present?
+      if hook.present?
         return redirect_to(frontend_url)
+      elsif !hook.present?
+        account.hooks.create!(
+          app_id: 'shopify',
+          access_token: api_session.access_token,
+          status: 'enabled',
+          reference_id: api_session.shop,
+          settings: {
+            scope: api_session.scope
+          }
+        )
       end
-
-      account.hooks.create!(
-        app_id: 'shopify',
-        access_token: api_session.access_token,
-        status: 'enabled',
-        reference_id: api_session.shop,
-        settings: {
-          scope: api_session.scope
-        }
-      )
 
       webhooks = ShopifyAPI::Webhook.all(session: api_session)
 
@@ -185,6 +186,24 @@ module ShopifyApp
 
       shop = OpenStruct.new(response.parsed_response["data"]["shop"])
       shop
+    end
+
+    def set_cookies(token_data)
+      cookie_headers = {
+        DeviseTokenAuth.headers_names[:'access-token'] => token_data['access-token'],
+        DeviseTokenAuth.headers_names[:'token-type']   => 'Bearer',
+        DeviseTokenAuth.headers_names[:client]         => token_data['client'],
+        DeviseTokenAuth.headers_names[:expiry]         => token_data['expiry'],
+        DeviseTokenAuth.headers_names[:uid]            => token_data['uid']
+      }
+
+      cookies[:cw_d_session_info] = {
+        value: cookie_headers.to_json,
+        expires: Time.at(token_data['expiry'].to_i),
+        secure: Rails.env.production?,
+        http_only: false,
+        same_site: :lax
+      }
     end
 
     def get_user_info(email)
