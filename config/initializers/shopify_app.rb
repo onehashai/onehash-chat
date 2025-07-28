@@ -3,7 +3,7 @@ ShopifyApp.configure do |config|
   config.old_secret = ""
   config.root_url = '/shopify'
   config.login_callback_url = '/shopify/auth/shopify/callback'
-  
+
   # FIXME: These scopes aren't even used, beware
   config.scope = "read_customers,read_orders,write_orders,read_fulfillments" # Consult this page for more scope options: https://shopify.dev/docs/api/usage/access-scopes
   config.embedded_app = false
