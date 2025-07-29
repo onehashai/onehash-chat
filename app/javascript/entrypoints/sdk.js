@@ -23,6 +23,10 @@ const runSDK = ({ baseUrl, websiteToken }) => {
     return;
   }
 
+  const match = websiteToken.split("?oseid");
+
+  websiteToken = match ? match[0] : "Invalid";
+
   // if this is a Rails Turbo app
   document.addEventListener('turbo:before-render', event => {
     // when morphing the page, this typically happens on reload like events

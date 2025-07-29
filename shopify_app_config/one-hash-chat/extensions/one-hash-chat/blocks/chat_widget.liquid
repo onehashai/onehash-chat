@@ -1,0 +1,49 @@
+<div class="chat-widget" 
+     data-shop="{{ shop.permanent_domain }}"
+     data-settings="{{ block.settings | json | escape }}">
+  <p>Chat Widget Debug - Check Console</p>
+</div>
+
+<script>
+ (function(d, t) {
+    var WEBSITE_TOKEN = "{{ block.settings.website_token }}"; // Liquid variable
+
+    var sdkUrl = "/apps/onehash-chat/packs/js/sdk.js";
+
+    var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
+    g.src = sdkUrl;
+    g.defer = true;
+    g.async = true;
+    s.parentNode.insertBefore(g, s);
+    console.log("Loading widget", WEBSITE_TOKEN)
+
+    g.onload = function() {
+      console.log("Running widget, ", window.chatwootSDK)
+      window.chatwootSDK.run({
+        websiteToken: WEBSITE_TOKEN,
+        baseUrl: "/apps/onehash-chat"
+{% comment %} sdkUrl.replace(/\/packs\/js\/sdk\.js$/, '') // Adjust baseUrl if needed {% endcomment %}
+      });
+    };
+  })(document, "script");
+</script>
+
+<script>
+console.log('=== AFTER SCRIPT TAG ===');
+</script>
+
+
+{% schema %}
+{
+  "name": "Chat Widget",
+  "target": "head",
+  "settings": [
+    {
+      "type": "text",
+      "id": "website_token",
+      "label": "Website Token",
+      "default": "example123"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,26 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "85e1dfe3c06b7f014bab34c7eced1f11"
+name = "OneHash Chat"
+handle = "onehash-chat"
+application_url = "https://366d-2401-4900-8820-640a-c97c-9f3c-6a69-917a.ngrok-free.app/app/login"
+embedded = false
+
+[build]
+include_config_on_deploy = true
+
+[webhooks]
+api_version = "2025-07"
+
+[auth]
+redirect_urls = [
+  "https://366d-2401-4900-8820-640a-c97c-9f3c-6a69-917a.ngrok-free.app/shopify/auth/shopify/callback"
+]
+
+[app_proxy]
+url = "https://366d-2401-4900-8820-640a-c97c-9f3c-6a69-917a.ngrok-free.app/"
+subpath = "onehash-chat"
+prefix = "apps"
+
+[pos]
+embedded = false

@@ -18,7 +18,10 @@ class WidgetsController < ActionController::Base
   end
 
   def set_web_widget
-    @web_widget = ::Channel::WebWidget.find_by!(website_token: permitted_params[:website_token])
+    token = permitted_params[:website_token]
+    token = token.split("?oseid")[0] # If shopify sent the request remove the store id
+
+    @web_widget = ::Channel::WebWidget.find_by!(website_token: token)
   rescue ActiveRecord::RecordNotFound
     Rails.logger.error('web widget does not exist')
     render json: { error: 'web widget does not exist' }, status: :not_found
