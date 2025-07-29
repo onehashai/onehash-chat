@@ -93,6 +93,7 @@
     "video.js": "7.18.1",
     "videojs-record": "4.5.0",
     "videojs-wavesurfer": "3.8.0",
+    "vite-plugin-dynamic-publicpath": "^1.1.2",
     "vue": "^3.5.12",
     "vue-chartjs": "5.3.1",
     "vue-datepicker-next": "^1.0.3",

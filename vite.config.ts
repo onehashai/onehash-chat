@@ -25,6 +25,7 @@ import vue from '@vitejs/plugin-vue';
 
 const isLibraryMode = process.env.BUILD_MODE === 'library';
 const isTestMode = process.env.TEST === 'true';
+import { useDynamicPublicPath } from 'vite-plugin-dynamic-publicpath';
 
 const vueOptions = {
   template: {
@@ -34,15 +35,16 @@ const vueOptions = {
   },
 };
 
-let plugins = [ruby(), vue(vueOptions)];
+let plugins = [ruby(), vue(vueOptions), useDynamicPublicPath()];
 
 if (isLibraryMode) {
-  plugins = [];
+  plugins = [useDynamicPublicPath()];
 } else if (isTestMode) {
-  plugins = [vue(vueOptions)];
+  plugins = [vue(vueOptions), useDynamicPublicPath()];
 }
 
 export default defineConfig({
+  base: '/app/onehash-chat',
   plugins: plugins,
   build: {
     rollupOptions: {
