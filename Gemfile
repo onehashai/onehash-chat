@@ -256,5 +256,3 @@ end
 gem 'shopify_app'
 
 gem "shopify_graphql", "~> 2.3"
-
-gem 'devise-encryptable'
