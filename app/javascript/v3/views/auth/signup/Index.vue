@@ -38,7 +38,7 @@ export default {
       <div
         class="flex-1 min-h-[640px] inline-flex items-center h-full justify-center overflow-auto py-6"
       >
-        <div class="px-8 max-w-[560px] w-full overflow-auto">
+        <div class="px-8 max-w-[700px] w-full overflow-auto">
           <div class="mb-4">
             <img
               :src="globalConfig.logo"
@@ -71,11 +71,6 @@ export default {
           </div>
         </div>
       </div>
-      <Testimonials
-        v-if="isAChatwootInstance"
-        class="flex-1"
-        @resize-containers="resizeContainers"
-      />
     </div>
     <div
       v-show="isLoading"
