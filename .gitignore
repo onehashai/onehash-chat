@@ -31,6 +31,7 @@ master.key
 .env
 .env.serve
 
+/assets/packs
 public/uploads
 public/packs*
 public/assets/administrate*

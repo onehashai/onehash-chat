@@ -39,8 +39,8 @@
       const logoColors = <%= raw @web_widget.logo_colors.to_json %>;
       window.chatwootWebChannel.logoColors = logoColors;
     </script>
-    <%= vite_client_tag %>
-    <%= vite_javascript_tag 'widget' %>
+    <%= custom_vite_client_tag %>
+    <%= custom_vite_javascript_tag 'widget' %>
   </head>
   <body>
     <div id="app" class="h-full"></div>

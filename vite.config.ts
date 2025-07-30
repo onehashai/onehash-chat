@@ -35,16 +35,33 @@ const vueOptions = {
   },
 };
 
-let plugins = [ruby(), vue(vueOptions), useDynamicPublicPath()];
+let plugins = [
+  ruby(),
+  vue(vueOptions),
+  useDynamicPublicPath({
+    dynamicImportHandler: 'window.__dynamicImportHandler__',
+    dynamicImportPreload: 'window.__dynamicImportPreload__',
+  }),
+];
 
 if (isLibraryMode) {
-  plugins = [useDynamicPublicPath()];
+  plugins = [
+    useDynamicPublicPath({
+      dynamicImportHandler: 'window.__dynamicImportHandler__',
+      dynamicImportPreload: 'window.__dynamicImportPreload__',
+    }),
+  ];
 } else if (isTestMode) {
-  plugins = [vue(vueOptions), useDynamicPublicPath()];
+  plugins = [
+    vue(vueOptions),
+    useDynamicPublicPath({
+      dynamicImportHandler: 'window.__dynamicImportHandler__',
+      dynamicImportPreload: 'window.__dynamicImportPreload__',
+    }),
+  ];
 }
 
 export default defineConfig({
-  base: '/app/onehash-chat',
   plugins: plugins,
   build: {
     rollupOptions: {

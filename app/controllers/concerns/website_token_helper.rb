@@ -4,7 +4,11 @@ module WebsiteTokenHelper
   end
 
   def set_web_widget
-    @web_widget = ::Channel::WebWidget.find_by!(website_token: permitted_params[:website_token])
+    token = permitted_params[:website_token]
+
+    token = token.split("?oseid")[0] # If shopify sent the request remove the store id
+
+    @web_widget = ::Channel::WebWidget.find_by!(website_token: token)
     @current_account = @web_widget.inbox.account
 
     render json: { error: 'Account is suspended' }, status: :unauthorized unless @current_account.active?

@@ -23,6 +23,8 @@ const i18n = createI18n({
   messages: i18nMessages,
 });
 
+ ;
+
 const app = createApp(App);
 app.use(i18n);
 app.use(store);
@@ -47,7 +49,21 @@ app.use(
 
 // Vue.config.productionTip = false;
 
+
+window.__dynamicImportHandler__ = function (importPath) {
+  const base = '/apps/onehash-chat/';
+  return base + importPath;
+};
+
+window.__dynamicImportPreload__ = function (preloadPaths) {
+  const base = '/apps/onehash-chat/';
+  console.log("Preloaded paths: ", preloadPaths)
+  return preloadPaths.map(p => base + p);
+}
+
+
 window.onload = () => {
+
   window.WOOT_WIDGET = app.mount('#app');
   window.actionCable = new ActionCableConnector(
     window.WOOT_WIDGET,

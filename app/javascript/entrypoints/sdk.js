@@ -18,34 +18,29 @@ import {
 import { setCookieWithDomain } from '../sdk/cookieHelpers';
 import { SDK_SET_BUBBLE_VISIBILITY } from 'shared/constants/sharedFrameEvents';
 
-window.__dynamicImportHandler__ = function (importPath) {
-  const base = '/apps/onehash-chat/';
-  return base + importPath;
 
-  // console.log("Imported: ", importPath)
   // const base = window.location.pathname.startsWith('/apps/onehash-chat/')
   //   ? '/apps/onehash-chat/'
   //   : '/';
-  // return base + importPath;
+
+window.__dynamicImportHandler__ = function (importPath) {
+  const base = '/apps/onehash-chat/';
+  return base + importPath;
 };
 
 window.__dynamicImportPreload__ = function (preloadPaths) {
   const base = '/apps/onehash-chat/';
   return preloadPaths.map(p => base + p);
-
-  // console.log('Preloaded: ', preloadPaths);
-  // const base = window.location.pathname.startsWith('/apps/onehash-chat/')
-  //   ? '/apps/onehash-chat/'
-  //   : '/';
-  // return preloadPaths.map(p => base + p);
 };
 
+console.log('Loaded widget: ');
+
 const runSDK = ({ baseUrl, websiteToken }) => {
+  console.log('Loaded: ', websiteToken);
+
   if (window.$chatwoot) {
     return;
   }
-
-  console.log('Loaded: ', websiteToken);
 
   const match = websiteToken.split('?oseid');
 

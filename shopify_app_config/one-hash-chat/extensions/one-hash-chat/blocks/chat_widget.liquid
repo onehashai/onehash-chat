@@ -8,30 +8,10 @@
  (function(d, t) {
     var WEBSITE_TOKEN = "{{ block.settings.website_token }}"; // Liquid variable
 
-    var sdkUrl = "/apps/onehash-chat/packs/js/sdk.js";
-
-window.__dynamicImportHandler__ = function(importPath) {
-  const base =   '/apps/onehash-chat/';
-  return base + importPath;
-
-  {% comment %} console.log("Imported: ", importPath)
-  const base = window.location.pathname.startsWith('/apps/onehash-chat/')
-    ? '/apps/onehash-chat/'
-    : '/';
-  return base + importPath; {% endcomment %}
-};
-
-window.__dynamicImportPreload__ = function(preloadPaths) {
-  const base = '/apps/onehash-chat/';
-  return preloadPaths.map(p => base + p);
-
-  {% comment %} console.log("Preloaded: ", preloadPaths)
-  const base = window.location.pathname.startsWith('/apps/onehash-chat/')
-    ? '/apps/onehash-chat/'
-    : '/';
-  return preloadPaths.map(p => base + p); {% endcomment %}
-};
-
+    var sdkUrl = "{{ './sdk.js' | asset_url }}";
+     {% comment %} const base = 'https://366d-2401-4900-8820-640a-c97c-9f3c-6a69-917a.ngrok-free.app'  {% endcomment %}
+    {% comment %} const base = '/apps/onehash-chat' 
+    const sdkUrl = base + "/packs/js/sdk.js"  {% endcomment %}
 
     var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
     g.src = sdkUrl;
@@ -44,7 +24,7 @@ window.__dynamicImportPreload__ = function(preloadPaths) {
       console.log("Running widget, ", window.chatwootSDK)
       window.chatwootSDK.run({
         websiteToken: WEBSITE_TOKEN,
-        baseUrl: "/apps/onehash-chat"
+        baseUrl: "https://testing-store-for-sukh.myshopify.com/apps/onehash-chat"
 {% comment %} sdkUrl.replace(/\/packs\/js\/sdk\.js$/, '') // Adjust baseUrl if needed {% endcomment %}
       });
     };
