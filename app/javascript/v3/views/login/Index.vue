@@ -54,6 +54,7 @@ export default {
         hasErrored: false,
       },
       error: '',
+      shop: null,
     };
   },
   validations() {
@@ -99,6 +100,7 @@ export default {
     console.log('Query: ', query);
 
     if ('shop' in query) {
+      this.shop = query.shop;
       integrationAPI
         .connectShopify(query)
         .then(res => {
@@ -111,9 +113,6 @@ export default {
           this.error = e.response.data.error;
         });
     }
-    // else {
-    //   this.redirectToKeycloak();
-    // }
   },
   methods: {
     // TODO: Remove this when Safari gets wider support
@@ -211,7 +210,7 @@ export default {
           useInstallationName($t('LOGIN.TITLE'), globalConfig.installationName)
         }}
       </h2>
-      <p v-if="showSignupLink" class="mt-3 text-sm text-center text-n-slate-11">
+      <p v-if="showSignupLink && !shop" class="mt-3 text-sm text-center text-n-slate-11">
         {{ $t('COMMON.OR') }}
         <router-link to="auth/signup" class="lowercase text-link text-n-brand">
           {{ $t('LOGIN.CREATE_NEW_ACCOUNT') }}
@@ -225,7 +224,7 @@ export default {
         'animate-wiggle': loginApi.hasErrored,
       }"
     >
-      <div v-if="!email">
+      <div v-if="!email && !shop">
         <GoogleOAuthButton v-if="showGoogleOAuth" />
         <form class="space-y-5" @submit.prevent="submitFormLogin">
           <FormInput
@@ -270,8 +269,11 @@ export default {
           />
         </form>
       </div>
-      <div v-else class="flex items-center justify-center">
+      <div v-else-if="!error" class="flex items-center justify-center">
         <Spinner color-scheme="primary" size="" />
+      </div>
+      <div v-if="error" class="flex text-center items-center justify-center">
+        {{ error }}
       </div>
     </section>
   </main>
