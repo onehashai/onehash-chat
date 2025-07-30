@@ -1,11 +1,6 @@
-require 'openssl'
-require 'devise-encryptable'
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
-  # Custom encryptor for keycloak migration
-  config.stretches = 27500
-
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
@@ -276,42 +271,4 @@ Devise.setup do |config|
   # When using OmniAuth, Devise cannot automatically set OmniAuth path,
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = '/my_engine/users/auth'
-end
-
-# This is keycl
-module Devise
-  module Encryptable
-    module Encryptors
-      class Pbkdf2256 < Base
-        # password - the clear text password to hash
-        # stretches - the number of iterations
-        # salt - a unique salt per user (string)
-        # pepper - a global secret pepper from Devise config (string)
-        def self.digest(password, stretches, salt, pepper)
-          algorithm = 'sha256'
-          iterations = stretches
-          iterations = 27500
-          key_length = 32 # 256 bits = 32 bytes
-
-          # Combine password and pepper first (pepper is optional)
-          password_peppered = "#{password}#{pepper}"
-
-          decoded_salt = Base64.decode64(salt)
-
-          # PBKDF2 key derivation
-          derived_key = OpenSSL::PKCS5.pbkdf2_hmac(
-            password_peppered,
-            decoded_salt,
-            iterations,
-            key_length,
-            algorithm
-          )
-
-          # Return base-64 encoded key as the stored encrypted password
-          key = Base64.strict_encode64(derived_key)
-          key
-        end
-      end
-    end
-  end
 end

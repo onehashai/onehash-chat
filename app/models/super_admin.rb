@@ -17,7 +17,6 @@
 #  last_sign_in_ip        :string
 #  message_signature      :text
 #  name                   :string           not null
-#  password_salt          :string
 #  provider               :string           default("email"), not null
 #  pubsub_token           :string
 #  remember_created_at    :datetime
