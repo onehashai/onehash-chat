@@ -1,20 +1,21 @@
 <script>
 // utils and composables
+import { login, keycloakRedirectUrl } from '../../api/auth';
+import { mapGetters } from 'vuex';
 import { parseBoolean } from '@chatwoot/utils';
 import { useAlert } from 'dashboard/composables';
 import { required, email } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
-import { login, keycloakRedirectUrl } from '../../api/auth';
-
 import integrationAPI from 'dashboard/api/integrations';
+
 // mixins
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
 
 // components
-// import FormInput from '../../components/Form/Input.vue';
-// import GoogleOAuthButton from '../../components/GoogleOauth/Button.vue';
+import FormInput from '../../components/Form/Input.vue';
+import GoogleOAuthButton from '../../components/GoogleOauth/Button.vue';
 import Spinner from 'shared/components/Spinner.vue';
-// import SubmitButton from '../../components/Button/SubmitButton.vue';
+import SubmitButton from '../../components/Button/SubmitButton.vue';
 
 const ERROR_MESSAGES = {
   'no-account-found': 'LOGIN.OAUTH.NO_ACCOUNT_FOUND',
@@ -23,11 +24,10 @@ const ERROR_MESSAGES = {
 
 export default {
   components: {
-    // FormInput,
-    // GoogleOAuthButton,
-    // RedirectLoader,
+    FormInput,
+    GoogleOAuthButton,
     Spinner,
-    // SubmitButton,
+    SubmitButton,
   },
   mixins: [globalConfigMixin],
   props: {
@@ -70,7 +70,7 @@ export default {
     };
   },
   computed: {
-    // ...mapGetters({ globalConfig: 'globalConfig/get' }),
+    ...mapGetters({ globalConfig: 'globalConfig/get' }),
     showGoogleOAuth() {
       return Boolean(window.chatwootConfig.googleOAuthClientId);
     },
@@ -110,9 +110,10 @@ export default {
         .catch(e => {
           this.error = e.response.data.error;
         });
-    } else {
-      this.redirectToKeycloak();
     }
+    // else {
+    //   this.redirectToKeycloak();
+    // }
   },
   methods: {
     // TODO: Remove this when Safari gets wider support
@@ -163,6 +164,15 @@ export default {
           );
         });
     },
+    submitFormLogin() {
+      if (this.v$.credentials.email.$invalid && !this.email) {
+        this.showAlertMessage(this.$t('LOGIN.EMAIL.ERROR'));
+        return;
+      }
+
+      this.submitLogin();
+    },
+
     redirectToKeycloak() {
       keycloakRedirectUrl()
         .then(response => {
@@ -176,14 +186,6 @@ export default {
           );
         });
     },
-    // submitFormLogin() {
-    //   if (this.v$.credentials.email.$invalid && !this.email) {
-    //     this.showAlertMessage(this.$t('LOGIN.EMAIL.ERROR'));
-    //     return;
-    //   }
-
-    //   this.submitLogin();
-    // },
   },
 };
 </script>
@@ -192,7 +194,7 @@ export default {
   <main
     class="flex flex-col w-full min-h-screen py-20 bg-n-brand/5 dark:bg-n-background sm:px-6 lg:px-8"
   >
-    <!-- <section class="max-w-5xl mx-auto">
+    <section class="max-w-5xl mx-auto">
       <img
         :src="globalConfig.logo"
         :alt="globalConfig.installationName"
@@ -268,12 +270,9 @@ export default {
           />
         </form>
       </div>
-    </section> -->
-    <div v-if="!error" class="flex items-center justify-center">
-      <Spinner class="bg-white-100" size="100px" />
-    </div>
-    <div v-else class="flex text-lg items-center justify-center">
-      {{ error }}
-    </div>
+      <div v-else class="flex items-center justify-center">
+        <Spinner color-scheme="primary" size="" />
+      </div>
+    </section>
   </main>
 </template>

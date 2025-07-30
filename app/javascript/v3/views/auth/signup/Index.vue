@@ -1,15 +1,15 @@
 <script>
 import { mapGetters } from 'vuex';
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
-// import SignupForm from './components/Signup/Form.vue';
-// import Testimonials from './components/Testimonials/Index.vue';
-// import Spinner from 'shared/components/Spinner.vue';
+import SignupForm from './components/Signup/Form.vue';
+import Testimonials from './components/Testimonials/Index.vue';
+import Spinner from 'shared/components/Spinner.vue';
 
 export default {
   components: {
-    // SignupForm,
-    // Spinner,
-    // Testimonials,
+    SignupForm,
+    Spinner,
+    Testimonials,
   },
   mixins: [globalConfigMixin],
   data() {
@@ -24,39 +24,16 @@ export default {
   beforeMount() {
     this.isLoading = this.isAChatwootInstance;
   },
-  mounted() {
-    this.redirectToKeycloak();
-  },
   methods: {
     resizeContainers() {
       this.isLoading = false;
-    },
-    redirectToKeycloak() {
-      const realm = window.chatwootConfig.keycloakRealm;
-      const clientId = window.chatwootConfig.keycloakClientId;
-      const redirectUri = window.chatwootConfig.keycloakCallbackUrl;
-      const keycloakUri = window.chatwootConfig.keycloakUrl;
-      const baseUrl = `${keycloakUri}/realms/${realm}/protocol/openid-connect/registrations`;
-      const responseType = 'code';
-      const scope = 'openid';
-
-      const queryString = new URLSearchParams({
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        response_type: responseType,
-        scope: scope,
-      }).toString();
-
-      window.location.href = `${baseUrl}?${queryString}`;
     },
   },
 };
 </script>
 
-<!-- REVIEW: This appears to not be used at all -->
-<!-- eslint-disable-line vue/valid-template-root -->
-<!-- <template> -->
-<!-- <div class="w-full h-full bg-n-background">
+<template>
+  <div class="w-full h-full bg-n-background">
     <div v-show="!isLoading" class="flex h-full min-h-screen items-center">
       <div
         class="flex-1 min-h-[640px] inline-flex items-center h-full justify-center overflow-auto py-6"
@@ -106,5 +83,5 @@ export default {
     >
       <Spinner color-scheme="primary" size="" />
     </div>
-  </div> -->
-<!-- </template> -->
+  </div>
+</template>
