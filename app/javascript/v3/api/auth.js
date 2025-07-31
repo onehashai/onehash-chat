@@ -75,14 +75,14 @@ export const resetPassword = async ({ email }) =>
   wootAPI.post('auth/password', { email });
 
 // export const logoutFromKeycloakSession = () => {
-  // const keycloak_token = Cookies.get('keycloak_token');
-  // if (keycloak_token) {
-  //   const response = wootAPI.post('api/v1/keycloak/logout', {
-  //     token: keycloak_token,
-  //   });
-  //   return response;
-  // }
-  // return 'Keycloak Token missing from cookies';
+// const keycloak_token = Cookies.get('keycloak_token');
+// if (keycloak_token) {
+//   const response = wootAPI.post('api/v1/keycloak/logout', {
+//     token: keycloak_token,
+//   });
+//   return response;
+// }
+// return 'Keycloak Token missing from cookies';
 // };
 
 export const checkKeycloakSession = async () => {
