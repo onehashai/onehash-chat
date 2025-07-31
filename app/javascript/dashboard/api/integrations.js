@@ -2,7 +2,6 @@
 import { setAuthCredentials } from 'dashboard/store/utils/api';
 
 import ApiClient from './ApiClient';
-import { Exception } from 'sass-embedded';
 
 class IntegrationsAPI extends ApiClient {
   constructor() {
