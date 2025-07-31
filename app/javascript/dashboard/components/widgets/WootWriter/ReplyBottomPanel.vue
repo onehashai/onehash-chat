@@ -300,7 +300,7 @@ export default {
       />
 
       <NextButton
-        v-if="shopifyProducts"
+        v-if="shopifyProducts && shopifyProducts.length > 0"
         v-tooltip.top-end="$t('CONVERSATION.FOOTER.SEND_PRODUCT')"
         icon="i-ph-bag"
         slate
@@ -310,7 +310,7 @@ export default {
       />
 
       <NextButton
-        v-if="shopifyDiscounts"
+        v-if="shopifyDiscounts && shopifyDiscounts.length > 0"
         v-tooltip.top-end="$t('CONVERSATION.FOOTER.SEND_DISCOUNT')"
         icon="i-ph-seal-percent"
         slate
