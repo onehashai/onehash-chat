@@ -73,18 +73,24 @@ class Shopify::PopulateProductsJob < ApplicationJob
           ) unless account.shopify_products.find_by(id: product_id).present?
         end
     end
-
   end
 
   def unwrap_table(obj)
-    if obj.is_a?(Hash) && obj.key?("table")
-      unwrap_table(obj["table"])
-    elsif obj.is_a?(Array)
-      obj.map { |item| unwrap_table(item) }
-    elsif obj.is_a?(OpenStruct)
+    case obj
+    when OpenStruct
       unwrap_table(obj.to_h)
+    when Hash
+      if obj.key?("table")
+        unwrap_table(obj["table"])
+      else
+        # Recursively unwrap all values inside the hash
+        obj.transform_values { |v| unwrap_table(v) }
+      end
+    when Array
+      obj.map { |item| unwrap_table(item) }
     else
       obj
     end
   end
+
 end
