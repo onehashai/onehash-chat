@@ -5,7 +5,6 @@ import { useMapGetter } from 'dashboard/composables/store';
 import { useI18n } from 'vue-i18n';
 import Avatar from 'next/avatar/Avatar.vue';
 import SidebarProfileMenuStatus from './SidebarProfileMenuStatus.vue';
-import { logoutFromKeycloakSession } from '../../../../javascript/v3/api/auth';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 import {
@@ -33,20 +32,20 @@ const isFeatureEnabledonAccount = useMapGetter(
 );
 
 async function logout() {
-  const keycloakRes = await logoutFromKeycloakSession();
-  if (keycloakRes === 'Keycloak Token missing from cookies') {
-    Auth.logout();
-  }
-  if (
-    keycloakRes.status === 200 &&
-    keycloakRes.data.message === 'Logged out successfully'
-  ) {
-    const url = keycloakRes.data.url;
-    window.location.href = url;
-    Auth.logout();
-  } else {
-    Auth.logout();
-  }
+  // const keycloakRes = await logoutFromKeycloakSession();
+  // if (keycloakRes === 'Keycloak Token missing from cookies') {
+  Auth.logout();
+  // }
+  // if (
+  //   keycloakRes.status === 200 &&
+  //   keycloakRes.data.message === 'Logged out successfully'
+  // ) {
+  //   const url = keycloakRes.data.url;
+  //   window.location.href = url;
+  //   Auth.logout();
+  // } else {
+  //   Auth.logout();
+  // }
 }
 // const showChatSupport = computed(() => {
 //   return (

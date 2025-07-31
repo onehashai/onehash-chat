@@ -64,7 +64,11 @@ class IntegrationsAPI extends ApiClient {
             }
           );
         }
-        throw new Exception('Id not found in the token');
+
+        return axios.post(
+          `${this.apiVersion}/integrations/shopify/auth`,
+          query
+        );
       } catch (e) {
         return axios.post(
           `${this.apiVersion}/integrations/shopify/auth`,
