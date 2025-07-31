@@ -16,10 +16,15 @@ class AppUninstalledJob < ActiveJob::Base
       raise ActiveRecord::RecordNotFound, "Shop Not Found"
     end
 
-    return if Rails.env.development?
     shop.with_shopify_session do |session|
       @hook = Integrations::Hook.find_by!(reference_id: shop_domain)
       @hook.destroy!
+
+      account_id = @hook.account.id
+
+      ShopifyProduct.destroy_by(account_id: account_id)
+      Order.destroy_by(account_id: account_id)
+
       shop.destroy!
 
       @hook.account.contacts.each do |contact|
