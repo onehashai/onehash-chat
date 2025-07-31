@@ -31,7 +31,7 @@ const handleTypeChange = info => {
       @tab-changed="handleTypeChange"
       class="w-full"
     />
-    <div class="h-2"></div>
+    <div class="h-2" />
 
     <ShopifyOrdersContainer v-if="input_type === 'Order'" />
     <ShopifyOrderShippingTracker v-if="input_type === 'Shipping'" />

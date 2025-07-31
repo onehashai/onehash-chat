@@ -1132,7 +1132,6 @@ export default {
       this.showProducts = false;
     },
     openDiscounts() {
-      console.log('SHOW PROD');
       this.showDiscounts = true;
     },
     hideDiscounts() {

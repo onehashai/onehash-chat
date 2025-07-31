@@ -11,10 +11,10 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits('close', 'onSelect');
+const emit = defineEmits('close', 'onSelect');
 
 const onClose = () => {
-  emits('close');
+  emit('close');
 };
 
 const includedVariants = ref([]);
@@ -31,8 +31,11 @@ const includeItem = item => {
   }
 };
 
+const defaultVariants = () => {
+  return props.shopifyProducts.map(e => e.variants[0]);
+};
+
 onMounted(() => {
-  console.log('Got products');
   variants.value = defaultVariants();
 
   props.shopifyProducts.forEach(p => {
@@ -45,12 +48,10 @@ onMounted(() => {
       v.image = p.image?.url ?? p.media_image_url;
     });
   });
-
-  console.log('Vars: ', variants.value);
 });
 
 const addVariants = () => {
-  emits('onSelect', { products: includedVariants.value });
+  emit('onSelect', { products: includedVariants.value });
 };
 
 const variantMode = ref(false);
@@ -59,10 +60,6 @@ const selectVariantsOfProduct = id => {
   variantMode.value = true;
 
   variants.value = props.shopifyProducts.find(e => e.id === id).variants;
-};
-
-const defaultVariants = () => {
-  return props.shopifyProducts.map(e => e.variants[0]);
 };
 
 const resetVariants = () => {

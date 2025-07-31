@@ -2,14 +2,12 @@
 import { mapGetters } from 'vuex';
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
 import SignupForm from './components/Signup/Form.vue';
-import Testimonials from './components/Testimonials/Index.vue';
 import Spinner from 'shared/components/Spinner.vue';
 
 export default {
   components: {
     SignupForm,
     Spinner,
-    Testimonials,
   },
   mixins: [globalConfigMixin],
   data() {

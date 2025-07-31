@@ -148,7 +148,7 @@ export default {
           solid
           blue
           :label="$t('INBOX_MGMT.ADD.LINE_CHANNEL.SUBMIT_BUTTON')"
-       	/>
+        />
       </div>
     </form>
   </div>

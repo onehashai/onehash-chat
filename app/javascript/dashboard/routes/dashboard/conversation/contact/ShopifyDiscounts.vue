@@ -11,10 +11,10 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits('close', 'onSelect');
+const emit = defineEmits('close', 'onSelect');
 
 const onClose = () => {
-  emits('close');
+  emit('close');
 };
 
 const includedDiscounts = ref([]);
@@ -31,7 +31,7 @@ const includeItem = item => {
 };
 
 const sendDiscounts = () => {
-  emits('onSelect', { discounts: includedDiscounts.value });
+  emit('onSelect', { discounts: includedDiscounts.value });
 };
 </script>
 

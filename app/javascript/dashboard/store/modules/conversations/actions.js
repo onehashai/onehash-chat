@@ -66,15 +66,11 @@ const actions = {
         sender: body.sender,
         content_type: 16,
         contentAttributes: {
-          products: body.products
+          products: body.products,
         },
       };
 
-      await dispatch(
-        'createPendingMessageAndSend',
-        messagePayload
-      );
-
+      await dispatch('createPendingMessageAndSend', messagePayload);
     } catch (error) {
       // Ignore error
     }
@@ -89,15 +85,11 @@ const actions = {
         sender: body.sender,
         content_type: 17,
         contentAttributes: {
-          discounts: body.discounts
+          discounts: body.discounts,
         },
       };
 
-      await dispatch(
-        'createPendingMessageAndSend',
-        messagePayload
-      );
-
+      await dispatch('createPendingMessageAndSend', messagePayload);
     } catch (error) {
       // Ignore error
     }

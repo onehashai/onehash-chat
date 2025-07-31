@@ -86,12 +86,12 @@ export default {
         </label>
       </div>
       <NextButton
-            type="submit"
-            :is-loading="isCreating"
-            solid
-            blue
-            :label="$t('INBOX_MGMT.AGENTS.BUTTON_TEXT')"
-          />
+        type="submit"
+        :is-loading="isCreating"
+        solid
+        blue
+        :label="$t('INBOX_MGMT.AGENTS.BUTTON_TEXT')"
+      />
     </form>
   </OnboardingBaseModal>
 </template>

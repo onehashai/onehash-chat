@@ -53,7 +53,7 @@ export default {
         },
         email: {
           required,
-          email
+          email,
         },
         password: {
           required,
