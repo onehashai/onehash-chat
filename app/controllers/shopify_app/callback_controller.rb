@@ -84,6 +84,11 @@ module ShopifyApp
             scope: api_session.scope
           }
         )
+
+        Shopify::PopulateProductsJob.perform_now(
+          shop_domain: api_session.shop,
+          account_id: account.id
+        );
       end
 
       webhooks = ShopifyAPI::Webhook.all(session: api_session)
