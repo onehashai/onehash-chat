@@ -352,5 +352,5 @@ en:
     order:
       update_complete: 'Order updated'
     multi_store_not_supported: Your OneHash Chat account already contains a shopify app, please remove the existing app before integrating new one, or log out of the current account.
-    shop_domain_required: 'Shop domain is required'
+    shop_domain_is_required: 'Shop domain is required'
     data_not_found: 'Data not found'
