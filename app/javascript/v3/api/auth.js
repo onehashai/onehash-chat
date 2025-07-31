@@ -85,19 +85,19 @@ export const resetPassword = async ({ email }) =>
 // return 'Keycloak Token missing from cookies';
 // };
 
-export const checkKeycloakSession = async () => {
-  const keycloak_token = Cookies.get('keycloak_token');
-  if (keycloak_token) {
-    const response = await wootAPI.post(
-      'api/v1/keycloak/check_keycloak_session',
-      {
-        token: keycloak_token,
-      }
-    );
-    return response;
-  }
-  return 'Keycloak Token missing from cookies';
-};
+// export const checkKeycloakSession = async () => {
+//   const keycloak_token = Cookies.get('keycloak_token');
+//   if (keycloak_token) {
+//     const response = await wootAPI.post(
+//       'api/v1/keycloak/check_keycloak_session',
+//       {
+//         token: keycloak_token,
+//       }
+//     );
+//     return response;
+//   }
+//   return 'Keycloak Token missing from cookies';
+// };
 
 export const keycloakRedirectUrl = async () => {
   const response = await wootAPI.post('api/v1/keycloak/create_redirect_url');
