@@ -44,11 +44,11 @@ module ShopifyApp
 
       hook = Integrations::Hook.find_by(reference_id: api_session.shop, app_id: 'shopify')
 
-      new_login = false
+      @new_login = false
 
       # Account id is not given and there's also no hook for this shop, create new account for the shop
       if (account_id == nil or !Account.find(account_id).present?) && !hook.present?
-        new_login = true
+        @new_login = true
         account_id = get_account_for_shop(api_session.shop, shop)
 
         set_cookies(@resource.create_new_auth_token)
@@ -59,10 +59,10 @@ module ShopifyApp
         account = Account.find(hook.account.id)
         user = account.users.find_by(email: shop.email)
         if !user&.present?
-          found_user = account.users.find { |user| User.find(AccountUser.find_by(user_id: user.id, role: 1).user_id) }
+          user = account.users.find { |user| User.find(AccountUser.find_by(user_id: user.id, role: 1).user_id) }
         end
 
-        set_cookies(found_user.create_new_auth_token)
+        set_cookies(user.create_new_auth_token)
         return redirect_to(frontend_url)
       end
 
@@ -103,70 +103,25 @@ module ShopifyApp
         ShopifyApp.configuration.post_authenticate_tasks.perform(api_session)
       end
 
-      # redirect_to_app if check_billing(api_session) we maybe this for now
+      # redirect_to_app if check_billing(api_session) we maybe don't need this for now
 
-      redirect_to(app_redirect_url(account_id, new_login))
+      redirect_to(app_redirect_url(account_id))
     end
 
     private
 
     def get_account_for_shop(shop_domain, shop)
-      admin_token_info = HTTParty.post(admin_token_endpoint, {
-                                        headers: {
-                                          'Content-Type': 'application/x-www-form-urlencoded',
-                                        },
-                                        body: {
-                                          "grant_type":"client_credentials",
-                                          'client_id':"#{keycloak_client_id}",
-                                          'client_secret':"#{keycloak_client_secret}",
-                                        }
-                                      })
+      user = User.find_by(email: shop.email)
 
-      @admin_token = admin_token_info.parsed_response["access_token"]
-
-      Rails.logger.info("Admin token info: #{@admin_token}");
-
-      get_user_info(shop.email)
-
-      Rails.logger.info("User data: #{@user_info}");
-      if @user_info.present? then
-        user = User.find_by(email: @user_info['email'])
+      if user.present? then
         @resource = user
         acc_user = AccountUser.find_by(user_id: user.id)
         return acc_user.account_id
       else
-        password = generate_secure_password
+        create_account_for_user(shop_domain, shop.email)
 
-        response = HTTParty.post(users_endpoint, {
-                                        headers: {
-                                          'Content-Type': 'application/json',
-                                          'Authorization': "Bearer #{@admin_token}",
-                                        },
-                                        body: {
-                                          "email":shop.email,
-                                          "enabled":true,
-                                          "username":shop.name,
-                                          "credentials": [
-                                            {
-                                              "type": "password",
-                                              "value": password,
-                                              "temporary": true
-                                            }
-                                          ]
-                                        }.to_json
-                                      })
-
-
-        Rails.logger.info("Creation result: #{response.parsed_response}")
-
-        if response.code == 201
-          get_user_info(shop.email)
-          create_account_for_user(shop_domain, password)
-          return @account.id
-        else
-          Rails.logger.error("No account available for the shop")
-          return nil
-        end
+        @reset_pass_token = @resource.send(:set_reset_password_token)
+        return @account.id
       end
     end
 
@@ -206,23 +161,6 @@ module ShopifyApp
       }
     end
 
-    def get_user_info(email)
-      result = HTTParty.get(users_endpoint, {
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': "Bearer #{@admin_token}",
-                                      },
-                                      query: {
-                                        "email": email
-                                      }
-                                    })
-      
-      if(result.code == 200) then
-        @user_info = result.parsed_response.first
-      else
-        @user_info = nil
-      end
-    end
 
     def generate_secure_password(length = 9)
       raise ArgumentError, "Password length must be at least 4" if length < 4
@@ -244,24 +182,21 @@ module ShopifyApp
       password
     end
 
-    def create_account_for_user(shop_name, password)
+    def create_account_for_user(shop_name, email)
       @resource, @account = AccountBuilder.new(
-        account_name: extract_domain_without_tld(@user_info['email']),
-        user_full_name: @user_info['email'],
-        email: @user_info['email'],
-        user_password: password,
+        account_name: extract_domain_without_tld(email),
+        user_full_name: shop_name,
+        email: email,
         locale: I18n.locale,
-        confirmed: @user_info['email_verified']
+        confirmed: true
       ).perform
 
       @account.update(custom_attributes: @account.custom_attributes.merge({ account_origin_shopify_store: shop_name }))
       @account.save
-
-      AdministratorNotifications::AccountNotificationMailer.with(account: @account).account_password(@account, password, change_password_url).deliver_now if @account
     end
 
-    def change_password_url
-      URI.join(keycloak_url, "/realms/#{keycloak_realm}/protocol/openid-connect/auth?response_type=code&client_id=#{keycloak_client_id}&redirect_uri=#{frontend_url}&kc_action=UPDATE_PASSWORD").to_s
+    def reset_password_url
+      URI.join(frontend_url, "/app/auth/password/edit?config=default&reset_password_token=#{@reset_pass_token}")
     end
 
     def admin_token_endpoint
@@ -292,8 +227,12 @@ module ShopifyApp
       ENV.fetch('KEYCLOAK_CALLBACK_URL', nil)
     end
 
-    def app_redirect_url(account_id, new_login)
-      if new_login then
+    def app_redirect_url(account_id)
+      if @reset_pass_token.present?
+        return reset_password_url
+      end
+
+      if @new_login then
         return "#{frontend_url}/app/accounts/#{account_id}/start/setup-profile"
       end
 
