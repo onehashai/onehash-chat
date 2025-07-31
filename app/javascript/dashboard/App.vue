@@ -18,7 +18,6 @@ import {
   registerSubscription,
   verifyServiceWorkerExistence,
 } from './helper/pushHelper';
-import { checkKeycloakSession } from '../../javascript/v3/api/auth';
 import Auth from './api/auth';
 import ReconnectService from 'dashboard/helper/ReconnectService';
 
@@ -91,18 +90,18 @@ export default {
     this.initializeColorTheme();
     this.listenToThemeChanges();
     this.setLocale(window.chatwootConfig.selectedLocale);
-    setTimeout(() => {
-      checkKeycloakSession().then(response => {
-        if (response === 'Keycloak Token missing from cookies') {
-          // Auth.logout();
-        } else if (
-          response.data.message === 'No session found for the provided token' ||
-          response.data.message === 'Session expired. Please log in again'
-        ) {
-          // Auth.logout();
-        }
-      });
-    }, 2000);
+    // setTimeout(() => {
+    // checkKeycloakSession().then(response => {
+    //   if (response === 'Keycloak Token missing from cookies') {
+    // Auth.logout();
+    // } else if (
+    //   response.data.message === 'No session found for the provided token' ||
+    //   response.data.message === 'Session expired. Please log in again'
+    // ) {
+    // Auth.logout();
+    // }
+    //   });
+    // }, 2000);
   },
   unmounted() {
     if (this.reconnectService) {
