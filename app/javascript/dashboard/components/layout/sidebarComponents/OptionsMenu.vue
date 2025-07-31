@@ -4,7 +4,6 @@ import Auth from '../../../api/auth';
 import WootDropdownItem from 'shared/components/ui/dropdown/DropdownItem.vue';
 import WootDropdownMenu from 'shared/components/ui/dropdown/DropdownMenu.vue';
 import AvailabilityStatus from 'dashboard/components/layout/AvailabilityStatus.vue';
-import { logoutFromKeycloakSession } from '../../../../../javascript/v3/api/auth';
 import { FEATURE_FLAGS } from '../../../featureFlags';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
@@ -61,20 +60,19 @@ export default {
       this.$emit('close');
     },
     async logout() {
-      const keycloakRes = await logoutFromKeycloakSession();
-      if (keycloakRes === 'Keycloak Token missing from cookies') {
-        Auth.logout();
-      }
-      if (
-        keycloakRes.status === 200 &&
-        keycloakRes.data.message === 'Logged out successfully'
-      ) {
-        const url = keycloakRes.data.url;
-        window.location.href = url;
-        Auth.logout();
-      } else {
-        Auth.logout();
-      }
+      // if (keycloakRes === 'Keycloak Token missing from cookies') {
+      //   Auth.logout();
+      // }
+      // if (
+      //   keycloakRes.status === 200 &&
+      //   keycloakRes.data.message === 'Logged out successfully'
+      // ) {
+      //   const url = keycloakRes.data.url;
+      //   window.location.href = url;
+      Auth.logout();
+      // } else {
+      //   Auth.logout();
+      // }
     },
     onClickAway() {
       if (this.show) this.$emit('close');
