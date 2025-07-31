@@ -223,8 +223,6 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    devise-encryptable (0.2.0)
-      devise (>= 2.1.0)
     devise_token_auth (1.2.5)
       bcrypt (~> 3.0)
       devise (> 3.5.2, < 5)
@@ -1056,7 +1054,6 @@ DEPENDENCIES
   ddtrace
   debug (~> 1.8)
   devise (>= 4.9.4)
-  devise-encryptable
   devise-secure_password!
   devise_token_auth (>= 1.2.3)
   dotenv-rails (>= 3.0.0)
