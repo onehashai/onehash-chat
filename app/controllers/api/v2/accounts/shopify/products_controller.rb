@@ -47,10 +47,6 @@ class Api::V2::Accounts::Shopify::ProductsController < Api::V1::Accounts::BaseCo
 
   def index
     shop_domain = @shopify_service.shop.shopify_domain
-    Shopify::PopulateProductsJob.perform_now(
-      shop_domain: shop_domain,
-      account_id: Current.account.id
-    );
 
     shop = Shop.find_by(shopify_domain: shop_domain)
 

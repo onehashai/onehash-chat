@@ -13,6 +13,8 @@ class AppUninstalledJob < ActiveJob::Base
     if shop.nil?
       logger.error("#{self.class} failed: cannot find shop with domain '#{shop_domain}'")
 
+      # The dev environment is unstable so don't fail the webhook there
+      return if Rails.env.development?
       raise ActiveRecord::RecordNotFound, "Shop Not Found"
     end
 
