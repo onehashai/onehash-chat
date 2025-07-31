@@ -14,10 +14,6 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-  console.log('Mess prods: ', products.value);
-});
-
 const products = computed(() => {
   return [...props.messageContentAttributes.products];
 });
@@ -28,6 +24,7 @@ const products = computed(() => {
     <div
       class="flex flex-col w-full px-2 py-1 text-xs shadow-md rounded-md my-2"
       v-for="item in products"
+      :key="item.id"
     >
       <div class="flex flex-row justify-start items-start">
         <img
@@ -35,7 +32,7 @@ const products = computed(() => {
           alt="Product image"
           class="object-cover object-center max-w-[60px] max-h-[60px] min-w-[60px] min-h-[60px] rounded-lg shadow"
         />
-        <div class="flex-1"></div>
+        <div class="flex-1" />
         <div class="flex flex-col w-full pl-2">
           <div class="h-[20px] text-sm overflow-x-auto overflow-y-hidden">
             {{ item.displayName }}

@@ -14,10 +14,6 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-  console.log('Mess prods: ', discounts.value);
-});
-
 const addCode = item => {
   const shopDomain = `${window.chatwootWebChannel.shopDomain}`;
   window.top.location.href = `https://${shopDomain}/discount/${item.discount.title}`;
@@ -33,6 +29,7 @@ const discounts = computed(() => {
     <div
       class="flex flex-col min-w-full px-2 py-1 text-xs shadow-md rounded-md my-2 gap-2"
       v-for="item in discounts"
+      :key="item.id"
     >
       <div class="flex flex-row text-sm">
         {{ item.discount.title }}
@@ -41,14 +38,14 @@ const discounts = computed(() => {
         {{ item.discount.summary }}
       </div>
 
-      <Button
+      <button
         class="px-4 py-2 bg-woot-500 text-white rounded hover:bg-woot-700 focus:outline-none focus:ring-2 focus:bg-woot-500"
         type="button"
         variant="solid"
         @click="() => addCode(item)"
       >
         {{ $t('ADD_TOKEN') }}
-      </Button>
+      </button>
     </div>
   </div>
 </template>

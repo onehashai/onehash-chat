@@ -96,8 +96,6 @@ export default {
   },
   mounted() {
     const query = this.$route.query;
-    // const queryParams = route.query;
-    console.log('Query: ', query);
 
     if ('shop' in query) {
       this.shop = query.shop;
@@ -210,7 +208,10 @@ export default {
           useInstallationName($t('LOGIN.TITLE'), globalConfig.installationName)
         }}
       </h2>
-      <p v-if="showSignupLink && !shop" class="mt-3 text-sm text-center text-n-slate-11">
+      <p
+        v-if="showSignupLink && !shop"
+        class="mt-3 text-sm text-center text-n-slate-11"
+      >
         {{ $t('COMMON.OR') }}
         <router-link to="auth/signup" class="lowercase text-link text-n-brand">
           {{ $t('LOGIN.CREATE_NEW_ACCOUNT') }}
