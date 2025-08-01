@@ -114,10 +114,21 @@ export default {
       type: String,
       required: true,
     },
-    // calendarEvents: { // REVIEW: Seems unused
-    //   type: Array,
-    //   default: () => [],
-    // },
+    calendarEvents: {
+      type: Array,
+      default: () => [],
+    },
+
+    shopifyProducts: {
+      type: Array,
+      required: true,
+    },
+
+    shopifyDiscounts: {
+      type: Array,
+      required: true,
+    },
+
     conversationType: {
       type: String,
       default: '',
@@ -128,6 +139,8 @@ export default {
     'toggleInsertArticle',
     'toggleEditor',
     'selectWhatsappTemplate',
+    'showProducts',
+    'showDiscounts',
   ],
   setup() {
     const { setSignatureFlagForInbox, fetchSignatureFlagFromUISettings } =
@@ -277,12 +290,33 @@ export default {
       />
 
       <NextButton
+        v-if="calendarEvents"
         v-tooltip.top-end="$t('CONVERSATION.FOOTER.SEND_CALENDAR')"
         icon="i-ph-calendar-check"
         slate
         faded
         sm
         @click="$emit('showAvailableCalendars')"
+      />
+
+      <NextButton
+        v-if="shopifyProducts && shopifyProducts.length > 0"
+        v-tooltip.top-end="$t('CONVERSATION.FOOTER.SEND_PRODUCT')"
+        icon="i-ph-bag"
+        slate
+        faded
+        sm
+        @click="$emit('showProducts')"
+      />
+
+      <NextButton
+        v-if="shopifyDiscounts && shopifyDiscounts.length > 0"
+        v-tooltip.top-end="$t('CONVERSATION.FOOTER.SEND_DISCOUNT')"
+        icon="i-ph-seal-percent"
+        slate
+        faded
+        sm
+        @click="$emit('showDiscounts')"
       />
 
       <FileUpload

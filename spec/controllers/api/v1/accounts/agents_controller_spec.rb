@@ -163,7 +163,7 @@ RSpec.describe 'Agents API', type: :request do
         expect(response).to have_http_status(:unauthorized)
       end
 
-      # REVIEW: this should fail, but it is.
+      # REVIEW: only fails on github
       # it 'creates a new agent' do
       #   post "/api/v1/accounts/#{account.id}/agents",
       #        params: params,

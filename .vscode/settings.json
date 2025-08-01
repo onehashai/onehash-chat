@@ -7,5 +7,10 @@
         "activityBar.background": "#41233D",
         "titleBar.activeBackground": "#5B3155",
         "titleBar.activeForeground": "#FCF9FC"
-    }
+    },
+    "rubyLsp.featureFlags": {
+        "fullTestDiscovery": true
+    },
+    "rubyLsp.testExplorerFileGlob": ""
+
 }

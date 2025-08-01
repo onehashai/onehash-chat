@@ -1,20 +1,21 @@
 <script>
 // utils and composables
+import { login, keycloakRedirectUrl } from '../../api/auth';
+import { mapGetters } from 'vuex';
 import { parseBoolean } from '@chatwoot/utils';
 import { useAlert } from 'dashboard/composables';
 import { required, email } from '@vuelidate/validators';
 import { useVuelidate } from '@vuelidate/core';
-import { login, keycloakRedirectUrl } from '../../api/auth';
-
 import integrationAPI from 'dashboard/api/integrations';
+
 // mixins
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
 
 // components
-// import FormInput from '../../components/Form/Input.vue';
-// import GoogleOAuthButton from '../../components/GoogleOauth/Button.vue';
+import FormInput from '../../components/Form/Input.vue';
+import GoogleOAuthButton from '../../components/GoogleOauth/Button.vue';
 import Spinner from 'shared/components/Spinner.vue';
-// import SubmitButton from '../../components/Button/SubmitButton.vue';
+import SubmitButton from '../../components/Button/SubmitButton.vue';
 
 const ERROR_MESSAGES = {
   'no-account-found': 'LOGIN.OAUTH.NO_ACCOUNT_FOUND',
@@ -23,11 +24,10 @@ const ERROR_MESSAGES = {
 
 export default {
   components: {
-    // FormInput,
-    // GoogleOAuthButton,
-    // RedirectLoader,
+    FormInput,
+    GoogleOAuthButton,
     Spinner,
-    // SubmitButton,
+    SubmitButton,
   },
   mixins: [globalConfigMixin],
   props: {
@@ -54,6 +54,7 @@ export default {
         hasErrored: false,
       },
       error: '',
+      shop: null,
     };
   },
   validations() {
@@ -70,7 +71,7 @@ export default {
     };
   },
   computed: {
-    // ...mapGetters({ globalConfig: 'globalConfig/get' }),
+    ...mapGetters({ globalConfig: 'globalConfig/get' }),
     showGoogleOAuth() {
       return Boolean(window.chatwootConfig.googleOAuthClientId);
     },
@@ -95,10 +96,9 @@ export default {
   },
   mounted() {
     const query = this.$route.query;
-    // const queryParams = route.query;
-    console.log('Query: ', query);
 
     if ('shop' in query) {
+      this.shop = query.shop;
       integrationAPI
         .connectShopify(query)
         .then(res => {
@@ -110,8 +110,6 @@ export default {
         .catch(e => {
           this.error = e.response.data.error;
         });
-    } else {
-      this.redirectToKeycloak();
     }
   },
   methods: {
@@ -163,6 +161,15 @@ export default {
           );
         });
     },
+    submitFormLogin() {
+      if (this.v$.credentials.email.$invalid && !this.email) {
+        this.showAlertMessage(this.$t('LOGIN.EMAIL.ERROR'));
+        return;
+      }
+
+      this.submitLogin();
+    },
+
     redirectToKeycloak() {
       keycloakRedirectUrl()
         .then(response => {
@@ -176,14 +183,6 @@ export default {
           );
         });
     },
-    // submitFormLogin() {
-    //   if (this.v$.credentials.email.$invalid && !this.email) {
-    //     this.showAlertMessage(this.$t('LOGIN.EMAIL.ERROR'));
-    //     return;
-    //   }
-
-    //   this.submitLogin();
-    // },
   },
 };
 </script>
@@ -192,7 +191,7 @@ export default {
   <main
     class="flex flex-col w-full min-h-screen py-20 bg-n-brand/5 dark:bg-n-background sm:px-6 lg:px-8"
   >
-    <!-- <section class="max-w-5xl mx-auto">
+    <section class="max-w-5xl mx-auto">
       <img
         :src="globalConfig.logo"
         :alt="globalConfig.installationName"
@@ -209,7 +208,10 @@ export default {
           useInstallationName($t('LOGIN.TITLE'), globalConfig.installationName)
         }}
       </h2>
-      <p v-if="showSignupLink" class="mt-3 text-sm text-center text-n-slate-11">
+      <p
+        v-if="showSignupLink && !shop"
+        class="mt-3 text-sm text-center text-n-slate-11"
+      >
         {{ $t('COMMON.OR') }}
         <router-link to="auth/signup" class="lowercase text-link text-n-brand">
           {{ $t('LOGIN.CREATE_NEW_ACCOUNT') }}
@@ -223,7 +225,7 @@ export default {
         'animate-wiggle': loginApi.hasErrored,
       }"
     >
-      <div v-if="!email">
+      <div v-if="!email && !shop">
         <GoogleOAuthButton v-if="showGoogleOAuth" />
         <form class="space-y-5" @submit.prevent="submitFormLogin">
           <FormInput
@@ -268,12 +270,12 @@ export default {
           />
         </form>
       </div>
-    </section> -->
-    <div v-if="!error" class="flex items-center justify-center">
-      <Spinner class="bg-white-100" size="100px" />
-    </div>
-    <div v-else class="flex text-lg items-center justify-center">
-      {{ error }}
-    </div>
+      <div v-else-if="!error" class="flex items-center justify-center">
+        <Spinner color-scheme="primary" size="" />
+      </div>
+      <div v-if="error" class="flex text-center items-center justify-center">
+        {{ error }}
+      </div>
+    </section>
   </main>
 </template>

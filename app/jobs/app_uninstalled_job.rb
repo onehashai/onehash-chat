@@ -13,12 +13,20 @@ class AppUninstalledJob < ActiveJob::Base
     if shop.nil?
       logger.error("#{self.class} failed: cannot find shop with domain '#{shop_domain}'")
 
+      # The dev environment is unstable so don't fail the webhook there
+      return if Rails.env.development?
       raise ActiveRecord::RecordNotFound, "Shop Not Found"
     end
 
     shop.with_shopify_session do |session|
       @hook = Integrations::Hook.find_by!(reference_id: shop_domain)
       @hook.destroy!
+
+      account_id = @hook.account.id
+
+      ShopifyProduct.destroy_by(account_id: account_id)
+      Order.destroy_by(account_id: account_id)
+
       shop.destroy!
 
       @hook.account.contacts.each do |contact|

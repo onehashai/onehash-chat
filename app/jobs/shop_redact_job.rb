@@ -18,6 +18,11 @@ class ShopRedactJob < ActiveJob::Base
 
     shop.with_shopify_session do |session|
       @hook = Integrations::Hook.find_by!(reference_id: shop_domain)
+      account_id = @hook.account.id
+
+      ShopifyProduct.destroy_by(account_id: account_id)
+      Order.destroy_by(account_id: account_id)
+
       @hook.destroy!
       shop.destroy!
     end

@@ -44,6 +44,8 @@ import {
 import { LOCAL_STORAGE_KEYS } from 'dashboard/constants/localStorage';
 import { LocalStorage } from 'shared/helpers/localStorage';
 import SelectCalendar from 'dashboard/routes/dashboard/conversation/contact/SelectCalendar.vue';
+import ShopifyProducts from 'dashboard/routes/dashboard/conversation/contact/ShopifyProducts.vue';
+import ShopifyDiscounts from 'dashboard/routes/dashboard/conversation/contact/ShopifyDiscounts.vue';
 import { emitter } from 'shared/helpers/mitt';
 
 const EmojiInput = defineAsyncComponent(
@@ -52,6 +54,8 @@ const EmojiInput = defineAsyncComponent(
 
 export default {
   components: {
+    ShopifyProducts,
+    ShopifyDiscounts,
     ArticleSearchPopover,
     SelectCalendar,
     AttachmentPreview,
@@ -122,6 +126,8 @@ export default {
       newConversationModalActive: false,
       showArticleSearchPopover: false,
       showSelectCalendarModal: false,
+      showProducts: false,
+      showDiscounts: false,
       hasRecordedAudio: false,
     };
   },
@@ -129,6 +135,8 @@ export default {
     ...mapGetters({
       isRTL: 'accounts/isRTL',
       currentChat: 'getSelectedChat',
+      shopifyProducts: 'getShopifyProducts',
+      shopifyDiscounts: 'getShopifyDiscounts',
       messageSignature: 'getMessageSignature',
       currentUser: 'getCurrentUser',
       lastEmail: 'getLastEmailInSelectedChat',
@@ -489,6 +497,9 @@ export default {
   },
 
   mounted() {
+    this.$store.dispatch('fetchProducts');
+    this.$store.dispatch('fetchDiscounts');
+
     this.getFromDraft();
     // Don't use the keyboard listener mixin here as the events here are supposed to be
     // working even if input/textarea is focussed.
@@ -1114,6 +1125,18 @@ export default {
     hideSelectCalendarModal() {
       this.showSelectCalendarModal = false;
     },
+    openProducts() {
+      this.showProducts = true;
+    },
+    hideProducts() {
+      this.showProducts = false;
+    },
+    openDiscounts() {
+      this.showDiscounts = true;
+    },
+    hideDiscounts() {
+      this.showDiscounts = false;
+    },
     async onSelectCalendarEvent(payload) {
       this.$store.dispatch('sendCalEvent', {
         conversation_id: this.currentChat.id,
@@ -1124,6 +1147,29 @@ export default {
 
       this.hideSelectCalendarModal();
     },
+
+    async onSelectProducts(payload) {
+      this.$store.dispatch('sendProducts', {
+        chat_id: this.currentChat.id,
+        account_id: this.currentUser.account_id,
+        sender: this.sender,
+        products: payload.products,
+      });
+
+      this.hideProducts();
+    },
+
+    async onSelectDiscounts(payload) {
+      this.$store.dispatch('sendDiscounts', {
+        chat_id: this.currentChat.id,
+        account_id: this.currentUser.account_id,
+        sender: this.sender,
+        discounts: payload.discounts,
+      });
+
+      this.hideDiscounts();
+    },
+
     resetAudioRecorderInput() {
       this.recordingAudioDurationText = '00:00';
       this.isRecordingAudio = false;
@@ -1252,6 +1298,8 @@ export default {
       v-if="isSignatureEnabledForInbox && !isSignatureAvailable"
     />
     <ReplyBottomPanel
+      :shopify-products="shopifyProducts"
+      :shopify-discounts="shopifyDiscounts"
       :conversation-id="conversationId"
       :enable-multiple-file-upload="enableMultipleFileUpload"
       :has-whatsapp-templates="hasWhatsappTemplates"
@@ -1268,7 +1316,7 @@ export default {
       :send-button-text="replyButtonLabel"
       :show-audio-recorder="showAudioRecorder"
       :show-editor-toggle="isAPIInbox && !isOnPrivateNote"
-      :show-emoji-picker="showEmojiPicker"
+      :showeemoji-picker="showEmojiPicker"
       :show-file-upload="showFileUpload"
       :toggle-audio-recorder-play-pause="toggleAudioRecorderPlayPause"
       :toggle-audio-recorder="toggleAudioRecorder"
@@ -1281,6 +1329,8 @@ export default {
       @toggle-editor="toggleRichContentEditor"
       @replace-text="replaceText"
       @toggle-insert-article="toggleInsertArticle"
+      @show-products="openProducts"
+      @show-discounts="openDiscounts"
       @show-available-calendars="openSelectCalendarModal"
     />
     <WhatsappTemplates
@@ -1297,6 +1347,20 @@ export default {
       :show="showSelectCalendarModal"
       @close="hideSelectCalendarModal"
       @on-select="onSelectCalendarEvent"
+    />
+
+    <ShopifyProducts
+      v-if="showProducts"
+      :shopifyProducts="shopifyProducts"
+      @close="hideProducts"
+      @on-select="onSelectProducts"
+    />
+
+    <ShopifyDiscounts
+      v-if="showDiscounts"
+      :shopifyDiscounts="shopifyDiscounts"
+      @close="hideDiscounts"
+      @on-select="onSelectDiscounts"
     />
 
     <woot-confirm-modal

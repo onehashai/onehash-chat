@@ -64,8 +64,16 @@ class IntegrationsAPI extends ApiClient {
             }
           );
         }
+
+        return axios.post(
+          `${this.apiVersion}/integrations/shopify/auth`,
+          query
+        );
       } catch (e) {
-        return await axios.post(`${this.apiVersion}/integrations/shopify/auth`, query);
+        return axios.post(
+          `${this.apiVersion}/integrations/shopify/auth`,
+          query
+        );
       }
     } else {
       return axios.post(`${this.baseUrl()}/integrations/shopify/auth`, query);
@@ -82,41 +90,35 @@ class IntegrationsAPI extends ApiClient {
 
     const cwSession = getCookie('cw_d_session_info');
     if (!cwSession) {
-      console.error('cw_d_session_info cookie not found');
-      return;
+      return { id: null, token: null };
     }
 
     let sessionData;
     try {
       sessionData = JSON.parse(cwSession);
     } catch (e) {
-      console.error('Failed to decode cw_d_session_info:', e.message);
-      return;
+      return { id: null, token: null };
     }
 
     const { 'access-token': accessToken, client, uid } = sessionData;
 
     if (!accessToken || !client || !uid) {
-      console.error('Missing required auth values in session data');
-      return;
+      return { id: null, token: null };
     }
 
     try {
-      const res = await axios.get(
-        `${this.apiVersion}/profile`,
-        {
-          headers: {
-            'access-token': accessToken,
-            client: client,
-            uid: uid,
-            'token-type': 'Bearer',
-          },
-        }
-      );
+      const res = await axios.get(`${this.apiVersion}/profile`, {
+        headers: {
+          'access-token': accessToken,
+          client: client,
+          uid: uid,
+          'token-type': 'Bearer',
+        },
+      });
 
       return { id: res.data.account_id, token: res.data.access_token };
     } catch (err) {
-      console.error('API request failed:', err.response?.data || err.message);
+      return { id: null, token: null };
     }
   }
 }

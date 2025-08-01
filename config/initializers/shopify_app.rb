@@ -3,7 +3,7 @@ ShopifyApp.configure do |config|
   config.old_secret = ""
   config.root_url = '/shopify'
   config.login_callback_url = '/shopify/auth/shopify/callback'
-  
+
   # FIXME: These scopes aren't even used, beware
   config.scope = "read_customers,read_orders,write_orders,read_fulfillments" # Consult this page for more scope options: https://shopify.dev/docs/api/usage/access-scopes
   config.embedded_app = false
@@ -17,6 +17,9 @@ ShopifyApp.configure do |config|
   config.reauth_on_access_scope_changes = true
 
   config.webhooks = [
+    { topic: "products/create", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/products_create" },
+    { topic: "products/update", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/products_update" },
+    { topic: "products/delete", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/products_delete" },
     { topic: "orders/updated", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/orders_updated" },
     { topic: "orders/create", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/orders_create" },
     { topic: "shop/redact", address: "#{ENV.fetch('SHOPIFY_WEBHOOK_HOST', '')}/shopify/webhooks/shop_redact" },

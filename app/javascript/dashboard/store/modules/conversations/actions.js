@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 
 import ConversationApi from '../../../api/inbox/conversation';
 import MessageApi from '../../../api/inbox/message';
+import ShopifyProductsApi from '../../../api/shopify/products';
+
 import { MESSAGE_STATUS, MESSAGE_TYPE } from 'shared/constants/messages';
 import { createPendingMessage } from 'dashboard/helper/commons';
 import {
@@ -37,6 +39,62 @@ const actions = {
     }
   },
 
+  fetchProducts: async ({ commit }) => {
+    try {
+      const response = await ShopifyProductsApi.get();
+      commit(types.SET_SHOPIFY_PRODUCTS, response.data.products);
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
+  fetchDiscounts: async ({ commit }) => {
+    try {
+      const response = await ShopifyProductsApi.getDiscounts();
+      commit(types.SET_SHOPIFY_DISCOUNTS, response.data.discounts);
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
+  sendProducts: async ({ commit, dispatch }, body) => {
+    try {
+      let messagePayload = {
+        conversationId: body.chat_id,
+        message: 'Referred products',
+        private: false,
+        sender: body.sender,
+        content_type: 16,
+        contentAttributes: {
+          products: body.products,
+        },
+      };
+
+      await dispatch('createPendingMessageAndSend', messagePayload);
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
+  sendDiscounts: async ({ commit, dispatch }, body) => {
+    try {
+      let messagePayload = {
+        conversationId: body.chat_id,
+        message: 'Referred discounts',
+        private: false,
+        sender: body.sender,
+        content_type: 17,
+        contentAttributes: {
+          discounts: body.discounts,
+        },
+      };
+
+      await dispatch('createPendingMessageAndSend', messagePayload);
+    } catch (error) {
+      // Ignore error
+    }
+  },
+
   createCall: async ({ commit, dispatch }, body) => {
     try {
       let messagePayload = {
@@ -50,8 +108,6 @@ const actions = {
           call_room: body.room_id,
         },
       };
-
-      // await new Promise(resolve => setTimeout(resolve, 1000))
 
       const call = await ConversationApi.createCall(body.chat_id, {
         ...body,

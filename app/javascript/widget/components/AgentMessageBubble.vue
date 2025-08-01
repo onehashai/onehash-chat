@@ -11,6 +11,8 @@ import IntegrationCard from './template/IntegrationCard.vue';
 import CalEventCard from './template/CalEventCard.vue';
 import CalEventConfirmationCard from './template/CalEventConfirmationCard.vue';
 import CallingEventCard from './template/CallingEventCard.vue';
+import ShopifyProductReferCard from './template/ShopifyProductReferCard.vue';
+import ShopifyDiscountReferCard from './template/ShopifyDiscountReferCard.vue';
 
 export default {
   name: 'AgentMessageBubble',
@@ -21,6 +23,8 @@ export default {
     ChatOptions,
     EmailInput,
     ShopifyOrderEventCard,
+    ShopifyProductReferCard,
+    ShopifyDiscountReferCard,
     CustomerSatisfaction,
     IntegrationCard,
     CalEventCard,
@@ -56,6 +60,12 @@ export default {
     },
     isTemplateShopifyOrderEvent() {
       return this.contentType === 'shopify_order_event';
+    },
+    isTemplateShopifyProductRefer() {
+      return this.contentType === 'shopify_product_refer';
+    },
+    isTemplateShopifyDiscountRefer() {
+      return this.contentType === 'shopify_discount_refer';
     },
     isCards() {
       return this.contentType === 'cards';
@@ -138,6 +148,18 @@ export default {
 
       <ShopifyOrderEventCard
         v-if="isTemplateShopifyOrderEvent"
+        :message-id="messageId"
+        :message-content-attributes="messageContentAttributes"
+      />
+
+      <ShopifyProductReferCard
+        v-if="isTemplateShopifyProductRefer"
+        :message-id="messageId"
+        :message-content-attributes="messageContentAttributes"
+      />
+
+      <ShopifyDiscountReferCard
+        v-if="isTemplateShopifyDiscountRefer"
         :message-id="messageId"
         :message-content-attributes="messageContentAttributes"
       />

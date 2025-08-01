@@ -1,15 +1,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import globalConfigMixin from 'shared/mixins/globalConfigMixin';
-// import SignupForm from './components/Signup/Form.vue';
-// import Testimonials from './components/Testimonials/Index.vue';
-// import Spinner from 'shared/components/Spinner.vue';
+import SignupForm from './components/Signup/Form.vue';
+import Spinner from 'shared/components/Spinner.vue';
 
 export default {
   components: {
-    // SignupForm,
-    // Spinner,
-    // Testimonials,
+    SignupForm,
+    Spinner,
   },
   mixins: [globalConfigMixin],
   data() {
@@ -22,57 +20,35 @@ export default {
     },
   },
   beforeMount() {
-    this.isLoading = this.isAChatwootInstance;
+    this.isLoading = false;
   },
-  mounted() {
-    this.redirectToKeycloak();
-  },
-  methods: {
-    resizeContainers() {
-      this.isLoading = false;
-    },
-    redirectToKeycloak() {
-      const realm = window.chatwootConfig.keycloakRealm;
-      const clientId = window.chatwootConfig.keycloakClientId;
-      const redirectUri = window.chatwootConfig.keycloakCallbackUrl;
-      const keycloakUri = window.chatwootConfig.keycloakUrl;
-      const baseUrl = `${keycloakUri}/realms/${realm}/protocol/openid-connect/registrations`;
-      const responseType = 'code';
-      const scope = 'openid';
-
-      const queryString = new URLSearchParams({
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        response_type: responseType,
-        scope: scope,
-      }).toString();
-
-      window.location.href = `${baseUrl}?${queryString}`;
-    },
-  },
+  // methods: {
+  //   resizeContainers() {
+  //     this.isLoading = false;
+  //   },
+  // },
 };
 </script>
 
-<!-- REVIEW: This appears to not be used at all -->
-<!-- eslint-disable-line vue/valid-template-root -->
-<!-- <template> -->
-<!-- <div class="w-full h-full bg-n-background">
+<template>
+  <div class="w-full h-full bg-n-background">
     <div v-show="!isLoading" class="flex h-full min-h-screen items-center">
       <div
         class="flex-1 min-h-[640px] inline-flex items-center h-full justify-center overflow-auto py-6"
       >
-        <div class="px-8 max-w-[560px] w-full overflow-auto">
-          <div class="mb-4">
-            <img
-              :src="globalConfig.logo"
-              :alt="globalConfig.installationName"
-              class="block w-auto h-8 dark:hidden"
-            />
+        <div class="px-8 max-w-[700px] w-full overflow-auto">
+          <div class="flex flex-col mb-4 justify-center items-center">
             <img
               v-if="globalConfig.logoDark"
               :src="globalConfig.logoDark"
               :alt="globalConfig.installationName"
-              class="hidden w-auto h-8 dark:block"
+              class="hidden w-auto h-12 dark:block"
+            />
+            <img
+              v-else
+              :src="globalConfig.logo"
+              :alt="globalConfig.installationName"
+              class="block w-auto h-12 dark:hidden"
             />
             <h2
               class="mt-6 text-3xl font-medium text-left mb-7 text-n-slate-12"
@@ -94,11 +70,6 @@ export default {
           </div>
         </div>
       </div>
-      <Testimonials
-        v-if="isAChatwootInstance"
-        class="flex-1"
-        @resize-containers="resizeContainers"
-      />
     </div>
     <div
       v-show="isLoading"
@@ -106,5 +77,5 @@ export default {
     >
       <Spinner color-scheme="primary" size="" />
     </div>
-  </div> -->
-<!-- </template> -->
+  </div>
+</template>

@@ -19,7 +19,10 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
     window.location.assign('/app/login');
   }
 
-  if ((to?.query && 'shop' in to.query) || to.path.includes('shopify')) {
+  if (
+    (to?.query && 'shop' in to.query) ||
+    (to.path && to.path.includes('shopify'))
+  ) {
     return next();
   }
 
