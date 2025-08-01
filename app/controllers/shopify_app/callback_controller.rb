@@ -11,6 +11,21 @@ module ShopifyApp
     }
   GRAPHQL
 
+  APP_SUBSCRIPTION_WEBHOOK = <<~GRAPHQL
+    mutation webhookSubscriptionCreate($callbackUrl: URL!) {
+      webhookSubscriptionCreate(topic: APP_SUBSCRIPTIONS_UPDATE, webhookSubscription: {callbackUrl: $callbackUrl, format: JSON}) {
+        webhookSubscription {
+          id
+          callbackUrl
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  GRAPHQL
+
   # Performs login after OAuth completes
   class CallbackController < ActionController::Base
     include ShopifyApp::LoginProtection
@@ -75,6 +90,10 @@ module ShopifyApp
       if hook.present?
         return redirect_to(frontend_url)
       elsif !hook.present?
+        shopify_shop = Shop.find_by(shopify_domain: api_session.shop)
+
+        subscribe_subscription_hook(shopify_shop)
+
         account.hooks.create!(
           app_id: 'shopify',
           access_token: api_session.access_token,
@@ -223,10 +242,22 @@ module ShopifyApp
       return "#{frontend_url}/app/accounts/#{account_id}/settings/integrations/shopify"
     end
 
+    def subscribe_subscription_hook(shop)
+      shop.with_shopify_session do
+        ShopifyGraphql.execute(
+          APP_SUBSCRIPTION_WEBHOOK,
+          callbackUrl: app_subscription_webhook_url
+        )
+      end
+    end
+
+    def app_subscription_webhook_url
+      frontend_url + '/shopify/webhooks/app_subscriptions_update'
+    end
+
     def frontend_url
       ENV.fetch('FRONTEND_URL', nil)
     end
-
 
     def callback_rescue(error)
       ShopifyApp::Logger.debug("#{error.class} was rescued and redirected to login_url_with_optional_shop")
