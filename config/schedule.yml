@@ -39,3 +39,8 @@ process_stale_contacts_job:
   cron: '30 04 * * *'
   class: 'Internal::ProcessStaleContactsJob'
   queue: housekeeping
+
+process_shopify_stale_subscriptions:
+  cron: '0 12 * * *'
+  class: 'Shopify::ProcessShopifyStaleSubscriptions'
+  queue: housekeeping

@@ -448,7 +448,7 @@ function ssl_success_message() {
     cat << EOF
 
 ***************************************************************************
-Woot! Woot!! Chatwoot server installation is complete.
+Woot!! Chatwoot server installation is complete.
 The server will be accessible at https://$domain_name
 
 Join the community at https://chatwoot.com/community?utm_source=cwctl
@@ -557,7 +557,7 @@ EOF
 ➥ 9/9 Skipping SSL/TLS setup.
 
 ***************************************************************************
-Woot! Woot!! Chatwoot server installation is complete.
+Woot!! Chatwoot server installation is complete.
 The server will be accessible at http://$public_ip:3000
 
 To configure a domain and SSL certificate, follow the guide at

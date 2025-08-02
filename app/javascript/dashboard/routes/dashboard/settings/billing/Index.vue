@@ -1,6 +1,10 @@
 <script setup>
 import { computed, onMounted } from 'vue';
-import { useMapGetter, useStore } from 'dashboard/composables/store.js';
+import {
+  useStoreGetters,
+  useMapGetter,
+  useStore,
+} from 'dashboard/composables/store.js';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { useCaptain } from 'dashboard/composables/useCaptain';
 import { format } from 'date-fns';
@@ -52,6 +56,16 @@ const planName = computed(() => {
   return customAttributes.value.plan_name;
 });
 
+const getters = useStoreGetters();
+
+const integrationList = computed(
+  () => getters['integrations/getAppIntegrations'].value
+);
+
+const hasShopify = computed(
+  () => integrationList.value?.find(e => e.id == 'shopify')?.hooks?.length > 0
+);
+
 /**
  * Computed property for subscribed quantity
  * @returns {number|undefined}
@@ -97,6 +111,7 @@ const hasABillingPlan = computed(() => {
 });
 
 const fetchAccountDetails = async () => {
+  await store.dispatch('integrations/get');
   if (!hasABillingPlan.value) {
     store.dispatch('accounts/stripe_subscription');
 
@@ -215,6 +230,7 @@ onMounted(fetchAccountDetails);
           </div>
         </BillingCard>
         <BillingCard
+          v-if="!hasShopify"
           :title="$t('LTD_SETTINGS.TITLE')"
           :description="$t('LTD_SETTINGS.DESCRIPTION')"
         >

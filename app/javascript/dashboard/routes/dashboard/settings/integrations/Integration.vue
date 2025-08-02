@@ -18,6 +18,7 @@ const props = defineProps({
   integrationName: { type: String, default: '' },
   integrationDescription: { type: String, default: '' },
   integrationEnabled: { type: Boolean, default: false },
+  hasActionButtons: { type: Boolean, default: false },
   integrationAction: { type: String, default: '' },
   actionButtonText: { type: String, default: '' },
   deleteConfirmationText: { type: Object, default: () => ({}) },
@@ -100,7 +101,7 @@ const confirmDeletion = () => {
         "
       >
         <div v-if="integrationEnabled">
-          <div v-if="integrationAction === 'disconnect'">
+          <div v-if="integrationAction === 'disconnect' && hasActionButtons">
             <Button
               :label="
                 actionButtonText ||
@@ -111,7 +112,7 @@ const confirmDeletion = () => {
               @click="openDeletePopup"
             />
           </div>
-          <div v-else>
+          <div v-else-if="hasActionButtons">
             <Button
               faded
               blue
@@ -120,7 +121,7 @@ const confirmDeletion = () => {
           </div>
         </div>
       </router-link>
-      <div v-if="!integrationEnabled">
+      <div v-if="!integrationEnabled && hasActionButtons">
         <slot name="action">
           <a :href="integrationAction">
             <Button

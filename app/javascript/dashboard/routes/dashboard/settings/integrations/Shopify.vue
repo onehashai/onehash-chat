@@ -101,6 +101,7 @@ onMounted(() => {
     >
       <Integration
         :integration-id="integration.id"
+        :hasActionButtons="integration.id !== 'shopify'"
         :integration-logo="integration.logo"
         :integration-name="integration.name"
         :integration-description="integration.description"
@@ -111,13 +112,14 @@ onMounted(() => {
           message: $t('INTEGRATION_SETTINGS.SHOPIFY.DELETE.MESSAGE'),
         }"
       >
-        <template #action>
+        <!-- <template #action>
           <Button
             teal
             :label="$t('INTEGRATION_SETTINGS.CONNECT.BUTTON_TEXT')"
             @click="openStoreUrlDialog"
           />
-        </template>
+        </template> -->
+       
       </Integration>
       <div
         v-if="error"
