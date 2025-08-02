@@ -42,5 +42,5 @@ process_stale_contacts_job:
 
 process_shopify_stale_subscriptions:
   cron: '0 12 * * *'
-  class: 'Internal::ProcessShopifyStaleSubscriptions'
+  class: 'Shopify::ProcessShopifyStaleSubscriptions'
   queue: housekeeping
