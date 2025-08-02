@@ -56,27 +56,30 @@ class ApplicationController < ActionController::Base
   end
 
   def verify_shopify_request
-    permitted = params.permit(:shop, :hmac, :code, :state, :timestamp)
+    permitted = params.permit(:shop, :hmac, :host, :timestamp, :state, :code, :session)
+
+    Rails.logger.info("Verifying Shopify request with params: #{permitted.inspect}")
 
     shop = permitted[:shop]
-    hmac = permitted[:shop]
+    hmac = permitted[:hmac]
 
-    if(hmac.present?)
-      return false
+    if(!hmac.present?)
+      return render status: :forbidden, json: { error: 'HMAC is missing' }
     end
 
     if(!shop.present?)
-      return false
+      return render status: :forbidden, json: { error: 'Shop is missing' }
     end
     key = ENV.fetch('SHOPIFY_API_SECRET', '')
     data = permitted.except(:hmac).to_query
 
+    Rails.logger.info("Computed data for HMAC: #{data}")
+
     computed_hmac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), key, data)
-    received_hmac = params[:hmac]
+    received_hmac = permitted[:hmac]
 
     if !ActiveSupport::SecurityUtils.secure_compare(computed_hmac, received_hmac)
-      return false
-      #  render json: { error: 'Unauthorized'}, status: :unauthorized if shop_domain.blank?
+      return render status: :forbidden, json: { error: 'HMAC verification failed' }
     end
 
     return true
