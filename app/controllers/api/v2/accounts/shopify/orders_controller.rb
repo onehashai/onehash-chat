@@ -299,6 +299,10 @@ GRAPHQL
     render json: {order: @order}
   end
 
+  # def contact
+  #   @contact ||= Current.account.contacts.find_by(id: params[:contact_id])
+  # end
+
   def fetch_order
     @order = Order.find(params[:id])
   end

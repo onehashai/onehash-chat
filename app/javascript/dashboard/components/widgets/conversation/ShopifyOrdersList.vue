@@ -2,7 +2,7 @@
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { useFunctionGetter } from 'dashboard/composables/store';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
-import ShopifyAPI from '../../../api/integrations/shopify';
+import ContactApi from '../../../api/contacts.js';
 import ShopifyOrderItem from './ShopifyOrderItem.vue';
 import { emitter } from 'shared/helpers/mitt';
 import { BUS_EVENTS } from '../../../../shared/constants/busEvents';
@@ -28,7 +28,7 @@ const error = ref('');
 const fetchOrders = async () => {
   try {
     loading.value = true;
-    const response = await ShopifyAPI.getOrders(props.contactId);
+    const response = await ContactApi.getOrders(props.contactId);
     orders.value = response.data.orders;
     shop.value = response.data.shop;
   } catch (e) {

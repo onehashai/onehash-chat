@@ -31,6 +31,10 @@ class ContactPolicy < ApplicationPolicy
     true
   end
 
+  def orders?
+    true
+  end
+
   def update?
     true
   end
