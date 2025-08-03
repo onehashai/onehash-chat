@@ -13,8 +13,9 @@ class Api::V1::Accounts::ContactsController < Api::V1::Accounts::BaseController
 
   before_action :check_authorization
   before_action :set_current_page, only: [:index, :active, :search, :filter]
-  before_action :fetch_contact, only: [:show, :update, :destroy, :avatar, :contactable_inboxes, :bookings, :destroy_custom_attributes]
+  before_action :fetch_contact, only: [:show, :update, :destroy, :avatar, :contactable_inboxes, :bookings, :destroy_custom_attributes, :orders]
   before_action :set_include_contact_inboxes, only: [:index, :search, :filter, :show, :update]
+  before_action :fetch_hook, only: [:orders]
 
   def get_all_ids
     contacts = resolved_contacts.where.not(phone_number: [nil, ''])
@@ -178,6 +179,26 @@ class Api::V1::Accounts::ContactsController < Api::V1::Accounts::BaseController
     render json: contact_bookings
   end
 
+  def orders
+    if !@contact.custom_attributes['shopify_customer_id'].present?
+      PopulateShopifyContactDataJob.perform_now(account_id: Current.account.id, id: @contact.id, email: @contact.email, phone_number: @contact.phone_number)
+
+      @contact = Current.account.contacts.find(@contact.id)
+    end
+
+    if !@contact.custom_attributes['shopify_customer_id'].present?
+      render json: {orders: []} 
+      return
+    end
+
+    # orders = fetch_orders(contact.custom_attributes['shopify_customer_id'])
+    orders = Order.where(customer_id: @contact.custom_attributes['shopify_customer_id'])
+
+    render json: { orders: orders, shop: @hook.reference_id}
+  rescue ShopifyAPI::Errors::HttpResponseError => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   private
 
   def resolved_contacts
@@ -263,4 +284,9 @@ class Api::V1::Accounts::ContactsController < Api::V1::Accounts::BaseController
   def render_error(error, error_status)
     render json: error, status: error_status
   end
+
+  def fetch_hook
+    @hook = Integrations::Hook.find_by!(account: Current.account, app_id: 'shopify')
+  end
+
 end
