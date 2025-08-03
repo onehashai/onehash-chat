@@ -99,7 +99,22 @@ class Api::V1::AccountsController < Api::BaseController
     head :no_content
   end
 
+  def has_shopify_account
+    hook = Integrations::Hook.find_by(app_id: 'shopify', account_id: @account.id)
+
+    hook.present?
+  end
+
+  def redirect_to_shopify_checkout
+    hook = Integrations::Hook.find_by(app_id: 'shopify', account_id: @account.id)
+
+    name = hook.reference_id.split('.').first    
+    render_redirect_url("https://admin.shopify.com/store/#{name}/charges/onehash-chat-1/pricing_plans")
+  end
+
   def stripe_checkout
+    return redirect_to_shopify_checkout if has_shopify_account
+
     return create_stripe_billing_session(stripe_customer_id) if stripe_customer_id.present?
 
     render_invalid_billing_details
