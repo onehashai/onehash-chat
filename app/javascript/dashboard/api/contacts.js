@@ -100,6 +100,11 @@ class ContactAPI extends ApiClient {
   getFilteredAllIds(filters) {
     return axios.post(`${this.url}/filtered_all_ids`, filters);
   }
+
+  getOrders(contactId) {
+    return axios.get(`${this.url}/${contactId}/orders`);
+  }
 }
+
 
 export default new ContactAPI();

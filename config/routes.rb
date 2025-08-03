@@ -165,6 +165,7 @@ Rails.application.routes.draw do
               post :export
             end
             member do
+              get :orders
               get :contactable_inboxes
               post :destroy_custom_attributes
               delete :avatar
@@ -264,7 +265,6 @@ Rails.application.routes.draw do
             resource :shopify, controller: 'shopify', only: [:destroy] do
               collection do
                 post :auth
-                get :orders
               end
             end
             resource :linear, controller: 'linear', only: [] do
@@ -374,7 +374,7 @@ Rails.application.routes.draw do
       resources :accounts, only: [:create] do
         scope module: :accounts do
           namespace :shopify do
-            resources :orders, only: [:show] do
+            resources :orders, only: [:show, :index] do
               post :cancel_order, on: :member
               post :calculate_refund, on: :member
               post :refund_order, on: :member

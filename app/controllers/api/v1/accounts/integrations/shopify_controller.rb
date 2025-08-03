@@ -5,7 +5,6 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
 
   before_action :fetch_hook, except: [:auth]
   before_action :setup_shopify_context, only: [:orders, :destroy]
-  before_action :validate_contact, only: [:orders]
 
   def auth
     shop_domain = params[:shop]
@@ -37,26 +36,6 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
     render json: { redirect_url: auth_url }
   end
 
-  def orders
-    if !contact.custom_attributes['shopify_customer_id'].present?
-      PopulateShopifyContactDataJob.perform_now(account_id: Current.account.id, id: contact.id, email: contact.email, phone_number: contact.phone_number)
-
-      @contact = Current.account.contacts.find(contact.id)
-    end
-
-    if !contact.custom_attributes['shopify_customer_id'].present?
-      render json: {orders: []} 
-      return
-    end
-
-    # orders = fetch_orders(contact.custom_attributes['shopify_customer_id'])
-    orders = Order.where(customer_id: contact.custom_attributes['shopify_customer_id'])
-
-    render json: { orders: orders, shop: @hook.reference_id}
-  rescue ShopifyAPI::Errors::HttpResponseError => e
-    render json: { error: e.message }, status: :unprocessable_entity
-  end
-
   def destroy
     shopify_client.delete(
       path: 'api_permissions/current.json',
@@ -72,9 +51,6 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
     "#{ENV.fetch('FRONTEND_URL', '')}/shopify/auth/shopify/callback"
   end
 
-  def contact
-    @contact ||= Current.account.contacts.find_by(id: params[:contact_id])
-  end
 
   def fetch_hook
     @hook = Integrations::Hook.find_by!(account: Current.account, app_id: 'shopify')
@@ -106,12 +82,5 @@ class Api::V1::Accounts::Integrations::ShopifyController < Api::V1::Accounts::Ba
 
   def shopify_client
     @shopify_service.shopify_client
-  end
-
-  def validate_contact
-    return unless contact.blank? || (contact.email.blank? && contact.phone_number.blank?)
-
-    render json: { error: 'Contact information missing' },
-           status: :unprocessable_entity
   end
 end
