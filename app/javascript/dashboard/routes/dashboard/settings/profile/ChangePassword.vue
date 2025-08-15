@@ -3,12 +3,12 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
 import { useAlert } from 'dashboard/composables';
 import { parseAPIErrorResponse } from 'dashboard/store/utils/api';
-// import FormButton from 'v3/components/Form/Button.vue';
+import FormButton from 'v3/components/Form/Button.vue';
 
 export default {
-  // components: {
-  //   FormButton,
-  // },
+  components: {
+    FormButton,
+  },
   setup() {
     return { v$: useVuelidate() };
   },
@@ -76,9 +76,11 @@ export default {
       }
     },
     redirectToHref() {
-      const keycloakUrl = window.chatwootConfig.keycloakUrl;
-      const keycloakRealm = window.chatwootConfig.keycloakRealm;
-      const hrefURL = `${keycloakUrl}/realms/${keycloakRealm}/account/#/security/signingin`;
+      // const keycloakUrl = window.chatwootConfig.keycloakUrl;
+      // const keycloakRealm = window.chatwootConfig.keycloakRealm;
+      // const hrefURL = `${keycloakUrl}/realms/${keycloakRealm}/account/#/security/signingin`;
+
+      const hrefURL = `${window.chatwootConfig.hostURL}/app/auth/reset/password`;
       window.open(hrefURL, '_blank');
     },
   },
@@ -95,9 +97,9 @@ export default {
         <p>{{ $t('PROFILE_SETTINGS.FORM.PASSWORD_SECTION.NOTE') }}</p>
       </div>
       <div class="w-[45%]">
-        <woot-button @click="redirectToHref">
+        <FormButton @click="redirectToHref">
           {{ $t('PROFILE_SETTINGS.FORM.PASSWORD_SECTION.BTN_TEXT') }}
-        </woot-button>
+        </FormButton>
       </div>
     </div>
   </form>

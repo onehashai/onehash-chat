@@ -22,7 +22,7 @@ export default {
       showPopoutButton: false,
       scrollPosition: 0,
       ticking: true,
-      disableBranding: window.chatwootWebChannel.disableBranding || false,
+      disableBranding: window.chatwootWebChannel.disableBranding ||window.chatwootWebChannel.hasShop  || false,
     };
   },
   computed: {
@@ -159,7 +159,7 @@ export default {
       <router-view class="h-full" />
       <div class="flex-1" />
 
-      <Branding :disable-branding="disableBranding" class="pb-[70px]" />
+      <Branding  :disable-branding="disableBranding" class="pb-[70px]" />
 
       <WidgetTabs v-if="routeTab !== null" :active-tab-index="routeTab" />
     </div>
