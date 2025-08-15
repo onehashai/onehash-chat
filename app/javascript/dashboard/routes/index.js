@@ -47,6 +47,10 @@ export const validateAuthenticateRoutePermission = async (to, next) => {
     );
   }
 
+  if (to.fullPath === '/app/auth/reset/password') {
+    next()
+  }
+
   if (!to.name) {
     return next(frontendURL(`accounts/${user.account_id}/dashboard`));
   }
