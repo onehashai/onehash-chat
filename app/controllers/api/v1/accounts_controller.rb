@@ -147,7 +147,9 @@ class Api::V1::AccountsController < Api::BaseController
   end
 
   def account_params
-    params.permit(:account_name, :email, :name, :password, :locale, :domain, :support_email, :user_full_name)
+    permitted = params.permit(:account_name, :email, :name, :password, :locale, :domain, :support_email, :user_full_name)
+    permitted[:domain] = nil if permitted[:domain].blank?
+    permitted
   end
 
   def custom_attributes_params

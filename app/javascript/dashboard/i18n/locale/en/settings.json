@@ -70,7 +70,7 @@
       },
       "PASSWORD_SECTION": {
         "TITLE": "Password",
-        "NOTE": "Updating your password would reset your logins in multiple devices.",
+        "NOTE": "Change your OneHash Chat password",
         "BTN_TEXT": "Change password"
       },
       "ACCESS_TOKEN": {
