@@ -32,3 +32,5 @@ class TriggerScheduledItemsJob < ApplicationJob
     Notification::RemoveOldNotificationJob.perform_later
   end
 end
+
+TriggerScheduledItemsJob.prepend_mod_with('TriggerScheduledItemsJob')
