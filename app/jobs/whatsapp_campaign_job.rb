@@ -150,7 +150,7 @@ class WhatsappCampaignJob < ApplicationJob
           }
         }
       ],
-      parameters: if template['components'].any? { |c| c.key?('example') }
+      parameters: if template['components'].any? { |c| c['type'] == 'BODY'  && c.key?('example') && c['example'].key?('body_text_named_params') }
                     [{ type: 'text', parameter_name: 'name', text: name }]
                   else
                     []
@@ -172,7 +172,7 @@ class WhatsappCampaignJob < ApplicationJob
       name: template['name'],
       lang_code: template['language'],
       # Changed 'key' to 'parameter_name'
-      parameters: if template['components'].any? { |c| c.key?('example') }
+      parameters: if template['components'].any? { |c| c['type'] == 'BODY'  && c.key?('example') && c['example'].key?('body_text_named_params') }
                     [{ type: 'text', parameter_name: 'name', text: name }]
                   else
                     []
