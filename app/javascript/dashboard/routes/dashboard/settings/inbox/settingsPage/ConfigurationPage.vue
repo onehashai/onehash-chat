@@ -33,6 +33,7 @@ export default {
       hmacMandatory: false,
       whatsAppInboxAPIKey: '',
       widgetBubblePosition: 'right',
+      isSyncingTemplates: false,
     };
   },
   validations: {
@@ -146,6 +147,20 @@ export default {
         useAlert(this.$t('INBOX_MGMT.EDIT.API.ERROR_MESSAGE'));
       }
     },
+
+    async syncTemplates() {
+      this.isSyncingTemplates = true;
+      try {
+        await this.$store.dispatch('inboxes/syncTemplates', this.inbox.id);
+        useAlert(
+          this.$t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_TEMPLATES_SYNC_SUCCESS')
+        );
+      } catch (error) {
+        useAlert(this.$t('INBOX_MGMT.EDIT.API.ERROR_MESSAGE'));
+      } finally {
+        this.isSyncingTemplates = false;
+      }
+    },
   },
 };
 </script>
@@ -157,6 +172,19 @@ export default {
       :sub-title="$t('INBOX_MGMT.ADD.TWILIO.API_CALLBACK.SUBTITLE')"
     >
       <woot-code :script="inbox.callback_webhook_url" lang="html" />
+    </SettingsSection>
+    <SettingsSection
+      v-if="isATwilioWhatsAppChannel"
+      :title="$t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_TEMPLATES_SYNC_TITLE')"
+      :sub-title="
+        $t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_TEMPLATES_SYNC_SUBHEADER')
+      "
+    >
+      <div class="flex justify-start items-center mt-2">
+        <NextButton :disabled="isSyncingTemplates" @click="syncTemplates">
+          {{ $t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_TEMPLATES_SYNC_BUTTON') }}
+        </NextButton>
+      </div>
     </SettingsSection>
   </div>
   <div v-else-if="isALineChannel" class="mx-8">
@@ -316,6 +344,19 @@ export default {
             @click="updateWhatsAppInboxAPIKey"
           >
             {{ $t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_SECTION_UPDATE_BUTTON') }}
+          </NextButton>
+        </div>
+      </SettingsSection>
+
+      <SettingsSection
+        :title="$t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_TEMPLATES_SYNC_TITLE')"
+        :sub-title="
+          $t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_TEMPLATES_SYNC_SUBHEADER')
+        "
+      >
+        <div class="flex justify-start items-center mt-2">
+          <NextButton :disabled="isSyncingTemplates" @click="syncTemplates">
+            {{ $t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_TEMPLATES_SYNC_BUTTON') }}
           </NextButton>
         </div>
       </SettingsSection>
