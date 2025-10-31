@@ -30,6 +30,8 @@ const resetCampaignTimers = (
     currentURL,
     isInBusinessHours,
   });
+
+  console.log('Campains: ', formattedCampaigns, currentURL, isInBusinessHours);
   campaignTimer.initTimers({ campaigns: filteredCampaigns }, websiteToken);
 };
 
@@ -111,6 +113,7 @@ export const actions = {
     },
     { websiteToken, campaignId }
   ) => {
+    debugger;
     // Disable campaign execution if widget is opened
     if (!isWidgetOpen) {
       const { data: campaigns } = await getCampaigns(websiteToken);
@@ -118,6 +121,7 @@ export const actions = {
       const campaign = campaigns.find(item => item.id === campaignId);
       if (campaign) {
         commit('setActiveCampaign', campaign);
+        console.log('setting active campaign: ', campaign);
       }
     }
   },
