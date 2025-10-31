@@ -37,9 +37,11 @@ export const filterCampaigns = ({
 }) => {
   return campaigns.filter(campaign => {
     if (!isPatternMatchingWithURL(campaign.url, currentURL)) {
+      console.log("Pattern not matching: ", campaign.url, currentURL)
       return false;
     }
     if (campaign.triggerOnlyDuringBusinessHours) {
+      console.log("only triggers for business hours but :", isInBusinessHours)
       return isInBusinessHours;
     }
     return true;
