@@ -100,3 +100,4 @@ CLAUDE.md
 .claude/settings.local.json
 .cursor
 .env.real
+.env.serve
