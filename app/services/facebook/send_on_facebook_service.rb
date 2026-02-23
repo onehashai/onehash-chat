@@ -40,12 +40,11 @@ class Facebook::SendOnFacebookService < Base::SendOnChannelService
   end
 
   def fb_text_message_params
-    {
+    params = {
       recipient: { id: contact.get_source_id(inbox.id) },
       message: { text: message.content },
-      messaging_type: 'MESSAGE_TAG',
-      tag: 'ACCOUNT_UPDATE'
     }
+    merge_human_agent_tag(params)
   end
 
   def external_error(response)
@@ -58,7 +57,7 @@ class Facebook::SendOnFacebookService < Base::SendOnChannelService
 
   def fb_attachment_message_params
     attachment = message.attachments.first
-    {
+    params = {
       recipient: { id: contact.get_source_id(inbox.id) },
       message: {
         attachment: {
@@ -68,9 +67,8 @@ class Facebook::SendOnFacebookService < Base::SendOnChannelService
           }
         }
       },
-      messaging_type: 'MESSAGE_TAG',
-      tag: 'ACCOUNT_UPDATE'
     }
+    merge_human_agent_tag(params)
   end
 
   def attachment_type(attachment)
@@ -97,5 +95,15 @@ class Facebook::SendOnFacebookService < Base::SendOnChannelService
     return unless exception.to_s.include?('The session has been invalidated') || exception.to_s.include?('Error validating access token')
 
     channel.authorization_error!
+  end
+
+  def merge_human_agent_tag(params)
+    global_config = GlobalConfig.get('ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT')
+
+    return params unless global_config['ENABLE_MESSENGER_CHANNEL_HUMAN_AGENT']
+
+    params[:messaging_type] = 'MESSAGE_TAG'
+    params[:tag] = 'HUMAN_AGENT'
+    params
   end
 end
